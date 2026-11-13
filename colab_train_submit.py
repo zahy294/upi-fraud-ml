@@ -69,11 +69,15 @@ def _stage_commands(args):
     py = str(root / ".colab-venv" / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")) if args.install_deps else sys.executable
     script = str(root / "colab_train_submit.py")
     environment = []
-    if args.install_deps:
+    # A resume must not recreate/reseed a working environment (which can
+    # silently upgrade pip and violate the saved dependency fingerprint).
+    existing_resume_env = args.resume and not args.dry_run and Path(py).is_file()
+    if args.install_deps and not existing_resume_env:
         environment += [
             [sys.executable, "-m", "pip", "install", "virtualenv==20.31.2"],
             [sys.executable, "-m", "virtualenv", "--no-download", str(root / ".colab-venv")],
         ]
+        environment.append([py, "-m", "pip", "install", "pip==25.1.1"])
         environment.append([py, "-m", "pip", "install", "--requirement", str(root / "requirements-colab.txt")])
     environment += [[py, "-m", "pip", "check"],
                     [py, script, "--root", str(root), "--tag", args.tag, "--_action", "environment"]]
@@ -346,6 +350,8 @@ def validate_artifacts(root: Path, run_dir: Path) -> dict:
             name: metrics["partitions"][name]["macro_f1"]
             for name in ("early_stop", "calibration", "assessment", "full_september")},
             "assessment_per_class": metrics["partitions"]["assessment"]["per_class"],
+            "recall_selection": metrics.get("recall_selection"),
+            "assessment_legacy_baseline": metrics["partitions"]["assessment"].get("legacy_baseline"),
             "baseline_comparison": {"available": False, "reason": "no baseline CSV supplied"}}
         refit = directory / "refit"
         if refit.exists():
@@ -385,6 +391,18 @@ def validate_artifacts(root: Path, run_dir: Path) -> dict:
     for profile, values in report["profiles"].items():
         lines += [f"## {profile}", ""]
         lines += [f"- {name}: {score:.6f}" for name, score in values["original_label_macro_f1"].items()]
+        selection = values.get("recall_selection")
+        legacy = values.get("assessment_legacy_baseline")
+        if selection:
+            lines += ["", f"Selected policy: {selection['selected']}; fraud-weighted member share: {selection['recall_weight']:.2f}.",
+                      "Selection uses Sep20-23, after threshold fitting on Sep16-19."]
+        if legacy:
+            score = values["original_label_macro_f1"]["assessment"]
+            lines += [f"Legacy ensemble assessment: {legacy['macro_f1']:.6f}; change: {score - legacy['macro_f1']:+.6f}.",
+                      "", "Assessment change versus legacy (precision / recall / F1):", ""]
+            for lab, value in values["assessment_per_class"].items():
+                old = legacy["per_class"][lab]
+                lines.append(f"- {lab}: {value['precision'] - old['precision']:+.4f} / {value['recall'] - old['recall']:+.4f} / {value['f1'] - old['f1']:+.4f}")
         lines += ["", "Assessment per class (precision / recall / F1 / support):", ""]
         for lab, value in values["assessment_per_class"].items():
             lines.append(f"- {lab}: {value['precision']:.4f} / {value['recall']:.4f} / {value['f1']:.4f} / {value['support']}")

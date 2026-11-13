@@ -4,6 +4,11 @@ All code is on [codex/target-070](https://github.com/zahy294/upi-fraud-ml/tree/c
 The modelling branch is unchanged. The Python runner is the entry point;
 the older notebook and run_all.py use the previous training interface.
 
+For the recall upgrade after the reported 0.5297 submission, use a **fresh
+`recall_v7` tag** and the current branch checkout. Do not resume `local_podium`
+or an older `podium_v6` run with this revision. See
+[RECALL_V7.md](RECALL_V7.md) for the experiment, comparison report and tests.
+
 The teammate supplies the five competition CSVs and, optionally, the
 submission reported to score 0.5400. That public score is user-reported;
 this pipeline has not reproduced it or established a leaderboard improvement.
@@ -65,7 +70,7 @@ import sys
 
 DATA = Path("/content/drive/MyDrive/upi_fraud_data")  # EDIT
 OUTPUT = Path("/content/drive/MyDrive/upi_fraud_runs")  # EDIT
-TAG = "podium_v6"
+TAG = "recall_v7"
 BASELINE = None  # Optional Path("/content/drive/MyDrive/friend_05400.csv")
 
 COMMON = [
@@ -89,11 +94,14 @@ mount Drive, import ML packages or create outputs. --mount-drive can be
 added to the runner instead of mounting Drive in cell1.
 
 --install-deps bootstraps pinned virtualenv20.31.2, creates ROOT/.colab-venv,
-and installs requirements-colab.txt there. Preparation, training, GPU probes
+pins pip25.1.1 and installs requirements-colab.txt there. Preparation, training, GPU probes
 and validation all use that environment. pip check runs inside the isolated
 environment, avoiding conflicts with unrelated Colab packages. Without this
 flag, the current interpreter must already have the exact declared versions.
 Repeat --install-deps when resuming so the same interpreter is selected.
+On resume, an existing private environment is reused without recreating it or
+installing packages; pip check and the complete version comparison still run.
+A missing environment is installed before the strict comparison.
 
 All required package versions are recorded, along with the complete installed
 distribution set and requirements-resolved.txt. These pins were chosen for
@@ -187,6 +195,10 @@ For each profile:
 - validation/metrics.json and per_class_metrics.csv contain raw-label metrics.
 - validation/assessment_confusion_matrix.csv contains the 12x12 matrix.
 - validation/offsets.json contains global offsets, conditional offsets and gate.
+- validation/recall_selection.json records the Sep20-23 comparison and chosen
+  share of the extra fraud-weighted member, when recall is enabled.
+- validation/metrics.json includes the legacy ensemble comparison for every
+  partition and all 12 classes, including misses as legit versus wrong fraud type.
 - refit/submission.csv is the final CSV.
 - refit/submission_metrics.json includes SHA256 and prediction counts.
 - refit/prediction_distribution.json and validation_report.json contain checks.

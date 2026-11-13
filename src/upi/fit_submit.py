@@ -21,7 +21,8 @@ try:
     from .bands import build_bands
     from .clean_labels import clean_training_labels
     from .make_submission import (prepare_rule_context, slice_rule_context, event_groups,
-                                  fit_offsets, predict_labels, evaluate_predictions, write_submission)
+                                  fit_offsets, predict_labels, evaluate_predictions, write_submission,
+                                  select_recall_policy)
 except ImportError:
     from common import LABELS
     from features_v6 import (align_pack, validate_ids, assemble_features, apply_feature_schema,
@@ -29,7 +30,8 @@ except ImportError:
     from bands import build_bands
     from clean_labels import clean_training_labels
     from make_submission import (prepare_rule_context, slice_rule_context, event_groups,
-                                 fit_offsets, predict_labels, evaluate_predictions, write_submission)
+                                 fit_offsets, predict_labels, evaluate_predictions, write_submission,
+                                 select_recall_policy)
 
 PROFILES = {"control": ("v1", "v2", "v3", "v4", "v5"),
             "fusion": ("v1", "v2", "v3", "v4", "v5", "v6"),
@@ -186,6 +188,27 @@ def sample_training(ids, y_clean, *, rate=0.25, seed=2026):
     keep = (y != 0) | (u < rate)
     weights = np.where(y[keep] == 0, 1 / rate, 1.)
     return keep, weights
+
+
+def fraud_class_weights(y_fit, *, power=.5, cap=6.):
+    """Counts come from the eligible, unsampled fit labels only.
+
+    Keep legit at one; give rarer fraud classes a capped square-root weight.
+    These multiply, rather than replace, inverse sampling weights.
+    """
+    y = np.asarray(y_fit)
+    if (y.ndim != 1 or not len(y) or y.dtype.kind not in "iu"
+            or not np.isin(y, np.arange(12)).all()):
+        raise ValueError("class weighting requires nonempty integer fit labels")
+    if not np.isfinite(power) or not 0 <= power <= 1 or not np.isfinite(cap) or cap < 1:
+        raise ValueError("invalid fraud class weighting parameters")
+    counts = np.bincount(y, minlength=12)
+    weights = np.ones(12)
+    present = np.flatnonzero(counts[1:]) + 1
+    if len(present):
+        reference = max(float(counts[0]) / len(present), 1.)
+        weights[present] = np.clip((reference / counts[present]) ** power, 1., cap)
+    return weights, counts
 
 
 def calendar_dates(base, config):
@@ -429,6 +452,17 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
     fit_positions = np.flatnonzero(fit)[keep]
     fit_y = y_clean[keep]
     members = config["members"] if profile == "ensemble" else config["members"][:1]
+    members = list(members)
+    recall_config = config.get("recall", {}) if profile == "ensemble" else {}
+    recall_name = None
+    if recall_config.get("enabled", False):
+        recall_member = dict(recall_config["member"])
+        recall_name = recall_member["name"]
+        if recall_name in {m["name"] for m in members}:
+            raise ValueError("recall member name must differ from baseline members")
+        # This member enters only via the chronological blend gate below.
+        recall_member["weight"] = 0.
+        members.append(recall_member)
     prior_manifest = None if validation else json.loads((validation_folder / "manifest.json").read_text(encoding="utf-8"))
     if prior_manifest is not None and prior_manifest["signature"] != signature:
         raise ValueError("validation/refit configuration or inputs differ")
@@ -438,23 +472,36 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
     ids = base.txn_id[query].to_numpy()
     ensemble = np.zeros((query.sum(), 12))
     total_weight = sum(float(m["weight"]) for m in members)
-    if total_weight <= 0:
+    if not np.isfinite(total_weight) or total_weight <= 0 or any(float(m["weight"]) < 0 for m in members):
         raise ValueError("ensemble weights must sum to a positive value")
     round_counts, backends = {}, {}
+    recall_proba = None
     provenance = {"signature": signature, "profile": profile, "stage": name,
                   "fit_ids_hash": ids_hash(base.txn_id[fit]),
                   "sampled_fit_ids_hash": ids_hash(base.txn_id.iloc[fit_positions])}
     for member in members:
         spec = _spec(config, member, schema)
+        member_weights = weights
+        if member["name"] == recall_name:
+            class_weights, counts = fraud_class_weights(
+                y_clean, power=recall_config.get("class_weight_power", .5),
+                cap=recall_config.get("class_weight_cap", 6.))
+            member_weights = weights * class_weights[fit_y]
+            spec["fraud_class_weights"] = class_weights.tolist()
+            spec["unsampled_fit_class_counts"] = counts.tolist()
         fixed = None if validation else int(prior_manifest["round_counts"][member["name"]])
+        print(f"{profile}/{name}: fitting {member['name']} on {len(fit_y)} rows", flush=True)
         model, rounds = train_member(
-            X.iloc[fit_positions], fit_y, weights,
+            X.iloc[fit_positions], fit_y, member_weights,
             X.loc[masks["early_stop"]] if validation else None,
             _raw_labels(base, masks["early_stop"]) if validation else None,
             spec=spec, device=config["device"], fixed_rounds=fixed)
+        print(f"{profile}/{name}: {member['name']} completed at {rounds} rounds", flush=True)
         p = model_proba(model, X.loc[query]) if query.any() else np.empty((0, 12))
         weight = float(member["weight"]) / total_weight
         ensemble += weight * p
+        if member["name"] == recall_name:
+            recall_proba = p
         round_counts[member["name"]], backends[member["name"]] = rounds, model.podium_backend_
         _dump_model(model, folder, member["name"], rounds, spec, base.txn_id.iloc[fit_positions])
         save_probability_artifact(folder / f"{member['name']}_proba.npz", ids, p, provenance=provenance)
@@ -478,16 +525,34 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
     if validation:
         y = _raw_labels(base, query)
         calibration = masks["calibration"][query]
-        offsets = fit_offsets(ensemble[calibration], y[calibration], groups[calibration],
-                              slice_rule_context(context, calibration), config=config.get("calibration", {}))
+        baseline_ensemble = ensemble.copy()
+        selection = None
+        if recall_proba is not None:
+            offsets, selection = select_recall_policy(
+                ensemble[calibration], recall_proba[calibration], y[calibration], groups[calibration],
+                slice_rule_context(context, calibration),
+                baseline_config=config.get("calibration", {}), config=recall_config)
+            _json(folder / "recall_selection.json", selection)
+            alpha = selection["recall_weight"]
+            ensemble = (1 - alpha) * ensemble + alpha * recall_proba
+        else:
+            offsets = fit_offsets(ensemble[calibration], y[calibration], groups[calibration],
+                                  slice_rule_context(context, calibration), config=config.get("calibration", {}))
         _json(folder / "offsets.json", offsets)
+        # Preserve an exact legacy decision comparator, selected independently
+        # of assessment. Both policies are reported on the same raw labels.
+        baseline_offsets = fit_offsets(
+            baseline_ensemble[calibration], y[calibration], groups[calibration],
+            slice_rule_context(context, calibration), config=config.get("calibration", {})) if selection else offsets
+        _json(folder / "baseline_offsets.json", baseline_offsets)
+        baseline_pred = predict_labels(baseline_ensemble, groups, baseline_offsets, context)
         pred = predict_labels(ensemble, groups, offsets, context)
         pred_global = predict_labels(ensemble, groups, offsets["global_only_offsets"], context)
         raw_argmax = ensemble.argmax(axis=1)
         zero = {"global": [0.] * 12, "conditional": {}, "class_order": list(LABELS)}
         band_only = predict_labels(ensemble, groups, zero, context)
         metrics = {"profile": profile, "label_source": "original",
-                   "assessment_reused_project_data": True, "partitions": {},
+                   "assessment_reused_project_data": True, "partitions": {}, "recall_selection": selection,
                    "round_counts": round_counts, "corrections": int((pred != raw_argmax).sum()),
                    "band_rule_changes_without_offsets": int((band_only != raw_argmax).sum()),
                    "offset_changes_after_rules": int((pred != band_only).sum()),
@@ -495,6 +560,8 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
         for partition in ("early_stop", "calibration", "assessment", "full_september", "tail"):
             mask = masks[partition][query]
             report = evaluate_predictions(y[mask], pred[mask])
+            report["legacy_baseline"] = evaluate_predictions(y[mask], baseline_pred[mask])
+            report["macro_f1_delta_vs_legacy"] = report["macro_f1"] - report["legacy_baseline"]["macro_f1"]
             report["global_only"] = evaluate_predictions(y[mask], pred_global[mask])
             b = context["band"][mask] > 0
             report["direct_band"] = evaluate_predictions(y[mask][b], pred[mask][b])
@@ -512,6 +579,13 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
         print(profile, "raw assessment macro-F1:", metrics["partitions"]["assessment"]["macro_f1"], flush=True)
         return metrics
     offsets = json.loads((validation_folder / "offsets.json").read_text(encoding="utf-8"))
+    if recall_proba is not None:
+        selection = json.loads((validation_folder / "recall_selection.json").read_text(encoding="utf-8"))
+        alpha = float(selection["recall_weight"])
+        if not np.isfinite(alpha) or not 0 <= alpha <= 1:
+            raise ValueError("invalid saved recall blend weight")
+        ensemble = (1 - alpha) * ensemble + alpha * recall_proba
+        _json(folder / "recall_selection.json", selection)
     save_probability_artifact(folder / "test_proba.npz", ids, ensemble, provenance=provenance)
     pred = predict_labels(ensemble, groups, offsets, context)
     sample = pd.read_csv(Path(config["_root"]) / "data/raw/sample_submission.csv")

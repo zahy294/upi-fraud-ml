@@ -1,5 +1,5 @@
 {
-  "tag": "podium_v6",
+  "tag": "recall_v7",
   "device": "cpu",
   "allow_cpu_fallback": false,
   "calendar_timezone": "Asia/Kolkata",
@@ -57,6 +57,25 @@
       "weight": 0.2
     }
   ],
+  "recall": {
+    "enabled": true,
+    "class_weight_power": 0.5,
+    "class_weight_cap": 6.0,
+    "member": {
+      "name": "R",
+      "seed": 211,
+      "num_leaves": 47,
+      "min_child_samples": 30,
+      "colsample_bytree": 0.8
+    },
+    "blend_weights": [0.0, 0.25, 0.5, 1.0],
+    "min_gain": 0.001,
+    "calibration": {
+      "coarse_grid": [-1.0, 0.0, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0],
+      "offset_bound": 3.0,
+      "conditional": false
+    }
+  },
   "calibration": {
     "steps": [
       0.4,

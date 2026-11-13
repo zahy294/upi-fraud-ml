@@ -116,6 +116,8 @@ def evaluate_predictions(y_true, y_pred) -> dict:
         "class_order": list(LABELS), "confusion_matrix": cm.tolist(),
         "per_class": {lab: {"precision": float(precision[k]), "recall": float(recall[k]),
                             "f1": float(f1[k]), "support": int(support[k]),
+                            "missed_as_legit": int(cm[k, 0]) if k else 0,
+                            "wrong_fraud_type": int(cm[k, 1:].sum() - tp[k]) if k else 0,
                             "predicted": int(predicted[k])} for k, lab in enumerate(LABELS)},
     }
 
@@ -162,13 +164,42 @@ def _optimize(logp, y, groups, context, config, conditional):
         return _score(y, pred) - penalty
 
     best = objective(result)
+    bound = float(config.get("offset_bound", 1.5))
+    if not np.isfinite(bound) or bound <= 0 or bound > 6:
+        raise ValueError("offset_bound must be in (0,6]")
+    grid = [float(v) for v in config.get("coarse_grid", [])]
+    if any(not np.isfinite(v) or abs(v) > bound for v in grid):
+        raise ValueError("coarse_grid must be finite and within offset_bound")
+
+    # Macro-F1 is piecewise constant. Small local steps can fail to cross any
+    # decision boundary, even when a larger jump recovers true fraud cases.
+    # Joint fraud shifts also move the legit/fraud boundary without changing
+    # the ordering among fraud classes.
+    if grid:
+        chosen = result["global"].copy()
+        for value in sorted(set(grid + [0.]), key=lambda v: (abs(v), v)):
+            result["global"] = [0.] + [value] * 11
+            score = objective(result)
+            if score > best + 1e-12:
+                chosen, best = result["global"].copy(), score
+        result["global"] = chosen
+        trace.append({"phase": "joint_fraud", "objective": float(best)})
+        for k in range(1, 12):
+            chosen = result["global"][k]
+            for value in sorted(set(grid + [chosen]), key=lambda v: (abs(v), v)):
+                result["global"][k] = value
+                score = objective(result)
+                if score > best + 1e-12:
+                    chosen, best = value, score
+            result["global"][k] = chosen
+        trace.append({"phase": "coarse_class", "objective": float(best)})
     for step in config.get("steps", [0.4, 0.2, 0.1, 0.05]):
         for sweep in range(min(int(config.get("max_passes", 3)), 3)):
             changed = False
             for k in range(1, 12):
                 old = result["global"][k]
                 chosen = old
-                for value in sorted({float(np.clip(old - step, -1.5, 1.5)), float(np.clip(old + step, -1.5, 1.5))}):
+                for value in sorted({float(np.clip(old - step, -bound, bound)), float(np.clip(old + step, -bound, bound))}):
                     result["global"][k] = value
                     score = objective(result)
                     if score > best + 1e-12 or (abs(score - best) <= 1e-12 and abs(value) < abs(chosen)):
@@ -228,6 +259,61 @@ def fit_offsets(proba: np.ndarray, y_raw: np.ndarray, groups: np.ndarray,
     selected["conditional_gate"] = gate
     selected["calibration_rows"] = len(y)
     return selected
+
+
+def select_recall_policy(base_proba, recall_proba, y_raw, groups, rule_context, *,
+                         baseline_config, config):
+    """Select on Sep20-23 after fitting offsets on Sep16-19; never assessment.
+
+    Candidate zero retains the previous optimizer and ensemble. Other
+    candidates use broad offset search and optionally a fraud-weighted member.
+    Only the selected policy is recalibrated on all Sep16-23 afterwards.
+    """
+    base, recall = _proba(base_proba), _proba(recall_proba)
+    y, groups = _labels(y_raw, "y_raw"), np.asarray(groups).astype(str)
+    ctx = _context(rule_context)
+    dates = pd.DatetimeIndex(pd.to_datetime(ctx.get("dates", []), utc=True))
+    if (base.shape != recall.shape or len(y) != len(base) or groups.shape != y.shape
+            or len(dates) != len(y) or dates.isna().any() or len(dates.year.unique()) != 1
+            or not ((dates.month == 9) & (dates.day >= 16) & (dates.day <= 23)).all()):
+        raise ValueError("recall policy selection requires aligned September16-23 rows")
+    alphas = [float(a) for a in config.get("blend_weights", [0., .25, .5])]
+    margin = float(config.get("min_gain", .001))
+    if (not alphas or len(set(alphas)) != len(alphas)
+            or any(not np.isfinite(a) or not 0 <= a <= 1 for a in alphas)
+            or not np.isfinite(margin) or margin < 0):
+        raise ValueError("invalid recall blend weights or minimum gain")
+    enhanced = {**baseline_config, **config.get("calibration", {})}
+    early, late = dates.day <= 19, dates.day >= 20
+    chosen_alpha, chosen_config, chosen_name = 0., baseline_config, "legacy"
+    trials = []
+    if early.any() and late.any():
+        early_ctx, late_ctx = slice_rule_context(ctx, early), slice_rule_context(ctx, late)
+        candidates = [("legacy", 0., baseline_config)] + [
+            (f"recall_{a:g}", a, enhanced) for a in alphas]
+        incumbent = None
+        baseline_score = None
+        for name, alpha, calibration_config in candidates:
+            probs = (1 - alpha) * base + alpha * recall
+            # The existing conditional optimizer cannot pass its own temporal
+            # gate inside four days, so inner policies are global-only.
+            inner = fit_offsets(probs[early], y[early], groups[early], early_ctx,
+                                config=calibration_config)
+            pred = predict_labels(probs[late], groups[late], inner, late_ctx)
+            report = evaluate_predictions(y[late], pred)
+            score = report["macro_f1"]
+            trials.append({"name": name, "recall_weight": alpha, "metrics": report})
+            if baseline_score is None:
+                baseline_score = incumbent = score
+            elif score > baseline_score + margin and score > incumbent + 1e-12:
+                chosen_alpha, chosen_config, chosen_name = alpha, calibration_config, name
+                incumbent = score
+    mixed = (1 - chosen_alpha) * base + chosen_alpha * recall
+    offsets = fit_offsets(mixed, y, groups, ctx, config=chosen_config)
+    selection = {"selected": chosen_name, "recall_weight": chosen_alpha,
+                 "min_gain": margin, "fit_days": "Sep16-19", "gate_days": "Sep20-23",
+                 "trials": trials, "fallback_reason": None if trials else "missing_inner_partition"}
+    return offsets, selection
 
 
 def write_submission(test_ids: np.ndarray, pred: np.ndarray,

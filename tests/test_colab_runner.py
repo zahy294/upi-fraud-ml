@@ -61,6 +61,23 @@ class PlanTests(unittest.TestCase):
                 commands = runner.plan_commands(args(Path(temp), "--stage", stage))
                 self.assertEqual([c[-1] for c in commands if "--stage" in c], expected)
 
+    def test_existing_resume_environment_is_not_recreated_or_installed(self):
+        with tempfile.TemporaryDirectory() as temp:
+            a = args(Path(temp), "--install-deps", "--resume")
+            py = Path(temp) / ".colab-venv" / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
+            py.parent.mkdir(parents=True)
+            py.write_text("mock executable")
+            commands = runner.plan_commands(a)
+            self.assertFalse(any("install" in c or "virtualenv" in c for c in commands))
+            self.assertEqual(commands[0], [str(py), "-m", "pip", "check"])
+
+    def test_new_environment_pins_pip_before_dependencies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            commands = runner.plan_commands(args(Path(temp), "--install-deps"))
+            pip_pin = next(i for i, c in enumerate(commands) if "pip==25.1.1" in c)
+            requirements = next(i for i, c in enumerate(commands) if "--requirement" in c)
+            self.assertLess(pip_pin, requirements)
+
 
 class FileTests(unittest.TestCase):
     def test_no_differing_raw_input_is_overwritten(self):
