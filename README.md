@@ -1,46 +1,44 @@
-# UPI Fraud Rings: ML Gradient Wars 2026
+# UPI Fraud Rings
 
-48-hour live round, 13 Nov 10:00 → 15 Nov 10:00 IST. Classify each October UPI transaction into 1 of 12 labels. Scored by macro-F1.
+Reproducible pipeline for the 12-class ML Gradient Wars 2026 task. Current team public score is **0.5034** by team report; the current visible leader was **0.5487** when implementation began. The working target is 0.70 macro-F1.
 
-## Layout
+## What is implemented
 
-```
-upi-fraud-ml/
-├── data/
-│   ├── raw/          original CSVs from the organisers (read-only; git-ignored)
-│   ├── interim/      parquet copies of raw, made by scripts/eda/00_load_and_overview.py
-│   ├── processed/    engineered features (relational_v0.parquet)
-│   └── archive/      the original zip
-├── docs/
-│   ├── PROBLEM_STATEMENT.md                 official task description
-│   ├── IMPLEMENTATION_PLAN.md               ← modelling plan: steps, validation, Colab runbook, research
-│   ├── hackathon/research.md                first notes on the event
-│   ├── hackathon/analysis.md                in-depth analysis: rules, strategy, legitimacy, similar contests
-│   └── past_runs_amazon_ml_postmortem.md    lessons from the Amazon ML Challenge run
-├── notebooks/00_starter_notebook.ipynb      organisers' baseline (DATA path → ../data/raw)
-├── reports/eda/
-│   ├── EDA_REPORT.md                        ← main findings
-│   ├── figures/                             charts referenced by the report
-│   └── tables/                              raw script outputs (markdown / txt)
-├── scripts/eda/                             EDA scripts, run in order 00 → 07
-├── src/                                     (pipeline code goes here)
-├── models/                                  (git-ignored)
-└── submissions/                             upload files (git-ignored); rules_v0.csv = rules-only baseline
-```
+- Raw-data integrity audit with hashes, schemas, joins, time tails, labels and submission-ID checks.
+- Row, metadata, interaction, multi-window relational and strictly prior-month label-history features.
+- July-August fitting, September 1-23 calibration and September 24-30 assessment.
+- LightGBM CPU, XGBoost GPU and CatBoost GPU configurations.
+- Class-offset tuning for macro-F1, with all 12 per-class metrics and confusion matrices.
+- Final refit, aligned test probabilities, strict id,label submission validation and persistent artifacts.
+- Unit tests for event windows, temporal history isolation, decisions and submission writing.
+- Thin Colab A100 driver in notebooks/colab_train.ipynb.
 
-## Reproduce the EDA
+The canonical strategy is [docs/TARGET_070_IMPLEMENTATION_PLAN.md](docs/TARGET_070_IMPLEMENTATION_PLAN.md). The exact coder-to-A100 handoff is [docs/CODING_HANDOFF.md](docs/CODING_HANDOFF.md).
 
-```bash
-python -I scripts/eda/00_load_and_overview.py .     # csv -> parquet + structure (~25 s)
-python -I scripts/eda/01_time_probe.py .
-python -I scripts/eda/02_labels_and_row_profiles.py .
-python -I scripts/eda/03_drift.py .                  # includes adversarial validation (~1.5 min)
-python -I scripts/eda/04_relational.py .             # builds data/processed/relational_v0.parquet (~3 min)
-python -I scripts/eda/05_signatures.py .             # needs 04
-python -I scripts/eda/06_offpattern.py .             # needs 04
-python -I scripts/eda/07_baselines.py .              # rules + LightGBM ablation, writes submissions/rules_v0.csv
-```
+## Setup
 
-Requires Python 3.11 with pandas, numpy, pyarrow, scikit-learn, lightgbm, scipy and matplotlib.
+Use Python 3.11+ and place the five organizer CSVs in data/raw/: train.csv, test.csv, accounts.csv, merchants.csv, and sample_submission.csv.
 
-`kaggle.json` (credentials) is git-ignored. Never commit it.
+Install dependencies with:
+
+    python -m pip install -r requirements.txt
+
+Raw data, caches, run artifacts, credentials, models and submission CSVs are excluded from Git.
+
+## Local commands
+
+    python run.py audit --config configs/baseline_lgb.yaml
+    python -m unittest discover -s tests -v
+    python run.py smoke --config configs/smoke.yaml
+    python run.py features --config configs/baseline_lgb.yaml
+    python run.py train --config configs/baseline_lgb.yaml
+    python run.py predict --config configs/baseline_lgb.yaml --run-dir runs/<validated-run>
+    python run.py blend --config configs/baseline_lgb.yaml --run-dirs runs/<xgb-run> runs/<cat-run>
+
+Train writes a unique run directory containing the model, aligned validation probabilities, predictions and a manifest with environment, commit, feature columns, split sizes, class weights and all metrics. Predict verifies the feature fingerprint from that run, refits on all supplied labels, saves the fitted model and test probabilities, and writes a validated submission.
+
+For the A100, use configs/xgb_a100.yaml first, then configs/catboost_a100.yaml as a diversity model. Run validation before final fitting. A high leaderboard target is not a measured result until an authorized upload scores it.
+
+## Earlier EDA
+
+The original EDA remains under scripts/eda/ and reports/eda/. The production pipeline does not depend on positional concatenation from those scripts; derived features are joined by txn_id.

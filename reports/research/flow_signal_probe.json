@@ -1,0 +1,294 @@
+{
+  "purpose": "planning diagnostic, not trained-model or untouched holdout performance",
+  "config": {
+    "forward_seconds": 1800,
+    "candidate_limits": [
+      1,
+      3,
+      8
+    ],
+    "layer_ratio": [
+      0.8,
+      0.9999
+    ],
+    "minimum_amount": 5000,
+    "aggregate_min_count": 3,
+    "aggregate_ratio": [
+      0.7,
+      1.05
+    ],
+    "context": "same calendar month only; edges are censored"
+  },
+  "versions": {
+    "python": "3.14.7",
+    "numpy": "2.5.2",
+    "pandas": "3.0.6"
+  },
+  "train_sha256": "da48ff9b2823b8460511d8f5bdc660b4a92b74cc2a64395bddb32b89710f61c5",
+  "script_sha256": "57381dbeed9df47e82a83953df59aeb016a9b7922890de14d355a377cc5e171e",
+  "excluded_train_tail_rows": 147,
+  "months": {
+    "2026-07": {
+      "rows": 527065,
+      "metrics": {
+        "layer_first_1": {
+          "flagged": 671,
+          "true_positive": 469,
+          "target_support": 2325,
+          "precision": 0.698956780923994,
+          "recall": 0.20172043010752688,
+          "label_counts": {
+            "layering_chain": 469,
+            "mule_account": 107,
+            "legit": 82,
+            "sim_swap": 4,
+            "qr_swap": 2,
+            "fake_cashback": 2,
+            "refund_abuse": 2,
+            "velocity_bot": 1,
+            "phishing_collect": 1,
+            "merchant_collusion": 1
+          }
+        },
+        "layer_first_3": {
+          "flagged": 672,
+          "true_positive": 470,
+          "target_support": 2325,
+          "precision": 0.6994047619047619,
+          "recall": 0.2021505376344086,
+          "label_counts": {
+            "layering_chain": 470,
+            "mule_account": 107,
+            "legit": 82,
+            "sim_swap": 4,
+            "qr_swap": 2,
+            "fake_cashback": 2,
+            "refund_abuse": 2,
+            "velocity_bot": 1,
+            "phishing_collect": 1,
+            "merchant_collusion": 1
+          }
+        },
+        "layer_first_8": {
+          "flagged": 672,
+          "true_positive": 470,
+          "target_support": 2325,
+          "precision": 0.6994047619047619,
+          "recall": 0.2021505376344086,
+          "label_counts": {
+            "layering_chain": 470,
+            "mule_account": 107,
+            "legit": 82,
+            "sim_swap": 4,
+            "qr_swap": 2,
+            "fake_cashback": 2,
+            "refund_abuse": 2,
+            "velocity_bot": 1,
+            "phishing_collect": 1,
+            "merchant_collusion": 1
+          }
+        },
+        "layer_added_by_8": {
+          "flagged": 1,
+          "true_positive": 1,
+          "target_support": 2325,
+          "precision": 1.0,
+          "recall": 0.00043010752688172043,
+          "label_counts": {
+            "layering_chain": 1
+          }
+        },
+        "mule_aggregate_outflow": {
+          "flagged": 1,
+          "true_positive": 1,
+          "target_support": 3422,
+          "precision": 1.0,
+          "recall": 0.0002922267679719462,
+          "label_counts": {
+            "mule_account": 1
+          }
+        },
+        "mule_aggregate_without_nearest_ratio": {
+          "flagged": 1,
+          "true_positive": 1,
+          "target_support": 3422,
+          "precision": 1.0,
+          "recall": 0.0002922267679719462,
+          "label_counts": {
+            "mule_account": 1
+          }
+        }
+      }
+    },
+    "2026-08": {
+      "rows": 526852,
+      "metrics": {
+        "layer_first_1": {
+          "flagged": 724,
+          "true_positive": 485,
+          "target_support": 2311,
+          "precision": 0.669889502762431,
+          "recall": 0.20986585893552576,
+          "label_counts": {
+            "layering_chain": 485,
+            "mule_account": 145,
+            "legit": 87,
+            "phishing_collect": 3,
+            "refund_abuse": 1,
+            "merchant_collusion": 1,
+            "account_takeover": 1,
+            "sim_swap": 1
+          }
+        },
+        "layer_first_3": {
+          "flagged": 724,
+          "true_positive": 485,
+          "target_support": 2311,
+          "precision": 0.669889502762431,
+          "recall": 0.20986585893552576,
+          "label_counts": {
+            "layering_chain": 485,
+            "mule_account": 145,
+            "legit": 87,
+            "phishing_collect": 3,
+            "refund_abuse": 1,
+            "merchant_collusion": 1,
+            "account_takeover": 1,
+            "sim_swap": 1
+          }
+        },
+        "layer_first_8": {
+          "flagged": 724,
+          "true_positive": 485,
+          "target_support": 2311,
+          "precision": 0.669889502762431,
+          "recall": 0.20986585893552576,
+          "label_counts": {
+            "layering_chain": 485,
+            "mule_account": 145,
+            "legit": 87,
+            "phishing_collect": 3,
+            "refund_abuse": 1,
+            "merchant_collusion": 1,
+            "account_takeover": 1,
+            "sim_swap": 1
+          }
+        },
+        "layer_added_by_8": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 2311,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        },
+        "mule_aggregate_outflow": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 3448,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        },
+        "mule_aggregate_without_nearest_ratio": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 3448,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        }
+      }
+    },
+    "2026-09": {
+      "rows": 509996,
+      "metrics": {
+        "layer_first_1": {
+          "flagged": 653,
+          "true_positive": 474,
+          "target_support": 2182,
+          "precision": 0.7258805513016845,
+          "recall": 0.21723189734188816,
+          "label_counts": {
+            "layering_chain": 474,
+            "mule_account": 96,
+            "legit": 69,
+            "merchant_collusion": 5,
+            "fake_cashback": 3,
+            "velocity_bot": 1,
+            "loan_app_extortion": 1,
+            "sim_swap": 1,
+            "account_takeover": 1,
+            "refund_abuse": 1,
+            "qr_swap": 1
+          }
+        },
+        "layer_first_3": {
+          "flagged": 653,
+          "true_positive": 474,
+          "target_support": 2182,
+          "precision": 0.7258805513016845,
+          "recall": 0.21723189734188816,
+          "label_counts": {
+            "layering_chain": 474,
+            "mule_account": 96,
+            "legit": 69,
+            "merchant_collusion": 5,
+            "fake_cashback": 3,
+            "velocity_bot": 1,
+            "loan_app_extortion": 1,
+            "sim_swap": 1,
+            "account_takeover": 1,
+            "refund_abuse": 1,
+            "qr_swap": 1
+          }
+        },
+        "layer_first_8": {
+          "flagged": 653,
+          "true_positive": 474,
+          "target_support": 2182,
+          "precision": 0.7258805513016845,
+          "recall": 0.21723189734188816,
+          "label_counts": {
+            "layering_chain": 474,
+            "mule_account": 96,
+            "legit": 69,
+            "merchant_collusion": 5,
+            "fake_cashback": 3,
+            "velocity_bot": 1,
+            "loan_app_extortion": 1,
+            "sim_swap": 1,
+            "account_takeover": 1,
+            "refund_abuse": 1,
+            "qr_swap": 1
+          }
+        },
+        "layer_added_by_8": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 2182,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        },
+        "mule_aggregate_outflow": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 3367,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        },
+        "mule_aggregate_without_nearest_ratio": {
+          "flagged": 0,
+          "true_positive": 0,
+          "target_support": 3367,
+          "precision": 0,
+          "recall": 0.0,
+          "label_counts": {}
+        }
+      }
+    }
+  },
+  "elapsed_seconds": 9.82722240000021
+}

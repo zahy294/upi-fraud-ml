@@ -1,0 +1,81 @@
+{
+  "files": {
+    "train.csv": {
+      "bytes": 231058404,
+      "sha256": "da48ff9b2823b8460511d8f5bdc660b4a92b74cc2a64395bddb32b89710f61c5"
+    },
+    "test.csv": {
+      "bytes": 36891354,
+      "sha256": "e3094af55340afc3239ac58f40c2e48b2040de9deb57463ac4d197e3aa0ec08b"
+    },
+    "accounts.csv": {
+      "bytes": 18800206,
+      "sha256": "97efcd06601dda981c1d1993b7b35202223c5f9f2be5fd7d13703df18a212539"
+    },
+    "merchants.csv": {
+      "bytes": 1116574,
+      "sha256": "8a2dbe1654b9c47a13385ee4313464a414cb7155eb4b8c2d80fc9b637c6c7d57"
+    },
+    "sample_submission.csv": {
+      "bytes": 4690486,
+      "sha256": "a0e0b01263dfccc7269221d54e27a675d12b10dabf03f10b7f7727f1c4aac4e1"
+    }
+  },
+  "rows": {
+    "train": 1564060,
+    "test": 260582,
+    "accounts": 420000,
+    "merchants": 30000,
+    "sample_submission": 260582
+  },
+  "schema": {
+    "train_missing": [],
+    "train_extra": [],
+    "test_missing": [],
+    "test_extra": []
+  },
+  "time": {
+    "train_min": "2026-07-01 00:00:00",
+    "train_max": "2026-10-10 18:03:49",
+    "test_min": "2026-10-01 00:00:10",
+    "test_max": "2026-11-09 14:10:44"
+  },
+  "duplicates": {
+    "train_txn_id": 0,
+    "test_txn_id": 0,
+    "cross_split_ids": 0,
+    "account_id": 0,
+    "merchant_id": 0
+  },
+  "labels": {
+    "legit": 1506412,
+    "mule_account": 10261,
+    "velocity_bot": 8106,
+    "qr_swap": 7264,
+    "layering_chain": 6822,
+    "phishing_collect": 6697,
+    "sim_swap": 4072,
+    "account_takeover": 4049,
+    "refund_abuse": 3305,
+    "merchant_collusion": 2549,
+    "fake_cashback": 2532,
+    "loan_app_extortion": 1991
+  },
+  "illegal_labels": [],
+  "joins": {
+    "missing_train_senders": 0,
+    "missing_test_senders": 0,
+    "missing_test_p2p_receivers": 0,
+    "missing_test_merchant_receivers": 0
+  },
+  "submission": {
+    "id_set_matches": true,
+    "id_order_matches": true,
+    "duplicate_ids": 0
+  },
+  "tails": {
+    "train_on_or_after_october": 147,
+    "test_on_or_after_november": 46
+  },
+  "passed": true
+}

@@ -1,0 +1,23 @@
+name: baseline_lgb
+paths: {raw_dir: data/raw, processed_dir: data/processed, runs_dir: runs, reports_dir: reports, submissions_dir: submissions}
+features:
+  cache_name: engineered_v1
+  relational: true
+  prior_label_history: true
+  exclude: [app_version, ip_risk_score]
+model:
+  kind: lightgbm
+  params:
+    n_estimators: 1600
+    learning_rate: 0.035
+    num_leaves: 63
+    min_child_samples: 60
+    subsample: 0.8
+    subsample_freq: 1
+    colsample_bytree: 0.65
+    reg_lambda: 5.0
+    n_jobs: -1
+    random_state: 20261113
+validation: {train_start: 2026-07-01, calibration_start: 2026-09-01, assessment_start: 2026-09-24, assessment_end: 2026-10-01}
+final_fit: {iteration_multiplier: 1.15}
+smoke: {sample_fraction: 0.005}

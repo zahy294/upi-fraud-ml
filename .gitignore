@@ -19,6 +19,7 @@ data/archive/
 
 # artefacts
 models/
+runs/
 submissions/*.csv
 *.joblib
 *.onnx
@@ -42,6 +43,7 @@ dist/
 venv/
 .ipynb_checkpoints/
 .pytest_cache/
+.test-artifacts/
 .mypy_cache/
 .ruff_cache/
 .coverage
