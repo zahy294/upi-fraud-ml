@@ -1,0 +1,125 @@
+train rows by month: {Period('2026-07', 'M'): 527065, Period('2026-08', 'M'): 526852, Period('2026-09', 'M'): 509996, Period('2026-10', 'M'): 147}
+test rows by month: {Period('2026-10', 'M'): 260536, Period('2026-11', 'M'): 46}
+
+train label x month (counts):
+timestamp           2026-07  2026-08  2026-09  2026-10      All
+label                                                          
+account_takeover       1435     1333     1280        1     4049
+fake_cashback           888      811      831        2     2532
+layering_chain         2325     2311     2182        4     6822
+legit                507552   507507   491335       18  1506412
+loan_app_extortion      678      660      645        8     1991
+merchant_collusion      778      919      841       11     2549
+mule_account           3422     3448     3367       24    10261
+phishing_collect       2280     2254     2162        1     6697
+qr_swap                2421     2489     2352        2     7264
+refund_abuse           1041     1115     1075       74     3305
+sim_swap               1411     1393     1267        1     4072
+velocity_bot           2834     2612     2659        1     8106
+All                  527065   526852   509996      147  1564060
+
+train rows in Oct: 147 max 2026-10-10 18:03:49
+by day: {datetime.date(2026, 10, 1): 68, datetime.date(2026, 10, 2): 19, datetime.date(2026, 10, 3): 12, datetime.date(2026, 10, 4): 18, datetime.date(2026, 10, 5): 4, datetime.date(2026, 10, 6): 9, datetime.date(2026, 10, 7): 5, datetime.date(2026, 10, 8): 4, datetime.date(2026, 10, 9): 5, datetime.date(2026, 10, 10): 3}
+label
+refund_abuse          74
+mule_account          24
+legit                 18
+merchant_collusion    11
+loan_app_extortion     8
+layering_chain         4
+fake_cashback          2
+qr_swap                2
+sim_swap               1
+phishing_collect       1
+velocity_bot           1
+account_takeover       1
+Name: count, dtype: int64
+
+test rows in Nov: 46
+by day: {datetime.date(2026, 11, 1): 13, datetime.date(2026, 11, 2): 8, datetime.date(2026, 11, 3): 9, datetime.date(2026, 11, 4): 4, datetime.date(2026, 11, 5): 5, datetime.date(2026, 11, 6): 3, datetime.date(2026, 11, 7): 2, datetime.date(2026, 11, 8): 1, datetime.date(2026, 11, 9): 1}
+
+test rows by day (Oct):
+timestamp
+2026-10-01    8285
+2026-10-02    8446
+2026-10-03    8234
+2026-10-04    8503
+2026-10-05    8333
+2026-10-06    8335
+2026-10-07    8464
+2026-10-08    8363
+2026-10-09    8368
+2026-10-10    8556
+2026-10-11    8461
+2026-10-12    8381
+2026-10-13    8618
+2026-10-14    8399
+2026-10-15    8642
+2026-10-16    8428
+2026-10-17    8280
+2026-10-18    8604
+2026-10-19    8384
+2026-10-20    8211
+2026-10-21    8341
+2026-10-22    8366
+2026-10-23    8417
+2026-10-24    8460
+2026-10-25    8407
+2026-10-26    8324
+2026-10-27    8280
+2026-10-28    8398
+2026-10-29    8357
+2026-10-30    8393
+2026-10-31    8498
+2026-11-01      13
+2026-11-02       8
+2026-11-03       9
+2026-11-04       4
+2026-11-05       5
+2026-11-06       3
+2026-11-07       2
+2026-11-08       1
+2026-11-09       1
+
+train last 5 days of Sep by day: {datetime.date(2026, 9, 25): 17220, datetime.date(2026, 9, 26): 16680, datetime.date(2026, 9, 27): 16856, datetime.date(2026, 9, 28): 17268, datetime.date(2026, 9, 29): 16908, datetime.date(2026, 9, 30): 17267, datetime.date(2026, 10, 1): 68, datetime.date(2026, 10, 2): 19, datetime.date(2026, 10, 3): 12, datetime.date(2026, 10, 4): 18, datetime.date(2026, 10, 5): 4, datetime.date(2026, 10, 6): 9, datetime.date(2026, 10, 7): 5, datetime.date(2026, 10, 8): 4, datetime.date(2026, 10, 9): 5, datetime.date(2026, 10, 10): 3}
+
+Oct-train rows: senders also in Sep train frac 0.9863945578231292
+Oct-train fraud rows receivers seen in test frac 0.5348837209302325
+
+app_version train by month:
+timestamp    2026-07  2026-08  2026-09  2026-10
+app_version                                    
+3.0             9066     9143     8899        8
+3.1             9219     9376     8903       10
+3.2             9119     9145     8839       10
+3.3             9181     9089     9043       11
+3.4             9181     9099     8871       13
+3.5             9231     9215     8918        8
+3.6             9257     9305     8786       11
+3.7             9161     9045     8887       13
+3.8             9342     9260     8861       12
+4.0            49710    49469    47524        4
+4.1            49425    49162    47967        4
+4.2            49431    49014    47304        2
+4.3            49258    49248    48108        6
+4.4            49324    49211    47842        4
+4.5            49256    49654    47438       10
+4.6            49188    49464    48072        2
+4.7            49219    49639    48033       14
+4.8            49497    49314    47701        5
+
+app_version test:
+app_version
+5.0    87201
+5.1    87102
+5.2    86279
+Name: count, dtype: Int64
+
+app x version test:
+app_version    5.0    5.1    5.2
+app                             
+APP_A        29530  29437  29294
+APP_B        26290  26343  25744
+APP_C        17571  17524  17521
+APP_D         8717   8696   8582
+APP_E         5093   5102   5138

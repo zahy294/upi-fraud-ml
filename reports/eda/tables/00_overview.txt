@@ -1,0 +1,116 @@
+
+===== train: 1,564,060 rows x 22 cols, 1,166 MiB in pandas
+                                  dtype  n_missing  pct_missing  n_unique
+txn_id                           object          0        0.000   1564060
+timestamp                datetime64[ns]          0        0.000   1370328
+sender_id                        object          0        0.000    326479
+receiver_id                      object          0        0.000    320367
+receiver_type                    object          0        0.000         2
+device_id                        object          0        0.000    359202
+amount                          float64          0        0.000    322218
+txn_type                         object          0        0.000         5
+merchant_category                string     567900       36.309        12
+device_city                      object          0        0.000        40
+sim_age_hours                   float64          0        0.000    308591
+device_age_days                 float64          0        0.000     19228
+sender_account_age_days           int64          0        0.000      4082
+new_payee                         int64          0        0.000         2
+pin_retries                       int64          0        0.000         3
+login_to_txn_sec                  int64          0        0.000      1309
+balance_before                  float64          0        0.000   1085353
+app                              object          0        0.000         5
+app_version                      string          0        0.000        18
+ip_risk_score                   float64          0        0.000       941
+qr_vpa_mismatch                 float32    1001778       64.050         2
+label                            object          0        0.000        12
+
+===== test: 260,582 rows x 21 cols, 179 MiB in pandas
+                                  dtype  n_missing  pct_missing  n_unique
+txn_id                           object          0        0.000    260582
+timestamp                datetime64[ns]          0        0.000    243862
+sender_id                        object          0        0.000    148183
+receiver_id                      object          0        0.000    100441
+receiver_type                    object          0        0.000         2
+device_id                        object          0        0.000    150666
+amount                          float64          0        0.000    128280
+txn_type                         object          0        0.000         5
+merchant_category                string      94733       36.354        12
+device_city                      object          0        0.000        40
+sim_age_hours                   float64          0        0.000    148563
+device_age_days                 float64          0        0.000     14263
+sender_account_age_days           int64          0        0.000      4015
+new_payee                         int64          0        0.000         2
+pin_retries                       int64          0        0.000         3
+login_to_txn_sec                  int64          0        0.000       902
+balance_before                  float64          0        0.000    242912
+app                              object          0        0.000         5
+app_version                      string          0        0.000         3
+ip_risk_score                   float64          0        0.000       650
+qr_vpa_mismatch                 float32     166829       64.022         2
+
+===== accounts: 420,000 rows x 6 cols, 152 MiB in pandas
+             dtype  n_missing  pct_missing  n_unique
+account_id  object          0          0.0    420000
+home_city   object          0          0.0        40
+bank_code   object          0          0.0        30
+kyc_level   object          0          0.0         2
+opened_on   object          0          0.0      3992
+os          object          0          0.0         2
+
+===== merchants: 30,000 rows x 4 cols, 7 MiB in pandas
+               dtype  n_missing  pct_missing  n_unique
+merchant_id   object          0          0.0     30000
+category      object          0          0.0        12
+city          object          0          0.0        40
+onboarded_on  object          0          0.0      3728
+
+===== sample_submission: 260,582 rows x 2 cols, 32 MiB in pandas
+        dtype  n_missing  pct_missing  n_unique
+id     object          0          0.0    260582
+label  object          0          0.0         1
+
+===== integrity
+dup txn_id train: 0  test: 0  overlap: 0
+sample_submission ids == test ids (as sets): True  same order: True
+sample_submission label values: {'legit': 260582}
+[train] sender in accounts: 1.00000
+[train] P2P receiver in accounts: 1.00000; MERCHANT receiver in merchants: 1.00000
+[train] receiver prefix vs type:
+ receiver_type  MERCHANT     P2P
+receiver_id                    
+AC                    0  570023
+MR               994037       0
+[train] time range: 2026-07-01 00:00:00 -> 2026-10-10 18:03:49
+[train] device_id == 'DV0'+sender digits: 0.9186
+[train] device_id prefix counts: {'DV0': 1564060}
+[test] sender in accounts: 1.00000
+[test] P2P receiver in accounts: 1.00000; MERCHANT receiver in merchants: 1.00000
+[test] receiver prefix vs type:
+ receiver_type  MERCHANT    P2P
+receiver_id                   
+AC                    0  95042
+MR               165540      0
+[test] time range: 2026-10-01 00:00:10 -> 2026-11-09 14:10:44
+[test] device_id == 'DV0'+sender digits: 0.9188
+[test] device_id prefix counts: {'DV0': 260582}
+
+===== entity overlap train/test
+sender_id: train 326,479  test 148,183  test seen in train 0.915
+receiver_id: train 320,367  test 100,441  test seen in train 0.793
+device_id: train 359,202  test 150,666  test seen in train 0.869
+
+===== accounts / merchants
+             count  unique         top    freq
+account_id  420000  420000    AC000000       1
+home_city   420000      40      Raipur   97853
+bank_code   420000      30         B28   90889
+kyc_level   420000       2        full  344516
+opened_on   420000    3992  2015-07-19    9621
+os          420000       2     android  361314
+              count unique         top  freq
+merchant_id   30000  30000    MR000000     1
+category      30000     12     grocery  6620
+city          30000     40      Ranchi  6951
+onboarded_on  30000   3728  2012-10-22   482
+accounts opened_on range: 2015-07-19 2026-06-23
+merchants onboarded range: 2012-10-22 2026-06-08
