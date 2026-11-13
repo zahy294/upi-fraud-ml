@@ -55,14 +55,26 @@ def per_class(y, pred, k=K):
 
 def fit_weights(P, y, sweeps=3, grid=np.geomspace(0.05, 400, 60), w0=None):
     """Coordinate ascent on class weights w so that argmax(P * w) maximises macro-F1. Legit weight stays 1."""
-    w = np.ones(P.shape[1]) if w0 is None else w0.copy()
+    k = P.shape[1]
+    w = np.ones(k) if w0 is None else w0.copy()
+    # rows where no fraud class can beat legit even at the largest weight always predict legit: count them once
+    cand = P[:, 1:].max(1) * grid.max() >= P[:, 0]
+    base = np.zeros((k, k), dtype=np.int64)
+    base[:, 0] = np.bincount(y[~cand], minlength=k)
+    Pc, yc = P[cand], y[cand]
+
+    def score(wv):
+        cm = base + np.bincount(yc * k + (Pc * wv).argmax(1), minlength=k * k).reshape(k, k)
+        tp = np.diag(cm)
+        return float((2 * tp / np.maximum(cm.sum(0) + cm.sum(1), 1)).mean())
+
     for _ in range(sweeps):
-        for c in range(1, P.shape[1]):
+        for c in range(1, k):
             s = np.empty(len(grid))
             for i, g in enumerate(grid):
                 w2 = w.copy()
                 w2[c] = g
-                s[i] = macro_f1(y, (P * w2).argmax(1))
+                s[i] = score(w2)
             plateau = np.where(s >= s.max() - 0.0003)[0]
             w[c] = grid[plateau[len(plateau) // 2]]
     return w

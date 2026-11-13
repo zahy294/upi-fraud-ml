@@ -27,6 +27,22 @@ class Events:
         lo_i, hi_i = self._lr(qg, qt, lo, hi)
         return np.where(qg >= 0, hi_i - lo_i, 0)
 
+    def prev_dt(self, qg, qt, within):
+        """Seconds since the last event of group qg strictly before qt (nan if none within `within`)."""
+        b = qg.astype(np.int64) * SCALE + qt + OFF
+        i = np.searchsorted(self.K, b, "left") - 1
+        ic = np.maximum(i, 0)
+        d = (b - self.K[ic]).astype(float)
+        return np.where((i >= 0) & (qg >= 0) & (d <= within), d, np.nan)
+
+    def next_dt(self, qg, qt, within):
+        """Seconds until the first event of group qg strictly after qt (nan if none within `within`)."""
+        b = qg.astype(np.int64) * SCALE + qt + OFF
+        i = np.searchsorted(self.K, b, "right")
+        ic = np.minimum(i, self.n - 1)
+        d = (self.K[ic] - b).astype(float)
+        return np.where((i < self.n) & (qg >= 0) & (d <= within), d, np.nan)
+
     def sum(self, qg, qt, lo, hi):
         """Sum of values over the same window."""
         lo_i, hi_i = self._lr(qg, qt, lo, hi)

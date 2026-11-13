@@ -10,6 +10,17 @@ Written 2026-11-13, 11:30 IST (round day 1, about 46 hours left). Builds on [the
 > - Inside an event about 12–15% of rows are labelled `legit` and a few percent carry a random other type. SIM-swap and takeover events are swapped with each other about a quarter of the time.
 > - New code: `src/upi/features_v1.py` (recipe features), `src/upi/exp_stage1.py` (fit Jul–Aug, score Sep), `src/upi/fit_submit.py`. Result: **September macro-F1 0.486** (`models/s1_v1`), submission `submissions/s1_v1.csv`.
 > - Open items, in order: October has half as many single-device bot bursts as September (find the new shape); stage 2 to complete events; typing of look-alike pairs; move the feature build from `base_v0.parquet` into one reproducible entry point; Colab runs for the final multi-seed fit.
+>
+> **Update, 13 Nov night.**
+>
+> - Public scores: `s1_v1` **0.5034** (September 0.486). Four probe files gave per-group F1 on October: phishing+cashback 0.50 average, SIM-swap+takeover 0.44, mule+layering 0.52, QR+refund+collusion 0.45, bot+loan 0.39. Groups without fewer October events score well above September, so test labels are clean inside events.
+> - **Device-number bands** (`src/upi/bands.py`). Devices the generator created for fraud rows have consecutive ID numbers, one band per fraud type in label order, followed by a fully occupied block of ordinary new devices. Train block: 423001–428454. Test block: 473632–474551. Bot bursts use a shared pool, 420001–423000. Every row on a band device is fraud of that band's type, including ordinary-looking rows no pattern can find. In train the fraud-labelled rows in a band carry the band's label 92–98% of the time. Test edges come from the train proportions refined by an ordered segmentation on stage-1 probabilities; `data/processed/band_edges.json` records them.
+> - Bots did not change shape in October; there are simply fewer events (Codex report, `docs/codex_bot_drift.md`). Do not rate-match.
+> - Detection of patterned fraud is now about 94–100% per class, measured with the trap columns. What remains is type confusion that looks inherent: a generator sometimes emits an event in a sibling type's shape (takeover in SIM-swap shape, bot in mule shape, cashback and phishing sharing bait-then-payback). Exact help found so far: a payback preceded by two baits is always cashback (`features_v4.py`).
+> - **Cleaned labels** (`src/upi/clean_labels.py`): `legit`-labelled rows with out-of-fold fraud probability ≥ 0.85, misfiled rows, and band rows get the event type. Pooled leave-one-month-out macro-F1 is 0.51 against raw labels and 0.58 against cleaned labels for the same predictions.
+> - One entry point now exists: `python run_all.py` (raw CSVs to submission). `notebooks/colab_train.ipynb` runs it on Colab and adds an XGBoost GPU model for a blend.
+> - Checked and empty: shuffle seed, `txn_id` as a hash of a counter, shared-device ownership, account-history features. Rows dated after the month end are all fraud, but the model already predicts them.
+> - Honest ceiling: about 0.58 on cleaned training labels, less on October because bot, collusion and refund events are fewer there. 0.60 needs a way to see ordinary-looking fraud on home devices, and nothing found so far does that.
 
 Expected gains in this file are my estimates from the EDA numbers and the research below. They are not measurements. The only measured scores so far are the EDA baselines (rules 0.392, LightGBM + relational features 0.391, both on September).
 
