@@ -1,4 +1,4 @@
-# Card 1 contract: codex/target-070
+# UPI implementation contract: codex/target-070
 
 Card 1 starts at merge commit 77a7fad (target starting SHA
 7ae1941900737d34eb0139e0e4295e2e3e597ecc, modelling source SHA
@@ -207,3 +207,182 @@ import NumPy because dependencies are installed in the Windows user site.
 Normal-interpreter synthetic checks work. No packages were installed to alter
 this environment. Colab must install its declared dependencies in its active
 environment before using the inherited -I command form.
+
+## Card 2 training and decision APIs (codex/target-070)
+
+Card 2 starts at e3b117f and changes only fit_submit.py, make_submission.py,
+configs/podium.json, tests/test_podium_predictions.py and this contract.
+No training has been executed locally. The modelling branch remains unchanged.
+
+### External entry point
+
+python src/upi/fit_submit.py ROOT --config configs/podium.json --stage all
+  [--profiles control,fusion,temporal,ensemble] [--device cpu|gpu|cuda]
+  [--allow-cpu-fallback] [--output-dir PATH] [--tag NAME]
+
+Stages: bootstrap, validate, refit, all. For separate commands, use identical
+config, profile selection and device options at every stage. Default profiles:
+ensemble only. All comparisons can be requested explicitly; no profile is
+automatically chosen using the assessment block. This CLI replaces the legacy
+fit_submit --trees/--seeds interface; inherited run_all commands must be
+updated by Card 3 rather than assumed compatible.
+
+Output root defaults to ROOT/runs/podium_v6. Explicit output_dir can point
+to local Colab disk; Card 3 handles copying completed artifacts to Drive.
+Card 2 refuses existing-run/bootstrap/validation provenance mismatches but does not
+implement resume or atomic stage recovery. Card 3 must add those guards.
+
+### Calendar and splitting
+
+Original base.timestamp is required. Never reinterpret t as Unix seconds.
+Naive timestamps retain their calendar dates; timezone-aware timestamps are
+converted to configured Asia/Kolkata before calendar selection.
+The year is inferred from July-August training timestamps.
+Boundaries are half-open intervals configured as month-day strings:
+fit [07-01,09-01); early_stop [09-01,09-16);
+calibration [09-16,09-24); assessment [09-24,10-01).
+All supervised partitions contain training rows only. Missing, overlapping
+or nonchronological required partitions raise. Actual dated training tails
+are reported separately, not folded back into September. Full September
+contains only actual September rows. September has already informed project
+development; assessment is not claimed to be untouched project data.
+
+### Teacher and context construction
+
+Bootstrap reads base_v0, ratios_v0, v1,v2,v4 only. The ratio named txn_id index
+must equal base txn_id order. Teacher features exclude bands, TE, cleaning
+labels and the common trap exclusions; teacher is fixed at 500 rounds.
+July1-14 has unavailable forward probabilities; July15-31 is predicted
+from July1-14, August from July, September from July-August. Later training
+tails are predicted from earlier calendar months. There is no backwards OOF.
+Separate test teachers fit July-August for validation bands and all training
+rows for final-refit bands. Saved predictions have explicit IDs and provenance.
+The bootstrap stage prepares both contexts; validation uses only its eligible
+teacher, fitting labels, boundaries and history.
+
+For each context: build_bands -> rebuild_chain_features -> clean_training_labels
+-> v6/TE as requested. v5 is reconstructed in fit_submit without importing
+the top-level legacy script. Its nearest incoming/outgoing payment, strict
+time matching, 90%-100% amount ratio, 7200-second window and eight-hop walk
+match the inspected v5 source. Unambiguous ch_band is recomputed from each
+context's bands; shared data/processed/features_v3/v5 are never overwritten.
+
+build_context_te(base,fit_mask) produces training encodings from strictly
+earlier eligible calendar months. Non-fitting queries use a frozen eligible
+reference for their query month. An October training tail is excluded from
+all October test encodings; eligible October tails may enter November
+encodings. This avoids passing a future-dated reference to the frozen TE API.
+
+### Models and profiles
+
+train_member(X_fit,y_fit,sample_weight,X_stop,y_stop,*,spec,device,
+fixed_rounds=None) -> (model,rounds).
+LightGBM is imported only here. CPU default; gpu/cuda are explicit choices.
+Unavailable backend raises unless allow_cpu_fallback was explicitly enabled.
+Fallback records the actual CPU backend; no claim of A100 acceleration.
+Card 3 must perform its requested tiny external backend probe.
+Fixed-round refits require no stop/eval set and disable early stopping.
+Observed classes are explicitly remapped and stored as model.podium_classes_;
+align_proba(proba,classes) restores fixed 12-column order and normalizes.
+Stop sets containing a class absent from fitting data raise a clear error.
+No local backend fit or LightGBM integration run was performed.
+
+A: seed17,leaves63,min_child20,colsample0.50,weight0.50.
+B: seed43,leaves31,min_child60,colsample0.75,weight0.30.
+C: seed101,leaves95,min_child40,colsample0.65,weight0.20.
+All multiclass, lr0.05, bagging0.8/freq1, L2=5; maximum2000 rounds,
+early stopping100 on original-label stop multi_logloss.
+Legit sampling rate0.25, seed2026; ID-hashed draws keep the same rows across
+members/profiles. Keep all cleaned-fraud rows; retained legit weight4 and
+fraud weight1. Teacher fits use all eligible raw labels with unit weights.
+Final refit uses each member's validation-selected round count.
+Categorical feature names and integer mappings are persisted and reused.
+
+control: base+v1..v5, member A.
+fusion: control+label-free v6, member A.
+temporal: fusion+TE, member A.
+ensemble: temporal with weighted A/B/C probabilities.
+Single-member profiles normalize A's weight to1.
+Control is a fold-safe comparison, not a reproduction of public0.5400.
+
+### Band rules and calibration
+
+apply_band_rules(pred,meta,f3,f5) aligns frames by txn_id.
+Direct band first. Non-direct-band rows whose ORIGINAL argmax is fraud can
+receive sender drain, receiver fan-in/shop, then chain corrections, in
+inherited order. Chain never overrides direct band or promotes original legit.
+
+event_groups uses priority direct_band > chain > merchant_session > drain
+> bait > other. Conditions: band>0; ch_len>1; S_flag==1; Ds_n>=2;
+is_tiny_p2p_pay==1 or finite bait_prev_dt_h.
+
+fit_offsets(proba,y_raw,groups,rule_context,*,config) requires original
+September16-23 timestamps. rule_context can be {meta,f3,f5} or the prepared
+ID/array context from prepare_rule_context. The caller must align probability
+IDs before passing arrays. predict_labels(proba,groups,offsets,rule_context)
+uses log(max(P,1e-9))+global+conditional, then band rules.
+
+Global legit offset stays0. Coordinate steps0.4,0.2,0.1,0.05, at most3 passes
+per step, bounds+/-1.5. Objective: original-label 12-class macro-F1 minus
+0.002*mean(global[1:]**2); ties prefer smaller norm. Traces are persisted.
+Conditional candidates +/-0.25,+/-0.125,0 are shrunk by n/(n+2000);
+require group n>=200 and affected true-class support>=30.
+No direct-band or legit-class conditional offset. Additional penalty
+0.01*mean(conditional**2). Enable only if Sep16-19-fitted conditional
+parameters beat global-only parameters on Sep20-23. Refit on Sep16-23 only
+after that gate. Otherwise conditional offsets stay empty.
+No assessment-dependent threshold fitting or automatic retuning.
+Both selected and global-only assessment metrics are recorded.
+No cleaned-label agreement is used as a headline validation score.
+
+### Artifacts and metrics
+
+bootstrap/ contains schema, ID-keyed forward_teacher.npz (warm-up NaN rows
+explicitly allowed), validation_test_teacher.npz, refit_test_teacher.npz,
+teacher model text files, model metadata and manifest.
+contexts/validation and contexts/refit contain full-ID band/chain frames,
+cleaning rows and diagnostics.
+Each PROFILE/validation contains schema, unknown-category counts, model
+text/JSON, member probabilities, validation_proba.npz, per-partition
+probabilities, meta.parquet, matching f3/f5, groups.npy, offsets.json,
+metrics.json, per_class_metrics.csv and manifest.
+PROFILE/refit contains corresponding models/schema/metadata,
+test_proba.npz, test meta/f3/f5/groups, submission.csv and submission_metrics.json.
+inputs.json records content hashes, dataset year, config and source hashes.
+Manifest records configuration, class order, feature-schema hash, training
+ID hashes, rounds, backends and split boundaries.
+Card 3 adds commit SHA, full dependency versions, timings, logs and copies.
+
+Probability artifacts are pickle-free NPZ: ids,proba,classes,provenance.
+load_probability_artifact rejects ID order, class order, shape, invalid
+probabilities and (when supplied) provenance mismatches. Never blend two
+arrays without matching these identities. Member metadata also records
+observed-class mapping and actual backend.
+
+evaluate_predictions returns all12 precision/recall/F1/support/predicted
+counts, confusion matrix, macro-F1, fraud rate and empty-subset flag.
+Validation reports early stop, calibration, assessment, full September,
+tail, direct-band and no-direct-band subsets. Empty subsets have zero
+macro-F1 and empty=true, avoiding a claimed measurement on no examples.
+Reports include band-only and offset changes and cleaning reason counts.
+Saved predictions are named by partition, not falsely called OOF.
+
+write_submission(test_ids,pred,sample,path) enforces unique non-null IDs,
+equal sample/prediction sets, exact sample order, columns id,label, valid
+labels and no missing values. It reports absent predicted classes instead
+of forcing them to occur. SHA256 and distributions are returned.
+Standalone rerender:
+python src/upi/make_submission.py ROOT/runs/podium_v6/ensemble --sample ROOT/data/raw/sample_submission.csv
+This reads persisted test identities/context and validation offsets, not
+test labels or assessment-driven parameters. No fraud-rate matching.
+
+### Card 2 checks
+
+rtk proxy python -m py_compile src/upi/fit_submit.py src/upi/make_submission.py tests/test_podium_predictions.py
+rtk proxy python tests/test_podium_predictions.py
+Fixtures have <=40 rows. Mock estimators only record arguments/return
+fabricated probabilities; no real LightGBM fit occurs. Temporary synthetic
+files exercise serialization, validation/refit artifact shapes and sample
+mapping. Any tiny printed score in this suite is a synthetic fixture score,
+not competition performance. Real training, runtime, backend compatibility
+and leaderboard improvement remain externally unverified.
