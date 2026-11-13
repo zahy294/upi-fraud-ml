@@ -1,5 +1,9 @@
 # Saved-probability diagnostics and candidate submissions
 
+For chronological selection among the saved A/B/C models and their blends,
+start with [SAVED_MODEL_COMPARISON.md](SAVED_MODEL_COMPARISON.md). It evaluates
+original validation labels without training and produces a separate candidate.
+
 Use `postprocess_saved.py` from branch `codex/target-070` with the existing
 `.colab-venv` interpreter. It never fits a model or reads training labels.
 Existing run files are preserved; each output CSV needs a new name and gets
