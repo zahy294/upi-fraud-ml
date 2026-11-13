@@ -1,0 +1,27 @@
+name: catboost_v2
+paths: {raw_dir: data/raw, processed_dir: data/processed, runs_dir: runs, reports_dir: reports, submissions_dir: submissions}
+features:
+  cache_name: engineered_v2
+  relational: true
+  prior_label_history: true
+  exclude: [app_version, ip_risk_score]
+training:
+  clean_burst_labels: true
+stage2:
+  neighbour_propagation: true
+model:
+  kind: catboost
+  params:
+    task_type: GPU
+    devices: "0"
+    iterations: 1800
+    learning_rate: 0.05
+    depth: 8
+    l2_leaf_reg: 5.0
+    random_seed: 20261113
+    loss_function: MultiClass
+    verbose: 100
+    allow_writing_files: false
+validation: {train_start: 2026-07-01, calibration_start: 2026-09-01, assessment_start: 2026-09-24, assessment_end: 2026-10-01}
+final_fit: {iteration_multiplier: 1.15}
+smoke: {sample_fraction: 0.005}

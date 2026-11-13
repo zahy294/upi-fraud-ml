@@ -29,6 +29,8 @@ def create_model(config: dict, n_estimators: int | None = None):
                         max_bin=256, reg_lambda=5, random_state=20261113,
                         eval_metric="mlogloss", early_stopping_rounds=100)
         defaults.update(params)
+        if n_estimators is not None:
+            defaults["early_stopping_rounds"] = None
         return XGBClassifier(**defaults)
     if kind == "catboost":
         from catboost import CatBoostClassifier
