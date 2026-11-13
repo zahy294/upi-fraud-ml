@@ -16,6 +16,20 @@ from make_submission import prepare_rule_context, predict_labels
 
 
 class SavedTests(unittest.TestCase):
+    def test_disagreement_directions_are_not_interpreted_as_ground_truth(self):
+        a = pd.DataFrame({"id": ["a", "b", "c", "d"],
+                          "label": ["legit", "mule_account", "phishing_collect", "legit"]})
+        b = a.copy()
+        b["label"] = ["sim_swap", "legit", "fake_cashback", "legit"]
+        report = tool.compare_labels(a, b)
+        self.assertEqual(report["changed_labels"], 3)
+        self.assertEqual(report["changed_fraud_status"], 2)
+        self.assertEqual(report["baseline_only_fraud"], 1)
+        self.assertEqual(report["current_only_fraud"], 1)
+        self.assertEqual(report["changed_fraud_type"], 1)
+        with self.assertRaises(ValueError):
+            tool.compare_labels(a, b.iloc[::-1])
+
     def test_align_class_and_transaction_orders(self):
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "friend.npz"
@@ -55,6 +69,7 @@ class SavedTests(unittest.TestCase):
             refit.mkdir(parents=True)
             val.mkdir()
             meta, f3, f5 = context(6)
+            f3.loc[0, "band"] = 4
             meta.to_parquet(refit / "meta.parquet", index=False)
             f3.to_parquet(refit / "features_v3.parquet", index=False)
             f5.to_parquet(refit / "features_v5.parquet", index=False)
@@ -92,6 +107,15 @@ class SavedTests(unittest.TestCase):
                 tool.main(["--profile-dir", str(profile), "--baseline-csv", str(baseline),
                            "--match-baseline-count", "--output", str(out2)])
             self.assertEqual(pd.read_csv(out2).label.ne("legit").sum(), 2)
+            out3 = root / "hybrid.csv"
+            with contextlib.redirect_stdout(io.StringIO()):
+                tool.main(["--profile-dir", str(profile), "--baseline-csv", str(baseline),
+                           "--top-k", "6", "--use-baseline-types", "--output", str(out3)])
+            hybrid = pd.read_csv(out3).set_index("id")
+            for txn in current.loc[current.label.ne("legit"), "id"]:
+                self.assertEqual(hybrid.loc[txn, "label"], "merchant_collusion")
+            self.assertEqual(hybrid.label.ne("legit").sum(), 6)
+            self.assertEqual(hybrid.loc["t0", "label"], "sim_swap")
 
 
 if __name__ == "__main__":

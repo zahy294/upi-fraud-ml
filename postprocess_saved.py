@@ -73,6 +73,22 @@ def counts(frame):
             "per_class": {k: int(frame.label.eq(k).sum()) for k in LABELS}}
 
 
+def compare_labels(current, baseline):
+    """Both frames must already be ID-aligned; neither provides ground truth."""
+    if not np.array_equal(current.id, baseline.id):
+        raise ValueError("comparison IDs must be aligned")
+    a, b = current.label, baseline.label
+    changed = a.ne(b)
+    transitions = pd.DataFrame({"current": a[changed], "baseline": b[changed]}).value_counts()
+    return {"changed_labels": int(changed.sum()),
+            "changed_fraud_status": int(a.ne("legit").ne(b.ne("legit")).sum()),
+            "baseline_only_fraud": int((a.eq("legit") & b.ne("legit")).sum()),
+            "current_only_fraud": int((a.ne("legit") & b.eq("legit")).sum()),
+            "changed_fraud_type": int((changed & a.ne("legit") & b.ne("legit")).sum()),
+            "transitions": [{"current": x, "baseline": y, "rows": int(n)}
+                            for (x, y), n in transitions.items()]}
+
+
 def exact_count_prediction(p, groups, offsets, context, k):
     """Rank calibrated best-fraud/legit log odds. Preserve direct bands.
 
@@ -109,6 +125,8 @@ def main(argv=None):
     ap.add_argument("--friend-weight", type=float, default=.65)
     ap.add_argument("--fraud-log-offset", type=float, default=0., help="additional shift for all fraud classes")
     ap.add_argument("--zero-offsets", action="store_true", help="use uncalibrated blended probabilities plus event rules")
+    ap.add_argument("--use-baseline-types", action="store_true",
+                    help="use baseline's fraud type where both predict fraud, preserving direct bands; this is a hard-label hybrid, not a probability blend")
     count = ap.add_mutually_exclusive_group()
     count.add_argument("--top-k", type=int)
     count.add_argument("--match-baseline-count", action="store_true")
@@ -118,6 +136,8 @@ def main(argv=None):
         ap.error("weights must be in [0,1] and offsets finite")
     if a.match_baseline_count and a.baseline_csv is None:
         ap.error("--match-baseline-count requires --baseline-csv")
+    if a.use_baseline_types and a.baseline_csv is None:
+        ap.error("--use-baseline-types requires --baseline-csv")
     if a.output and a.output.suffix.lower() != ".csv":
         ap.error("--output must be a new .csv file")
     refit = a.profile_dir / "refit"
@@ -131,8 +151,7 @@ def main(argv=None):
     if a.baseline_csv:
         baseline = read_submission(a.baseline_csv, ids)
         report["baseline"] = counts(baseline)
-        report["changed_labels"] = int(current.label.ne(baseline.label).sum())
-        report["changed_fraud_status"] = int(current.label.ne("legit").ne(baseline.label.ne("legit")).sum())
+        report.update(compare_labels(current, baseline))
         report["inputs"][str(a.baseline_csv)] = digest(a.baseline_csv)
     if a.output:
         sidecar = a.output.with_suffix(".json")
@@ -159,10 +178,20 @@ def main(argv=None):
         k = report["baseline"]["frauds"] if a.match_baseline_count else a.top_k
         pred = (exact_count_prediction(p, groups, offsets, context, k) if k is not None
                 else predict_labels(p, groups, offsets, context))
+        type_changes = 0
+        if a.use_baseline_types:
+            baseline_y = baseline.label.map({label: i for i, label in enumerate(LABELS)}).to_numpy()
+            use = (pred > 0) & (baseline_y > 0) & (context["band"] == 0)
+            type_changes = int((pred[use] != baseline_y[use]).sum())
+            pred[use] = baseline_y[use]
         result = write_submission(ids, pred, current[["id"]], a.output)
         report["candidate"] = result
+        if baseline is not None:
+            candidate_frame = pd.DataFrame({"id": ids, "label": np.asarray(LABELS)[pred]})
+            report["candidate_vs_baseline"] = compare_labels(candidate_frame, baseline)
         report["settings"] = {"friend_weight": a.friend_weight if a.friend_proba else None,
                               "fraud_log_offset": a.fraud_log_offset, "top_k": k,
+                              "use_baseline_types": a.use_baseline_types, "baseline_type_changes": type_changes,
                               "offsets": offsets, "direct_bands_protected": True}
         for path in (own_path, offset_path, refit / "meta.parquet", refit / "features_v3.parquet",
                      refit / "features_v5.parquet", refit / "groups.npy"):
