@@ -1,103 +1,113 @@
-"""Clean the training labels the way the test labels are clean.
-
-Inside a fraud event about 12% of rows are labelled legit (unreported) and about 3% carry some other fraud type.
-The event's own type is reliable in the raw labels (rows on device-band devices carry the band's label 92-98% of the
-time), including events that one generator emits in a sibling type's shape. So a row is corrected to the type of
-ITS EVENT, taken as the majority raw label among the event's other detected rows, never to the type its shape suggests.
-
-  band device                       -> band type
-  labelled legit, model sure (>=tau)-> event type (falls back to the model's type when the event has no labelled row)
-  labelled fraud, differs from its event's majority -> event type
-
-Evidence used: leave-one-month-out probabilities from a model trained on the raw labels, device bands, raw labels of
-neighbouring rows. The trap columns decide nothing; they are printed as an independent purity check.
-
-Usage: python -I src/upi/clean_labels.py <project_root> <oof_tag> [--tau-unrep 0.85]
-Writes models/<oof_tag>/y_clean.npy (train rows in base order).
-"""
+"""Fold-restricted, event-preserving label corrections; no rows are removed."""
+from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
+import numpy as np
+import pandas as pd
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
-from common import LABELS, macro_f1, fit_weights  # noqa: E402
-from events import Events, MIN, HOUR, DAY  # noqa: E402
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-ap = argparse.ArgumentParser()
-ap.add_argument("root")
-ap.add_argument("tag")
-ap.add_argument("--tau-unrep", type=float, default=0.85)
-a = ap.parse_args()
-sys.stdout.reconfigure(encoding="utf-8")
-pd.set_option("display.width", 220)
-ROOT = Path(a.root)
-OUT = ROOT / "models" / a.tag
-K = len(LABELS)
-
-base = pd.read_parquet(ROOT / "data/processed/base_v0.parquet",
-                       columns=["txn_id", "t", "label", "split", "month", "app_major", "ip_risk_score", "sender_id", "receiver_id", "device_id", "receiver_type"])
-tr = (base.split == "train").values
-b = base[tr]
-y = b.label.map({lab: i for i, lab in enumerate(LABELS)}).values.astype(int)
-old = (b.app_major == "3").values
-band = pd.read_parquet(ROOT / "data/processed/features_v3.parquet", columns=["band"]).band.values[tr].astype(int)
-s_flag = pd.read_parquet(ROOT / "data/processed/features_v2.parquet", columns=["S_flag"]).S_flag.values[tr] == 1
-P = np.load(OUT / "oof.npy").astype(float)
-pf = 1 - P[:, 0]
-top = P[:, 1:].argmax(1) + 1
-
-# ---- the type of each row's event: votes from the raw labels of other detected rows linked to it ----
-t = b.t.values.astype(np.int64)
-snd = b.sender_id.str[2:].astype(np.int64).values
-is_p2p = (b.receiver_type == "P2P").values
-rnum = b.receiver_id.str[2:].astype(np.int64).values
-rcv = np.where(is_p2p, rnum, rnum + 1_000_000)
-dev = b.device_id.str[2:].astype(np.int64).values
-pair = snd * 2_000_000 + rcv
-pcode, puniq = pd.factorize(pair)
-rcode = pd.Index(puniq).get_indexer(np.where(is_p2p, rnum * 2_000_000 + snd, -1))
-rcv_evt = np.where(is_p2p | s_flag, rcv, -1)            # receiver link only for person accounts and fixed-amount merchant sessions
-votes = np.zeros((len(y), K))
-detected = (pf >= 0.5) | (band > 0)
-for k in range(1, K):
-    ind = ((y == k) & detected).astype(float)
-    if ind.sum() == 0:
-        continue
-    v = (Events(snd, t, ind).sum(snd, t, -7 * DAY, 7 * DAY) - ind                      # same sender (bursts, repeats over days)
-         + Events(rcv_evt, t, ind, mask=rcv_evt >= 0).sum(rcv_evt, t, -DAY, DAY) - ind * (rcv_evt >= 0)   # payments into the same account
-         + Events(dev, t, ind).sum(dev, t, -10 * MIN, 10 * MIN) - ind               # same device within minutes
-         + Events(pcode, t, ind).sum(rcode, t, -7 * DAY, 7 * DAY))                   # opposite direction of the pair (bait and payback)
-    votes[:, k] = np.maximum(v, 0)
-tot = votes.sum(1)
-evt = votes.argmax(1)
-evt_ok = (votes.max(1) >= 1) & (votes.max(1) / np.maximum(tot, 1e-9) >= 0.6)
-evt = np.where(evt_ok, evt, 0)
+try:
+    from .common import LABELS
+    from .events import Events, MIN, DAY
+    from .features_v6 import align_pack, fit_mask, validate_probabilities, entity_codes
+except ImportError:
+    from common import LABELS
+    from events import Events, MIN, DAY
+    from features_v6 import align_pack, fit_mask, validate_probabilities, entity_codes
 
 
-def purity(mask):
-    return (old[mask].mean() - 0.1506) / (0.625 - 0.1506) if mask.any() else np.nan
+def clean_training_labels(base: pd.DataFrame, teacher_proba: np.ndarray,
+                          bands: pd.DataFrame, sessions: pd.DataFrame,
+                          fit_ids: pd.Index, *, tau_unrep: float = 0.85) -> pd.DataFrame:
+    mask = fit_mask(base, fit_ids)
+    p, available = validate_probabilities(teacher_proba, len(base))
+    if not 0 <= tau_unrep <= 1:
+        raise ValueError("tau_unrep must be within [0,1]")
+    band_all = align_pack(base, bands).band
+    if band_all.isna().any() or not band_all.isin(range(12)).all():
+        raise ValueError("band must be an integer class index 0..11")
+    session_all = align_pack(base, sessions)
+    b = base.loc[mask].reset_index(drop=True)
+    band = band_all.to_numpy(dtype=int)[mask]
+    s_flag = session_all.S_flag.to_numpy()[mask] == 1
+    p, available = p[mask], available[mask]
+    y = b.label.map({lab: i for i, lab in enumerate(LABELS)})
+    if y.isna().any():
+        raise ValueError("fit labels must belong to the fixed class order")
+    y = y.to_numpy(dtype=int)
+    if not len(b):
+        return pd.DataFrame({"txn_id": b.txn_id, "y_raw": y, "y_clean": y.copy(),
+                             "reason": pd.Series(dtype=object),
+                             "teacher_available": available})
+    pf = np.where(available, 1 - p[:, 0], np.nan)
+    top = np.where(available, np.nan_to_num(p[:, 1:], nan=-1).argmax(axis=1) + 1, 0)
+    detected = (pf >= 0.5) | (band > 0)
+    t = b.t.to_numpy()
+    snd, rcv, dev = (entity_codes(b, key) for key in ("snd", "rcv", "dev"))
+    is_p2p = b.receiver_type.eq("P2P").to_numpy()
+    rcv_evt = np.where(is_p2p | s_flag, rcv, -1)
+    pair_keys = list(zip(b.sender_id, b.receiver_type, b.receiver_id))
+    pairs, unique = pd.factorize(pd.MultiIndex.from_tuples(pair_keys), sort=False)
+    lookup = {key: i for i, key in enumerate(unique)}
+    reverse = np.array([lookup.get((r, "P2P", s), -1) if p2p else -1
+                        for s, r, p2p in zip(b.sender_id, b.receiver_id, is_p2p)], dtype=np.int64)
+    votes = np.zeros((len(b), 12))
+    for k in range(1, 12):
+        ind = ((y == k) & detected).astype(float)
+        if not ind.any():
+            continue
+        v = (Events(snd, t, ind).sum(snd, t, -7 * DAY, 7 * DAY) - ind
+             + Events(rcv_evt, t, ind, mask=rcv_evt >= 0).sum(rcv_evt, t, -DAY, DAY)
+             - ind * (rcv_evt >= 0)
+             + Events(dev, t, ind).sum(dev, t, -10 * MIN, 10 * MIN) - ind
+             + Events(pairs, t, ind).sum(reverse, t, -7 * DAY, 7 * DAY))
+        votes[:, k] = np.maximum(v, 0)
+    total = votes.sum(axis=1)
+    winner = votes.argmax(axis=1)
+    event_ok = (votes.max(axis=1) >= 1) & (votes.max(axis=1) / np.maximum(total, 1e-9) >= 0.6)
+    event = np.where(event_ok, winner, 0)
+    clean = y.copy()
+    reason = np.full(len(y), "unchanged", dtype=object)
+    unreported = (band == 0) & (y == 0) & available & (pf >= tau_unrep)
+    # A missing teacher disables teacher-dependent detection. A known band can
+    # still detect a neighbour; direct band correction below remains available.
+    changed_type = (band == 0) & (y > 0) & detected & (event > 0) & (event != y)
+    band_change = (band > 0) & (band != y)
+    clean[unreported] = np.where(event[unreported] > 0, event[unreported], top[unreported])
+    reason[unreported] = "unreported"
+    clean[changed_type], reason[changed_type] = event[changed_type], "event_type"
+    clean[band > 0] = band[band > 0]
+    reason[band_change] = "band"
+    return pd.DataFrame({"txn_id": b.txn_id.to_numpy(), "y_raw": y, "y_clean": clean,
+                         "reason": reason, "teacher_available": available})
 
 
-yc = y.copy()
-r_unrep = (band == 0) & (y == 0) & (pf >= a.tau_unrep)
-r_type = (band == 0) & (y > 0) & detected & (evt > 0) & (evt != y)
-r_band = (band > 0) & (y != band)
-yc[r_unrep] = np.where(evt[r_unrep] > 0, evt[r_unrep], top[r_unrep])
-yc[r_type] = evt[r_type]
-yc[r_band] = band[r_band]
-print(f"unreported -> fraud: {r_unrep.sum()} rows (patterned~{purity(r_unrep):.2f}); event type known for {(evt[r_unrep] > 0).mean():.2f} of them, "
-      f"and it differs from the model's type in {(evt[r_unrep] != top[r_unrep])[evt[r_unrep] > 0].mean():.3f}")
-print(f"row disagrees with its event -> event type: {r_type.sum()} rows (patterned~{purity(r_type):.2f})")
-print(f"band rule: {r_band.sum()} rows")
-keep_sibling = (band == 0) & (y > 0) & detected & (top != y) & ~r_type
-print(f"fraud rows whose label differs from the model's type but agrees with their event (kept as labelled): {keep_sibling.sum()}")
-print(pd.crosstab(pd.Series(np.array(LABELS)[y[keep_sibling]], name="label kept"), pd.Series(np.array(LABELS)[top[keep_sibling]], name="model type")).to_string())
-ct = pd.DataFrame({"raw": np.bincount(y, minlength=K), "clean": np.bincount(yc, minlength=K)}, index=LABELS)
-ct["change_%"] = ((ct.clean / ct.raw - 1) * 100).round(1)
-print(ct.to_string())
-np.save(OUT / "y_clean.npy", yc)
-w = fit_weights(P, yc)
-pred = np.where(band > 0, band, (P * w).argmax(1))
-print(f"\nthe raw-label model scored against cleaned labels: {macro_f1(yc, pred):.4f} | against raw labels: {macro_f1(y, pred):.4f}")
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("root", type=Path)
+    ap.add_argument("tag")
+    ap.add_argument("--tau-unrep", type=float, default=0.85)
+    a = ap.parse_args(argv)
+    processed = a.root / "data/processed"
+    base = pd.read_parquet(processed / "base_v0.parquet")
+    train = base.split.eq("train").to_numpy()
+    out = a.root / "models" / a.tag
+    p = np.full((len(base), 12), np.nan)
+    p[train] = np.load(out / "oof.npy")
+    result = clean_training_labels(
+        base, p, pd.read_parquet(processed / "features_v3.parquet"),
+        pd.read_parquet(processed / "features_v2.parquet"), pd.Index(base.txn_id[train]),
+        tau_unrep=a.tau_unrep)
+    out.mkdir(parents=True, exist_ok=True)
+    np.save(out / "y_clean.npy", result.y_clean.to_numpy())
+    result.to_parquet(out / "cleaning_rows.parquet", index=False)
+    print(result.reason.value_counts().to_dict())
+    print("Cleaning diagnostics only; validation must use original held-out labels.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
