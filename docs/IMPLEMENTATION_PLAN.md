@@ -2,6 +2,15 @@
 
 Written 2026-11-13, 11:30 IST (round day 1, about 46 hours left). Builds on [the EDA report](../reports/eda/EDA_REPORT.md), [the problem statement](PROBLEM_STATEMENT.md) and [the rules analysis](hackathon/analysis.md). Read those for the data findings; this file only says what to build, in what order, and why.
 
+> **Update, 13 Nov evening. Read this first; it overrides the ceiling and step order below.**
+>
+> - Leaderboard: rules file scored **0.4061** (September 0.392), so September validation transfers. The leader is at 0.55.
+> - The 0.454 "ceiling" in the EDA was wrong. In training, `app_version` 3.x and `ip_risk_score` > 0.5 mark pattern-generated fraud (about 62% and 40% of it, against 15% and 2% of ordinary rows). Using them only as a measuring tool shows 28–40% of each fraud class is patterned, and the old signature rules caught only 50–88% of that. Scripts: `scripts/explore/10`–`15`.
+> - Fraud events follow exact numeric recipes across rows: SIM-swap and takeover bursts shrink `balance_before` by exactly ×0.25 or ×0.35 per payment; phishing and cashback paybacks have `balance_before` = 1.1 × amount; mule accounts forward with `balance_before` = 1.02 × amount; mule victims pay whole multiples of ₹10; bots are one device making 25–60 small whole-rupee merchant payments in about 5–10 minutes.
+> - Inside an event about 12–15% of rows are labelled `legit` and a few percent carry a random other type. SIM-swap and takeover events are swapped with each other about a quarter of the time.
+> - New code: `src/upi/features_v1.py` (recipe features), `src/upi/exp_stage1.py` (fit Jul–Aug, score Sep), `src/upi/fit_submit.py`. Result: **September macro-F1 0.486** (`models/s1_v1`), submission `submissions/s1_v1.csv`.
+> - Open items, in order: October has half as many single-device bot bursts as September (find the new shape); stage 2 to complete events; typing of look-alike pairs; move the feature build from `base_v0.parquet` into one reproducible entry point; Colab runs for the final multi-seed fit.
+
 Expected gains in this file are my estimates from the EDA numbers and the research below. They are not measurements. The only measured scores so far are the EDA baselines (rules 0.392, LightGBM + relational features 0.391, both on September).
 
 ---
