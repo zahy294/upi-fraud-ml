@@ -8,6 +8,9 @@ For the recall upgrade after the reported 0.5297 submission, use a **fresh
 `recall_v7` tag** and the current branch checkout. Do not resume `local_podium`
 or an older `podium_v6` run with this revision. See
 [RECALL_V7.md](RECALL_V7.md) for the experiment, comparison report and tests.
+To reuse existing probabilities without any training, see
+[ZERO_TRAINING.md](ZERO_TRAINING.md). It supports ID-checked probability
+blends, diagnostics and optional fraud-count matching as separate candidates.
 
 The teammate supplies the five competition CSVs and, optionally, the
 submission reported to score 0.5400. That public score is user-reported;

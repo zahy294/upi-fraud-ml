@@ -127,7 +127,7 @@ def _score(y, pred):
     return float(np.mean(2 * np.diag(cm) / np.maximum(cm.sum(axis=0) + cm.sum(axis=1), 1)))
 
 
-def _decision(logp, groups, offsets, context):
+def _decision_scores(logp, groups, offsets):
     a = np.asarray(offsets["global"], dtype=float)
     if a.shape != (12,) or not np.isfinite(a).all() or a[0] != 0:
         raise ValueError("invalid global offsets")
@@ -139,7 +139,11 @@ def _decision(logp, groups, offsets, context):
         if group == "direct_band" and np.any(delta != 0):
             raise ValueError("conditional offsets forbidden for direct bands")
         scores[groups == group] += delta
-    return _apply_rules(scores.argmax(axis=1), context)
+    return scores
+
+
+def _decision(logp, groups, offsets, context):
+    return _apply_rules(_decision_scores(logp, groups, offsets).argmax(axis=1), context)
 
 
 def predict_labels(proba: np.ndarray, groups: np.ndarray,
