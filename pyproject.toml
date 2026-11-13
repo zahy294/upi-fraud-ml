@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "upi-fraud-local"
+version = "0.1.0"
+description = "Reproducible local UPI fraud validation and submission pipeline"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy==2.5.4",
+    "pandas==3.1.1",
+    "lightgbm==4.7.0",
+    "pyarrow==26.0.1",
+    "scikit-learn==1.9.1",
+]
+
+[project.scripts]
+upi-fraud = "upi_fraud.run:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

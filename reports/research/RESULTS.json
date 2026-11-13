@@ -1,0 +1,4248 @@
+{
+  "date": "2026-11-13",
+  "git_revision": "f2a9e923ff42898de4333ddad5d144a9b9a75768",
+  "python": "3.14.8",
+  "dependencies": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.1",
+    "lightgbm": "4.7.0",
+    "scikit-learn": "1.9.1",
+    "scipy": "1.18.1",
+    "pyarrow": "26.0.1",
+    "matplotlib": "3.11.2"
+  },
+  "data_hashes": {
+    "train.csv": {
+      "bytes": 231058404,
+      "sha256": "da48ff9b2823b8460511d8f5bdc660b4a92b74cc2a64395bddb32b89710f61c5"
+    },
+    "test.csv": {
+      "bytes": 36891354,
+      "sha256": "e3094af55340afc3239ac58f40c2e48b2040de9deb57463ac4d197e3aa0ec08b"
+    },
+    "accounts.csv": {
+      "bytes": 18800206,
+      "sha256": "97efcd06601dda981c1d1993b7b35202223c5f9f2be5fd7d13703df18a212539"
+    },
+    "merchants.csv": {
+      "bytes": 1116574,
+      "sha256": "8a2dbe1654b9c47a13385ee4313464a414cb7155eb4b8c2d80fc9b637c6c7d57"
+    },
+    "sample_submission.csv": {
+      "bytes": 4690486,
+      "sha256": "a0e0b01263dfccc7269221d54e27a675d12b10dabf03f10b7f7727f1c4aac4e1"
+    }
+  },
+  "submission": {
+    "file": "/home/thanmay/ML-challenge/s1_v1.csv",
+    "sha256": "1d5b1b383132b490fdde0751da0aaa08827c7503d971a9c1acda7791174951e7",
+    "rows": 260582,
+    "valid_ids": true,
+    "exact_match": false,
+    "different_rows": 1834,
+    "overall_agreement": 0.9929619083436309,
+    "fraud_union_rows": 4667,
+    "fraud_union_agreement": 0.6070280694236126,
+    "submitted_counts": {
+      "legit": 256794,
+      "mule_account": 736,
+      "layering_chain": 556,
+      "qr_swap": 535,
+      "phishing_collect": 481,
+      "account_takeover": 307,
+      "velocity_bot": 269,
+      "sim_swap": 269,
+      "refund_abuse": 256,
+      "fake_cashback": 202,
+      "loan_app_extortion": 97,
+      "merchant_collusion": 80
+    },
+    "rules_counts": {
+      "legit": 256601,
+      "mule_account": 695,
+      "qr_swap": 583,
+      "sim_swap": 511,
+      "account_takeover": 504,
+      "phishing_collect": 456,
+      "layering_chain": 314,
+      "velocity_bot": 270,
+      "merchant_collusion": 197,
+      "refund_abuse": 190,
+      "fake_cashback": 172,
+      "loan_app_extortion": 89
+    },
+    "disagreements": [
+      {
+        "label": "account_takeover",
+        "rules": "legit",
+        "n": 42
+      },
+      {
+        "label": "account_takeover",
+        "rules": "sim_swap",
+        "n": 26
+      },
+      {
+        "label": "fake_cashback",
+        "rules": "legit",
+        "n": 28
+      },
+      {
+        "label": "fake_cashback",
+        "rules": "phishing_collect",
+        "n": 2
+      },
+      {
+        "label": "layering_chain",
+        "rules": "account_takeover",
+        "n": 2
+      },
+      {
+        "label": "layering_chain",
+        "rules": "legit",
+        "n": 133
+      },
+      {
+        "label": "layering_chain",
+        "rules": "mule_account",
+        "n": 107
+      },
+      {
+        "label": "legit",
+        "rules": "account_takeover",
+        "n": 258
+      },
+      {
+        "label": "legit",
+        "rules": "loan_app_extortion",
+        "n": 6
+      },
+      {
+        "label": "legit",
+        "rules": "mule_account",
+        "n": 3
+      },
+      {
+        "label": "legit",
+        "rules": "phishing_collect",
+        "n": 117
+      },
+      {
+        "label": "legit",
+        "rules": "qr_swap",
+        "n": 235
+      },
+      {
+        "label": "legit",
+        "rules": "sim_swap",
+        "n": 259
+      },
+      {
+        "label": "legit",
+        "rules": "velocity_bot",
+        "n": 1
+      },
+      {
+        "label": "loan_app_extortion",
+        "rules": "legit",
+        "n": 15
+      },
+      {
+        "label": "merchant_collusion",
+        "rules": "legit",
+        "n": 1
+      },
+      {
+        "label": "mule_account",
+        "rules": "account_takeover",
+        "n": 2
+      },
+      {
+        "label": "mule_account",
+        "rules": "legit",
+        "n": 149
+      },
+      {
+        "label": "phishing_collect",
+        "rules": "legit",
+        "n": 137
+      },
+      {
+        "label": "phishing_collect",
+        "rules": "qr_swap",
+        "n": 6
+      },
+      {
+        "label": "phishing_collect",
+        "rules": "sim_swap",
+        "n": 1
+      },
+      {
+        "label": "qr_swap",
+        "rules": "legit",
+        "n": 130
+      },
+      {
+        "label": "qr_swap",
+        "rules": "loan_app_extortion",
+        "n": 1
+      },
+      {
+        "label": "qr_swap",
+        "rules": "merchant_collusion",
+        "n": 63
+      },
+      {
+        "label": "refund_abuse",
+        "rules": "legit",
+        "n": 11
+      },
+      {
+        "label": "refund_abuse",
+        "rules": "merchant_collusion",
+        "n": 55
+      },
+      {
+        "label": "sim_swap",
+        "rules": "account_takeover",
+        "n": 3
+      },
+      {
+        "label": "sim_swap",
+        "rules": "legit",
+        "n": 40
+      },
+      {
+        "label": "sim_swap",
+        "rules": "qr_swap",
+        "n": 1
+      }
+    ]
+  },
+  "initial": {
+    "protocol": {
+      "seed": 137,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "all supplied train+test rows, same as existing EDA; no test labels",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "probes": {
+      "prior_month": [
+        {
+          "month": 8,
+          "role": "sender_id",
+          "hits": 58720,
+          "fraud_precision": 0.04766689373297003,
+          "fraud_recall": 0.14468855001292324,
+          "fraud_outside_rules": 1577
+        },
+        {
+          "month": 8,
+          "role": "receiver_id",
+          "hits": 5435,
+          "fraud_precision": 0.24857405703771848,
+          "fraud_recall": 0.06983716722667356,
+          "fraud_outside_rules": 270
+        },
+        {
+          "month": 8,
+          "role": "device_id",
+          "hits": 55670,
+          "fraud_precision": 0.04217711514280582,
+          "fraud_recall": 0.12137503230808995,
+          "fraud_outside_rules": 1487
+        },
+        {
+          "month": 9,
+          "role": "sender_id",
+          "hits": 98526,
+          "fraud_precision": 0.04686072711771512,
+          "fraud_recall": 0.24741439365521675,
+          "fraud_outside_rules": 2622
+        },
+        {
+          "month": 9,
+          "role": "receiver_id",
+          "hits": 9712,
+          "fraud_precision": 0.23177512355848434,
+          "fraud_recall": 0.12062590429237446,
+          "fraud_outside_rules": 487
+        },
+        {
+          "month": 9,
+          "role": "device_id",
+          "hits": 93475,
+          "fraud_precision": 0.03930462690558973,
+          "fraud_recall": 0.19688119607738064,
+          "fraud_outside_rules": 2453
+        }
+      ],
+      "seed_selection_audit": [
+        {
+          "label": "mule_account",
+          "selected_rows": 6048,
+          "seed_rows": 5745,
+          "nonseed_rows": 303,
+          "nonseed_labels": {
+            "legit": 237,
+            "mule_account": 0,
+            "velocity_bot": 7,
+            "layering_chain": 15,
+            "sim_swap": 3,
+            "account_takeover": 7,
+            "phishing_collect": 6,
+            "qr_swap": 7,
+            "refund_abuse": 5,
+            "fake_cashback": 9,
+            "loan_app_extortion": 5,
+            "merchant_collusion": 2
+          }
+        },
+        {
+          "label": "velocity_bot",
+          "selected_rows": 8627,
+          "seed_rows": 8106,
+          "nonseed_rows": 521,
+          "nonseed_labels": {
+            "legit": 430,
+            "mule_account": 5,
+            "velocity_bot": 0,
+            "layering_chain": 11,
+            "sim_swap": 8,
+            "account_takeover": 10,
+            "phishing_collect": 5,
+            "qr_swap": 11,
+            "refund_abuse": 6,
+            "fake_cashback": 5,
+            "loan_app_extortion": 15,
+            "merchant_collusion": 15
+          }
+        }
+      ]
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.38070993150572624,
+        "f1": {
+          "legit": 0.9844520591346224,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.3201581027667984,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4151967435549525,
+          "fake_cashback": 0.3148636763412489,
+          "loan_app_extortion": 0.35555555555555557,
+          "merchant_collusion": 0.29445234708392604
+        },
+        "predicted": {
+          "legit": 518288,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 725,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 359,
+          "fake_cashback": 326,
+          "loan_app_extortion": 195,
+          "merchant_collusion": 487
+        }
+      },
+      "9": {
+        "macro_f1": 0.3922083696983793,
+        "f1": {
+          "legit": 0.9844676366295083,
+          "mule_account": 0.3065184216263353,
+          "velocity_bot": 0.48388829215896884,
+          "layering_chain": 0.3343915343915344,
+          "sim_swap": 0.2659010600706714,
+          "account_takeover": 0.25758241758241757,
+          "phishing_collect": 0.300944669365722,
+          "qr_swap": 0.3218517497933315,
+          "refund_abuse": 0.44203389830508477,
+          "fake_cashback": 0.3316412859560068,
+          "loan_app_extortion": 0.36231884057971014,
+          "merchant_collusion": 0.31496062992125984
+        },
+        "predicted": {
+          "legit": 501624,
+          "mule_account": 1220,
+          "velocity_bot": 1065,
+          "layering_chain": 653,
+          "sim_swap": 997,
+          "account_takeover": 995,
+          "phishing_collect": 802,
+          "qr_swap": 1277,
+          "refund_abuse": 400,
+          "fake_cashback": 351,
+          "loan_app_extortion": 183,
+          "merchant_collusion": 429
+        }
+      }
+    },
+    "experiments": {
+      "8_base": {
+        "raw": {
+          "macro_f1": 0.41143414877086665,
+          "f1": {
+            "legit": 0.9862597471653242,
+            "mule_account": 0.33968045524184726,
+            "velocity_bot": 0.44184100418410044,
+            "layering_chain": 0.47965367965367967,
+            "sim_swap": 0.30713547052740436,
+            "account_takeover": 0.27347611202635913,
+            "phishing_collect": 0.37692066478519914,
+            "qr_swap": 0.43667352336173965,
+            "refund_abuse": 0.45003065603923975,
+            "fake_cashback": 0.2674616695059625,
+            "loan_app_extortion": 0.27464008859357697,
+            "merchant_collusion": 0.3034367141659681
+          },
+          "predicted": {
+            "legit": 519330,
+            "mule_account": 1121,
+            "velocity_bot": 973,
+            "layering_chain": 1154,
+            "sim_swap": 541,
+            "account_takeover": 488,
+            "phishing_collect": 935,
+            "qr_swap": 914,
+            "refund_abuse": 516,
+            "fake_cashback": 363,
+            "loan_app_extortion": 243,
+            "merchant_collusion": 274
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.418737133501584,
+          "f1": {
+            "legit": 0.9863263889971776,
+            "mule_account": 0.36079606248662527,
+            "velocity_bot": 0.4436424208772904,
+            "layering_chain": 0.5045095828635852,
+            "sim_swap": 0.32199085830370744,
+            "account_takeover": 0.27608695652173915,
+            "phishing_collect": 0.39348219674109836,
+            "qr_swap": 0.4554230550823396,
+            "refund_abuse": 0.44509345794392524,
+            "fake_cashback": 0.2532051282051282,
+            "loan_app_extortion": 0.2748244734202608,
+            "merchant_collusion": 0.3094650205761317
+          },
+          "predicted": {
+            "legit": 518557,
+            "mule_account": 1225,
+            "velocity_bot": 990,
+            "layering_chain": 1237,
+            "sim_swap": 576,
+            "account_takeover": 507,
+            "phishing_collect": 1060,
+            "qr_swap": 1033,
+            "refund_abuse": 597,
+            "fake_cashback": 437,
+            "loan_app_extortion": 337,
+            "merchant_collusion": 296
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4217508694791536,
+          "f1": {
+            "legit": 0.9864037857348894,
+            "mule_account": 0.36012032660077353,
+            "velocity_bot": 0.4457998336567785,
+            "layering_chain": 0.5080870050195203,
+            "sim_swap": 0.32199085830370744,
+            "account_takeover": 0.2782608695652174,
+            "phishing_collect": 0.4149184149184149,
+            "qr_swap": 0.46338067390698967,
+            "refund_abuse": 0.44920440636474906,
+            "fake_cashback": 0.24620874219446923,
+            "loan_app_extortion": 0.27640449438202247,
+            "merchant_collusion": 0.3102310231023102
+          },
+          "predicted": {
+            "legit": 518661,
+            "mule_account": 1206,
+            "velocity_bot": 995,
+            "layering_chain": 1275,
+            "sim_swap": 576,
+            "account_takeover": 507,
+            "phishing_collect": 1178,
+            "qr_swap": 1102,
+            "refund_abuse": 519,
+            "fake_cashback": 310,
+            "loan_app_extortion": 230,
+            "merchant_collusion": 293
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          5.0,
+          5.0,
+          6.951319283893326,
+          5.0,
+          5.0,
+          6.951319283893326,
+          6.951319283893326,
+          2.1578637647613177,
+          1.6106946595542408,
+          1.2022711204863819,
+          5.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1751,
+          "mule_account": 185,
+          "velocity_bot": 4,
+          "layering_chain": 464,
+          "sim_swap": 93,
+          "account_takeover": 64,
+          "phishing_collect": 243,
+          "qr_swap": 251,
+          "refund_abuse": 91,
+          "fake_cashback": 13,
+          "loan_app_extortion": 3,
+          "merchant_collusion": 33
+        }
+      },
+      "8_interactions": {
+        "raw": {
+          "macro_f1": 0.4034270439521213,
+          "f1": {
+            "legit": 0.9859365987497467,
+            "mule_account": 0.35222847252271744,
+            "velocity_bot": 0.4219505260164913,
+            "layering_chain": 0.48679678530424797,
+            "sim_swap": 0.2867647058823529,
+            "account_takeover": 0.2740021574973031,
+            "phishing_collect": 0.3956043956043956,
+            "qr_swap": 0.43591258121677495,
+            "refund_abuse": 0.4190948543087415,
+            "fake_cashback": 0.21005154639175258,
+            "loan_app_extortion": 0.2623294858342078,
+            "merchant_collusion": 0.31045241809672386
+          },
+          "predicted": {
+            "legit": 518845,
+            "mule_account": 1174,
+            "velocity_bot": 905,
+            "layering_chain": 1173,
+            "sim_swap": 511,
+            "account_takeover": 521,
+            "phishing_collect": 931,
+            "qr_swap": 897,
+            "refund_abuse": 498,
+            "fake_cashback": 741,
+            "loan_app_extortion": 293,
+            "merchant_collusion": 363
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.41109771015485186,
+          "f1": {
+            "legit": 0.9859663250294664,
+            "mule_account": 0.36363636363636365,
+            "velocity_bot": 0.42129105322763305,
+            "layering_chain": 0.4940577249575552,
+            "sim_swap": 0.2949117341640706,
+            "account_takeover": 0.2823654768247203,
+            "phishing_collect": 0.4091318714328627,
+            "qr_swap": 0.44762449914138525,
+            "refund_abuse": 0.425869432580842,
+            "fake_cashback": 0.20633934120571784,
+            "loan_app_extortion": 0.28258706467661693,
+            "merchant_collusion": 0.3193916349809886
+          },
+          "predicted": {
+            "legit": 518240,
+            "mule_account": 1249,
+            "velocity_bot": 920,
+            "layering_chain": 1223,
+            "sim_swap": 533,
+            "account_takeover": 544,
+            "phishing_collect": 1075,
+            "qr_swap": 1005,
+            "refund_abuse": 524,
+            "fake_cashback": 798,
+            "loan_app_extortion": 345,
+            "merchant_collusion": 396
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.41315764977120506,
+          "f1": {
+            "legit": 0.9860055392912398,
+            "mule_account": 0.35666305525460457,
+            "velocity_bot": 0.42374788970174454,
+            "layering_chain": 0.5023829548640314,
+            "sim_swap": 0.27415002698327035,
+            "account_takeover": 0.3073073073073073,
+            "phishing_collect": 0.41834319526627217,
+            "qr_swap": 0.45264937993235627,
+            "refund_abuse": 0.4262094304960196,
+            "fake_cashback": 0.2032301480484522,
+            "loan_app_extortion": 0.2862903225806452,
+            "merchant_collusion": 0.3209125475285171
+          },
+          "predicted": {
+            "legit": 518256,
+            "mule_account": 1167,
+            "velocity_bot": 942,
+            "layering_chain": 1256,
+            "sim_swap": 460,
+            "account_takeover": 665,
+            "phishing_collect": 1126,
+            "qr_swap": 1059,
+            "refund_abuse": 518,
+            "fake_cashback": 675,
+            "loan_app_extortion": 332,
+            "merchant_collusion": 396
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          2.89091169431116,
+          5.0,
+          5.0,
+          5.0,
+          12.476387184557597,
+          5.0,
+          6.951319283893326,
+          5.0,
+          0.6698550069565965,
+          3.8729833462074175,
+          5.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1692,
+          "mule_account": 164,
+          "velocity_bot": 16,
+          "layering_chain": 442,
+          "sim_swap": 63,
+          "account_takeover": 104,
+          "phishing_collect": 235,
+          "qr_swap": 223,
+          "refund_abuse": 92,
+          "fake_cashback": 21,
+          "loan_app_extortion": 9,
+          "merchant_collusion": 18
+        }
+      },
+      "8_history_interactions": {
+        "raw": {
+          "macro_f1": 0.39566982379893484,
+          "f1": {
+            "legit": 0.9857205356333778,
+            "mule_account": 0.3463687150837989,
+            "velocity_bot": 0.4339781328847771,
+            "layering_chain": 0.47351477904594674,
+            "sim_swap": 0.27063740856844304,
+            "account_takeover": 0.2709120345385861,
+            "phishing_collect": 0.3948281299274677,
+            "qr_swap": 0.45288489417222383,
+            "refund_abuse": 0.4068627450980392,
+            "fake_cashback": 0.2129514321295143,
+            "loan_app_extortion": 0.27487179487179486,
+            "merchant_collusion": 0.22450728363324765
+          },
+          "predicted": {
+            "legit": 518792,
+            "mule_account": 1206,
+            "velocity_bot": 955,
+            "layering_chain": 1106,
+            "sim_swap": 521,
+            "account_takeover": 520,
+            "phishing_collect": 917,
+            "qr_swap": 960,
+            "refund_abuse": 517,
+            "fake_cashback": 795,
+            "loan_app_extortion": 315,
+            "merchant_collusion": 248
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.3975160257263805,
+          "f1": {
+            "legit": 0.985392100364588,
+            "mule_account": 0.3584305408271474,
+            "velocity_bot": 0.434733893557423,
+            "layering_chain": 0.4818788054508553,
+            "sim_swap": 0.28024819027921405,
+            "account_takeover": 0.2826666666666667,
+            "phishing_collect": 0.4083769633507853,
+            "qr_swap": 0.4577828834003446,
+            "refund_abuse": 0.40463132236441196,
+            "fake_cashback": 0.16506717850287908,
+            "loan_app_extortion": 0.2868605817452357,
+            "merchant_collusion": 0.22412318220701455
+          },
+          "predicted": {
+            "legit": 518034,
+            "mule_account": 1267,
+            "velocity_bot": 958,
+            "layering_chain": 1138,
+            "sim_swap": 541,
+            "account_takeover": 542,
+            "phishing_collect": 993,
+            "qr_swap": 993,
+            "refund_abuse": 526,
+            "fake_cashback": 1273,
+            "loan_app_extortion": 337,
+            "merchant_collusion": 250
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4110341131965875,
+          "f1": {
+            "legit": 0.9860653053586883,
+            "mule_account": 0.3607758620689655,
+            "velocity_bot": 0.4359764639955169,
+            "layering_chain": 0.4974818130945719,
+            "sim_swap": 0.29081632653061223,
+            "account_takeover": 0.2756756756756757,
+            "phishing_collect": 0.42790697674418604,
+            "qr_swap": 0.47185289957567184,
+            "refund_abuse": 0.4096236890808143,
+            "fake_cashback": 0.2569230769230769,
+            "loan_app_extortion": 0.2902902902902903,
+            "merchant_collusion": 0.229020979020979
+          },
+          "predicted": {
+            "legit": 518565,
+            "mule_account": 1192,
+            "velocity_bot": 957,
+            "layering_chain": 1263,
+            "sim_swap": 567,
+            "account_takeover": 517,
+            "phishing_collect": 1186,
+            "qr_swap": 1046,
+            "refund_abuse": 506,
+            "fake_cashback": 489,
+            "loan_app_extortion": 339,
+            "merchant_collusion": 225
+          }
+        },
+        "shared_weights": [
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "joint_weights": [
+          1.0,
+          2.0,
+          2.0,
+          5.1886745726331025,
+          2.89091169431116,
+          2.1578637647613177,
+          6.951319283893326,
+          3.8729833462074175,
+          0.897411460689644,
+          0.5,
+          2.89091169431116,
+          0.6698550069565965
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1738,
+          "mule_account": 174,
+          "velocity_bot": 2,
+          "layering_chain": 445,
+          "sim_swap": 57,
+          "account_takeover": 65,
+          "phishing_collect": 247,
+          "qr_swap": 238,
+          "refund_abuse": 84,
+          "fake_cashback": 22,
+          "loan_app_extortion": 5,
+          "merchant_collusion": 19
+        }
+      },
+      "9_base": {
+        "raw": {
+          "macro_f1": 0.40716072566770084,
+          "f1": {
+            "legit": 0.9864527980716414,
+            "mule_account": 0.34949759720401924,
+            "velocity_bot": 0.43837882547559964,
+            "layering_chain": 0.4606635071090047,
+            "sim_swap": 0.277623542476402,
+            "account_takeover": 0.2576617480136209,
+            "phishing_collect": 0.3772455089820359,
+            "qr_swap": 0.4592274678111588,
+            "refund_abuse": 0.4254498714652956,
+            "fake_cashback": 0.2778272484416741,
+            "loan_app_extortion": 0.28969957081545067,
+            "merchant_collusion": 0.28620102214650767
+          },
+          "predicted": {
+            "legit": 502671,
+            "mule_account": 1211,
+            "velocity_bot": 968,
+            "layering_chain": 983,
+            "sim_swap": 534,
+            "account_takeover": 482,
+            "phishing_collect": 844,
+            "qr_swap": 910,
+            "refund_abuse": 481,
+            "fake_cashback": 292,
+            "loan_app_extortion": 287,
+            "merchant_collusion": 333
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.4121816560609471,
+          "f1": {
+            "legit": 0.986355321404517,
+            "mule_account": 0.3653887342043264,
+            "velocity_bot": 0.4414019715224535,
+            "layering_chain": 0.4718331777155307,
+            "sim_swap": 0.2821350762527233,
+            "account_takeover": 0.26473859844271413,
+            "phishing_collect": 0.40391908975979773,
+            "qr_swap": 0.46255242660275614,
+            "refund_abuse": 0.41702127659574467,
+            "fake_cashback": 0.29043478260869565,
+            "loan_app_extortion": 0.2754036087369421,
+            "merchant_collusion": 0.28499580888516346
+          },
+          "predicted": {
+            "legit": 501946,
+            "mule_account": 1302,
+            "velocity_bot": 993,
+            "layering_chain": 1031,
+            "sim_swap": 569,
+            "account_takeover": 518,
+            "phishing_collect": 1002,
+            "qr_swap": 986,
+            "refund_abuse": 570,
+            "fake_cashback": 319,
+            "loan_app_extortion": 408,
+            "merchant_collusion": 352
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4149877303767824,
+          "f1": {
+            "legit": 0.9864576611908762,
+            "mule_account": 0.36790017211703957,
+            "velocity_bot": 0.44298605414273995,
+            "layering_chain": 0.48022079116835326,
+            "sim_swap": 0.28307022318998365,
+            "account_takeover": 0.2641509433962264,
+            "phishing_collect": 0.4197681513117755,
+            "qr_swap": 0.46199524940617576,
+            "refund_abuse": 0.42420382165605097,
+            "fake_cashback": 0.2635514018691589,
+            "loan_app_extortion": 0.3005524861878453,
+            "merchant_collusion": 0.28499580888516346
+          },
+          "predicted": {
+            "legit": 502068,
+            "mule_account": 1281,
+            "velocity_bot": 998,
+            "layering_chain": 1079,
+            "sim_swap": 570,
+            "account_takeover": 522,
+            "phishing_collect": 1116,
+            "qr_swap": 1016,
+            "refund_abuse": 495,
+            "fake_cashback": 239,
+            "loan_app_extortion": 260,
+            "merchant_collusion": 352
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          5.0,
+          5.0,
+          6.951319283893326,
+          5.0,
+          5.0,
+          6.951319283893326,
+          6.951319283893326,
+          2.1578637647613177,
+          1.6106946595542408,
+          1.2022711204863819,
+          5.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1684,
+          "mule_account": 184,
+          "velocity_bot": 4,
+          "layering_chain": 392,
+          "sim_swap": 69,
+          "account_takeover": 63,
+          "phishing_collect": 262,
+          "qr_swap": 227,
+          "refund_abuse": 60,
+          "fake_cashback": 11,
+          "loan_app_extortion": 8,
+          "merchant_collusion": 10
+        }
+      },
+      "9_interactions": {
+        "raw": {
+          "macro_f1": 0.3826336824285845,
+          "f1": {
+            "legit": 0.9672762123275231,
+            "mule_account": 0.34496379196840027,
+            "velocity_bot": 0.4340792666486924,
+            "layering_chain": 0.4604361370716511,
+            "sim_swap": 0.2774566473988439,
+            "account_takeover": 0.2742025741466144,
+            "phishing_collect": 0.3120491584290676,
+            "qr_swap": 0.4533496482104619,
+            "refund_abuse": 0.43226600985221675,
+            "fake_cashback": 0.02052267098013446,
+            "loan_app_extortion": 0.2992125984251969,
+            "merchant_collusion": 0.3157894736842105
+          },
+          "predicted": {
+            "legit": 483216,
+            "mule_account": 1190,
+            "velocity_bot": 1050,
+            "layering_chain": 1028,
+            "sim_swap": 463,
+            "account_takeover": 507,
+            "phishing_collect": 1581,
+            "qr_swap": 917,
+            "refund_abuse": 549,
+            "fake_cashback": 18952,
+            "loan_app_extortion": 244,
+            "merchant_collusion": 299
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.38375168107710866,
+          "f1": {
+            "legit": 0.9588371907612246,
+            "mule_account": 0.359603789836348,
+            "velocity_bot": 0.43462149285336155,
+            "layering_chain": 0.4621004566210046,
+            "sim_swap": 0.2798866855524079,
+            "account_takeover": 0.2824919441460795,
+            "phishing_collect": 0.32980645161290323,
+            "qr_swap": 0.45422116527942924,
+            "refund_abuse": 0.42409638554216866,
+            "fake_cashback": 0.01577343609965944,
+            "loan_app_extortion": 0.28944504896626766,
+            "merchant_collusion": 0.31413612565445026
+          },
+          "predicted": {
+            "legit": 474464,
+            "mule_account": 1277,
+            "velocity_bot": 1119,
+            "layering_chain": 1103,
+            "sim_swap": 498,
+            "account_takeover": 582,
+            "phishing_collect": 1713,
+            "qr_swap": 1012,
+            "refund_abuse": 585,
+            "fake_cashback": 27064,
+            "loan_app_extortion": 274,
+            "merchant_collusion": 305
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.3871905708292313,
+          "f1": {
+            "legit": 0.9706708025732105,
+            "mule_account": 0.35706462212486306,
+            "velocity_bot": 0.43678770209382456,
+            "layering_chain": 0.4727932285368803,
+            "sim_swap": 0.25771971496437057,
+            "account_takeover": 0.30303030303030304,
+            "phishing_collect": 0.3404255319148936,
+            "qr_swap": 0.4514805042509528,
+            "refund_abuse": 0.4243520192887282,
+            "fake_cashback": 0.02262274704785581,
+            "loan_app_extortion": 0.29262926292629265,
+            "merchant_collusion": 0.31671041119860016
+          },
+          "predicted": {
+            "legit": 486121,
+            "mule_account": 1198,
+            "velocity_bot": 1114,
+            "layering_chain": 1126,
+            "sim_swap": 417,
+            "account_takeover": 766,
+            "phishing_collect": 1786,
+            "qr_swap": 1059,
+            "refund_abuse": 584,
+            "fake_cashback": 15259,
+            "loan_app_extortion": 264,
+            "merchant_collusion": 302
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          2.89091169431116,
+          5.0,
+          5.0,
+          5.0,
+          12.476387184557597,
+          5.0,
+          6.951319283893326,
+          5.0,
+          0.6698550069565965,
+          3.8729833462074175,
+          5.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1614,
+          "mule_account": 178,
+          "velocity_bot": 1,
+          "layering_chain": 367,
+          "sim_swap": 57,
+          "account_takeover": 80,
+          "phishing_collect": 251,
+          "qr_swap": 228,
+          "refund_abuse": 58,
+          "fake_cashback": 55,
+          "loan_app_extortion": 9,
+          "merchant_collusion": 10
+        }
+      },
+      "9_history_interactions": {
+        "raw": {
+          "macro_f1": 0.33262960764604543,
+          "f1": {
+            "legit": 0.968014347937484,
+            "mule_account": 0.2581143740340031,
+            "velocity_bot": 0.21183463928667928,
+            "layering_chain": 0.437480215257993,
+            "sim_swap": 0.2792838874680307,
+            "account_takeover": 0.23564239194789816,
+            "phishing_collect": 0.2728592162554427,
+            "qr_swap": 0.40564903846153844,
+            "refund_abuse": 0.420012353304509,
+            "fake_cashback": 0.02250270465200144,
+            "loan_app_extortion": 0.26265060240963856,
+            "merchant_collusion": 0.21751152073732719
+          },
+          "predicted": {
+            "legit": 484415,
+            "mule_account": 1809,
+            "velocity_bot": 4743,
+            "layering_chain": 977,
+            "sim_swap": 688,
+            "account_takeover": 409,
+            "phishing_collect": 1972,
+            "qr_swap": 976,
+            "refund_abuse": 544,
+            "fake_cashback": 13034,
+            "loan_app_extortion": 185,
+            "merchant_collusion": 244
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.33293224202948984,
+          "f1": {
+            "legit": 0.967342026942597,
+            "mule_account": 0.26769869737587315,
+            "velocity_bot": 0.20615384615384616,
+            "layering_chain": 0.43786617329633054,
+            "sim_swap": 0.2774161241862794,
+            "account_takeover": 0.2388235294117647,
+            "phishing_collect": 0.27137546468401486,
+            "qr_swap": 0.3990746096009254,
+            "refund_abuse": 0.41897720271102895,
+            "fake_cashback": 0.022589928057553957,
+            "loan_app_extortion": 0.27175208581644816,
+            "merchant_collusion": 0.21611721611721613
+          },
+          "predicted": {
+            "legit": 483404,
+            "mule_account": 1930,
+            "velocity_bot": 5141,
+            "layering_chain": 1061,
+            "sim_swap": 730,
+            "account_takeover": 420,
+            "phishing_collect": 2142,
+            "qr_swap": 1106,
+            "refund_abuse": 548,
+            "fake_cashback": 13069,
+            "loan_app_extortion": 194,
+            "merchant_collusion": 251
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.3334995929679887,
+          "f1": {
+            "legit": 0.9668739971810715,
+            "mule_account": 0.2693563880883766,
+            "velocity_bot": 0.2083440638681432,
+            "layering_chain": 0.439052570768342,
+            "sim_swap": 0.2787286063569682,
+            "account_takeover": 0.232419547079857,
+            "phishing_collect": 0.27522178667216834,
+            "qr_swap": 0.3951995534468323,
+            "refund_abuse": 0.4239401496259352,
+            "fake_cashback": 0.02077884335948852,
+            "loan_app_extortion": 0.27110582639714625,
+            "merchant_collusion": 0.2209737827715356
+          },
+          "predicted": {
+            "legit": 482794,
+            "mule_account": 1838,
+            "velocity_bot": 5107,
+            "layering_chain": 1280,
+            "sim_swap": 778,
+            "account_takeover": 398,
+            "phishing_collect": 2685,
+            "qr_swap": 1231,
+            "refund_abuse": 529,
+            "fake_cashback": 12933,
+            "loan_app_extortion": 196,
+            "merchant_collusion": 227
+          }
+        },
+        "shared_weights": [
+          1.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0,
+          2.0
+        ],
+        "joint_weights": [
+          1.0,
+          2.0,
+          2.0,
+          5.1886745726331025,
+          2.89091169431116,
+          2.1578637647613177,
+          6.951319283893326,
+          3.8729833462074175,
+          0.897411460689644,
+          0.5,
+          2.89091169431116,
+          0.6698550069565965
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1651,
+          "mule_account": 143,
+          "velocity_bot": 16,
+          "layering_chain": 365,
+          "sim_swap": 74,
+          "account_takeover": 48,
+          "phishing_collect": 251,
+          "qr_swap": 204,
+          "refund_abuse": 54,
+          "fake_cashback": 43,
+          "loan_app_extortion": 7,
+          "merchant_collusion": 4
+        }
+      }
+    }
+  },
+  "context": {
+    "protocol": {
+      "seed": 137,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "all supplied train+test rows, same as existing EDA; no test labels",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "probes": {
+      "prior_month": [
+        {
+          "month": 8,
+          "role": "sender_id",
+          "hits": 58720,
+          "fraud_precision": 0.04766689373297003,
+          "fraud_recall": 0.14468855001292324,
+          "fraud_outside_rules": 1577
+        },
+        {
+          "month": 8,
+          "role": "receiver_id",
+          "hits": 5435,
+          "fraud_precision": 0.24857405703771848,
+          "fraud_recall": 0.06983716722667356,
+          "fraud_outside_rules": 270
+        },
+        {
+          "month": 8,
+          "role": "device_id",
+          "hits": 55670,
+          "fraud_precision": 0.04217711514280582,
+          "fraud_recall": 0.12137503230808995,
+          "fraud_outside_rules": 1487
+        },
+        {
+          "month": 9,
+          "role": "sender_id",
+          "hits": 98526,
+          "fraud_precision": 0.04686072711771512,
+          "fraud_recall": 0.24741439365521675,
+          "fraud_outside_rules": 2622
+        },
+        {
+          "month": 9,
+          "role": "receiver_id",
+          "hits": 9712,
+          "fraud_precision": 0.23177512355848434,
+          "fraud_recall": 0.12062590429237446,
+          "fraud_outside_rules": 487
+        },
+        {
+          "month": 9,
+          "role": "device_id",
+          "hits": 93475,
+          "fraud_precision": 0.03930462690558973,
+          "fraud_recall": 0.19688119607738064,
+          "fraud_outside_rules": 2453
+        }
+      ],
+      "seed_selection_audit": [
+        {
+          "label": "mule_account",
+          "selected_rows": 6048,
+          "seed_rows": 5745,
+          "nonseed_rows": 303,
+          "nonseed_labels": {
+            "legit": 237,
+            "mule_account": 0,
+            "velocity_bot": 7,
+            "layering_chain": 15,
+            "sim_swap": 3,
+            "account_takeover": 7,
+            "phishing_collect": 6,
+            "qr_swap": 7,
+            "refund_abuse": 5,
+            "fake_cashback": 9,
+            "loan_app_extortion": 5,
+            "merchant_collusion": 2
+          }
+        },
+        {
+          "label": "velocity_bot",
+          "selected_rows": 8627,
+          "seed_rows": 8106,
+          "nonseed_rows": 521,
+          "nonseed_labels": {
+            "legit": 430,
+            "mule_account": 5,
+            "velocity_bot": 0,
+            "layering_chain": 11,
+            "sim_swap": 8,
+            "account_takeover": 10,
+            "phishing_collect": 5,
+            "qr_swap": 11,
+            "refund_abuse": 6,
+            "fake_cashback": 5,
+            "loan_app_extortion": 15,
+            "merchant_collusion": 15
+          }
+        }
+      ]
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.38070993150572624,
+        "f1": {
+          "legit": 0.9844520591346224,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.3201581027667984,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4151967435549525,
+          "fake_cashback": 0.3148636763412489,
+          "loan_app_extortion": 0.35555555555555557,
+          "merchant_collusion": 0.29445234708392604
+        },
+        "predicted": {
+          "legit": 518288,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 725,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 359,
+          "fake_cashback": 326,
+          "loan_app_extortion": 195,
+          "merchant_collusion": 487
+        }
+      },
+      "9": {
+        "macro_f1": 0.3922083696983793,
+        "f1": {
+          "legit": 0.9844676366295083,
+          "mule_account": 0.3065184216263353,
+          "velocity_bot": 0.48388829215896884,
+          "layering_chain": 0.3343915343915344,
+          "sim_swap": 0.2659010600706714,
+          "account_takeover": 0.25758241758241757,
+          "phishing_collect": 0.300944669365722,
+          "qr_swap": 0.3218517497933315,
+          "refund_abuse": 0.44203389830508477,
+          "fake_cashback": 0.3316412859560068,
+          "loan_app_extortion": 0.36231884057971014,
+          "merchant_collusion": 0.31496062992125984
+        },
+        "predicted": {
+          "legit": 501624,
+          "mule_account": 1220,
+          "velocity_bot": 1065,
+          "layering_chain": 653,
+          "sim_swap": 997,
+          "account_takeover": 995,
+          "phishing_collect": 802,
+          "qr_swap": 1277,
+          "refund_abuse": 400,
+          "fake_cashback": 351,
+          "loan_app_extortion": 183,
+          "merchant_collusion": 429
+        }
+      }
+    },
+    "experiments": {
+      "8_context": {
+        "raw": {
+          "macro_f1": 0.41805925355700535,
+          "f1": {
+            "legit": 0.9862791961525651,
+            "mule_account": 0.3355969331872946,
+            "velocity_bot": 0.45044543429844097,
+            "layering_chain": 0.47486195873292647,
+            "sim_swap": 0.3095115681233933,
+            "account_takeover": 0.27148330596606457,
+            "phishing_collect": 0.3990071362085014,
+            "qr_swap": 0.44896772317534167,
+            "refund_abuse": 0.42718446601941745,
+            "fake_cashback": 0.2643884892086331,
+            "loan_app_extortion": 0.305159165751921,
+            "merchant_collusion": 0.34382566585956414
+          },
+          "predicted": {
+            "legit": 519255,
+            "mule_account": 1117,
+            "velocity_bot": 980,
+            "layering_chain": 1130,
+            "sim_swap": 552,
+            "account_takeover": 494,
+            "phishing_collect": 969,
+            "qr_swap": 950,
+            "refund_abuse": 533,
+            "fake_cashback": 301,
+            "loan_app_extortion": 251,
+            "merchant_collusion": 320
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.42361313648062815,
+          "f1": {
+            "legit": 0.986322275832967,
+            "mule_account": 0.34926787252368646,
+            "velocity_bot": 0.44912669808705297,
+            "layering_chain": 0.4888006804649844,
+            "sim_swap": 0.32293762575452717,
+            "account_takeover": 0.2776595744680851,
+            "phishing_collect": 0.40867992766726946,
+            "qr_swap": 0.4584624049563503,
+            "refund_abuse": 0.43236857649143534,
+            "fake_cashback": 0.2627986348122867,
+            "loan_app_extortion": 0.3023758099352052,
+            "merchant_collusion": 0.3445575567736883
+          },
+          "predicted": {
+            "legit": 518614,
+            "mule_account": 1196,
+            "velocity_bot": 995,
+            "layering_chain": 1216,
+            "sim_swap": 595,
+            "account_takeover": 547,
+            "phishing_collect": 1064,
+            "qr_swap": 1062,
+            "refund_abuse": 578,
+            "fake_cashback": 361,
+            "loan_app_extortion": 266,
+            "merchant_collusion": 358
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.426289804161867,
+          "f1": {
+            "legit": 0.9863320479123848,
+            "mule_account": 0.3553559974342527,
+            "velocity_bot": 0.45,
+            "layering_chain": 0.4887640449438202,
+            "sim_swap": 0.32310015098137895,
+            "account_takeover": 0.27948990435706694,
+            "phishing_collect": 0.41118124436429215,
+            "qr_swap": 0.46309289924221164,
+            "refund_abuse": 0.4297017650639075,
+            "fake_cashback": 0.26473099914602904,
+            "loan_app_extortion": 0.311804008908686,
+            "merchant_collusion": 0.3519245875883739
+          },
+          "predicted": {
+            "legit": 518616,
+            "mule_account": 1229,
+            "velocity_bot": 988,
+            "layering_chain": 1249,
+            "sim_swap": 594,
+            "account_takeover": 549,
+            "phishing_collect": 1073,
+            "qr_swap": 1074,
+            "refund_abuse": 528,
+            "fake_cashback": 360,
+            "loan_app_extortion": 238,
+            "merchant_collusion": 354
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          6.951319283893326,
+          3.8729833462074175,
+          6.951319283893326,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          1.6106946595542408,
+          5.0,
+          1.2022711204863819,
+          3.8729833462074175
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1742,
+          "mule_account": 177,
+          "velocity_bot": 2,
+          "layering_chain": 443,
+          "sim_swap": 93,
+          "account_takeover": 66,
+          "phishing_collect": 225,
+          "qr_swap": 256,
+          "refund_abuse": 86,
+          "fake_cashback": 9,
+          "loan_app_extortion": 2,
+          "merchant_collusion": 34
+        }
+      },
+      "9_context": {
+        "raw": {
+          "macro_f1": 0.41180829503273314,
+          "f1": {
+            "legit": 0.9863028582408705,
+            "mule_account": 0.3520174482006543,
+            "velocity_bot": 0.4702702702702703,
+            "layering_chain": 0.45615162222936073,
+            "sim_swap": 0.27417519908987487,
+            "account_takeover": 0.29857299670691545,
+            "phishing_collect": 0.3618613732508949,
+            "qr_swap": 0.4441710243002153,
+            "refund_abuse": 0.4197056941778631,
+            "fake_cashback": 0.2867256637168142,
+            "loan_app_extortion": 0.2737306843267108,
+            "merchant_collusion": 0.3180147058823529
+          },
+          "predicted": {
+            "legit": 502668,
+            "mule_account": 1218,
+            "velocity_bot": 1041,
+            "layering_chain": 931,
+            "sim_swap": 491,
+            "account_takeover": 542,
+            "phishing_collect": 911,
+            "qr_swap": 899,
+            "refund_abuse": 488,
+            "fake_cashback": 299,
+            "loan_app_extortion": 261,
+            "merchant_collusion": 247
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.4177589950961089,
+          "f1": {
+            "legit": 0.9863063618088125,
+            "mule_account": 0.3741990602306707,
+            "velocity_bot": 0.471127900701565,
+            "layering_chain": 0.47303689687795647,
+            "sim_swap": 0.2782122905027933,
+            "account_takeover": 0.3018867924528302,
+            "phishing_collect": 0.3795161797046811,
+            "qr_swap": 0.4520383693045564,
+            "refund_abuse": 0.402200488997555,
+            "fake_cashback": 0.3040136635354398,
+            "loan_app_extortion": 0.2692702980472765,
+            "merchant_collusion": 0.3212996389891697
+          },
+          "predicted": {
+            "legit": 502046,
+            "mule_account": 1315,
+            "velocity_bot": 1047,
+            "layering_chain": 989,
+            "sim_swap": 523,
+            "account_takeover": 575,
+            "phishing_collect": 1021,
+            "qr_swap": 984,
+            "refund_abuse": 561,
+            "fake_cashback": 340,
+            "loan_app_extortion": 328,
+            "merchant_collusion": 267
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4208877185158127,
+          "f1": {
+            "legit": 0.9863994057289182,
+            "mule_account": 0.3767254194096411,
+            "velocity_bot": 0.4724622030237581,
+            "layering_chain": 0.4739157762413576,
+            "sim_swap": 0.2782122905027933,
+            "account_takeover": 0.3023130715438408,
+            "phishing_collect": 0.38220551378446116,
+            "qr_swap": 0.45454545454545453,
+            "refund_abuse": 0.41836734693877553,
+            "fake_cashback": 0.3037542662116041,
+            "loan_app_extortion": 0.280225988700565,
+            "merchant_collusion": 0.3215258855585831
+          },
+          "predicted": {
+            "legit": 502151,
+            "mule_account": 1342,
+            "velocity_bot": 1045,
+            "layering_chain": 1000,
+            "sim_swap": 523,
+            "account_takeover": 579,
+            "phishing_collect": 1030,
+            "qr_swap": 992,
+            "refund_abuse": 493,
+            "fake_cashback": 341,
+            "loan_app_extortion": 240,
+            "merchant_collusion": 260
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          6.951319283893326,
+          3.8729833462074175,
+          6.951319283893326,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          1.6106946595542408,
+          5.0,
+          1.2022711204863819,
+          3.8729833462074175
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1702,
+          "mule_account": 208,
+          "velocity_bot": 6,
+          "layering_chain": 368,
+          "sim_swap": 65,
+          "account_takeover": 65,
+          "phishing_collect": 237,
+          "qr_swap": 236,
+          "refund_abuse": 75,
+          "fake_cashback": 22,
+          "loan_app_extortion": 5,
+          "merchant_collusion": 9
+        }
+      }
+    }
+  },
+  "initial_base_combination": {
+    "family": "base",
+    "thresholds": {
+      "legit": null,
+      "mule_account": null,
+      "velocity_bot": 0.0,
+      "layering_chain": 0.0,
+      "sim_swap": 0.02,
+      "account_takeover": 0.02,
+      "phishing_collect": 0.02,
+      "qr_swap": 0.05,
+      "refund_abuse": 0.0,
+      "fake_cashback": 0.0,
+      "loan_app_extortion": 0.0,
+      "merchant_collusion": 0.02
+    },
+    "August": {
+      "base": {
+        "macro_f1": 0.4217508694791536,
+        "per_class": {
+          "legit": {
+            "precision": 0.9757972934151594,
+            "recall": 0.9972433877759321,
+            "f1": 0.9864037857348894,
+            "predicted": 518661,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.6948590381426202,
+            "recall": 0.24303944315545242,
+            "f1": 0.36012032660077353,
+            "predicted": 1206,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8080402010050252,
+            "recall": 0.30781010719754975,
+            "f1": 0.4457998336567785,
+            "predicted": 995,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.7145098039215686,
+            "recall": 0.3942016443098226,
+            "f1": 0.5080870050195203,
+            "predicted": 1275,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5503472222222222,
+            "recall": 0.22756640344580042,
+            "f1": 0.32199085830370744,
+            "predicted": 576,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.504930966469428,
+            "recall": 0.19204801200300076,
+            "f1": 0.2782608695652174,
+            "predicted": 507,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.6044142614601019,
+            "recall": 0.31588287488908606,
+            "f1": 0.4149184149184149,
+            "predicted": 1178,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7549909255898367,
+            "recall": 0.3342707914825231,
+            "f1": 0.46338067390698967,
+            "predicted": 1102,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.7071290944123314,
+            "recall": 0.3291479820627803,
+            "f1": 0.44920440636474906,
+            "predicted": 519,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.44516129032258067,
+            "recall": 0.17016029593094945,
+            "f1": 0.24620874219446923,
+            "predicted": 310,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5347826086956522,
+            "recall": 0.18636363636363637,
+            "f1": 0.27640449438202247,
+            "predicted": 230,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.6416382252559727,
+            "recall": 0.2045701849836779,
+            "f1": 0.3102310231023102,
+            "predicted": 293,
+            "support": 919
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.44133868919078173,
+        "per_class": {
+          "legit": {
+            "precision": 0.9759318013057272,
+            "recall": 0.997042405326429,
+            "f1": 0.986374162761503,
+            "predicted": 518485,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.7222715173025732,
+            "recall": 0.23607888631090487,
+            "f1": 0.3558469945355191,
+            "predicted": 1127,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.816,
+            "recall": 0.3124042879019908,
+            "f1": 0.45182724252491696,
+            "predicted": 1000,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.7132132132132132,
+            "recall": 0.4110774556469061,
+            "f1": 0.5215481745813889,
+            "predicted": 1332,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5892857142857143,
+            "recall": 0.23689877961234745,
+            "f1": 0.3379416282642089,
+            "predicted": 560,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.5394265232974911,
+            "recall": 0.22580645161290322,
+            "f1": 0.3183500793231095,
+            "predicted": 558,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.6282173498570067,
+            "recall": 0.29236912156166817,
+            "f1": 0.3990311837723282,
+            "predicted": 1049,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7380952380952381,
+            "recall": 0.3487344314985938,
+            "f1": 0.4736698499317872,
+            "predicted": 1176,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.71875,
+            "recall": 0.3506726457399103,
+            "f1": 0.4713682941531043,
+            "predicted": 544,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.4331065759637188,
+            "recall": 0.23551171393341552,
+            "f1": 0.305111821086262,
+            "predicted": 441,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5719557195571956,
+            "recall": 0.23484848484848486,
+            "f1": 0.33297529538131043,
+            "predicted": 271,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.6796116504854369,
+            "recall": 0.22850924918389554,
+            "f1": 0.34201954397394135,
+            "predicted": 309,
+            "support": 919
+          }
+        }
+      }
+    },
+    "September": {
+      "base": {
+        "macro_f1": 0.4149877303767824,
+        "per_class": {
+          "legit": {
+            "precision": 0.9759136212624585,
+            "recall": 0.9972320310989448,
+            "f1": 0.9864576611908762,
+            "predicted": 502068,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.667447306791569,
+            "recall": 0.25393525393525396,
+            "f1": 0.36790017211703957,
+            "predicted": 1281,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.811623246492986,
+            "recall": 0.3046257991726213,
+            "f1": 0.44298605414273995,
+            "predicted": 998,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.7256719184430028,
+            "recall": 0.35884509624197986,
+            "f1": 0.48022079116835326,
+            "predicted": 1079,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.45614035087719296,
+            "recall": 0.2052091554853986,
+            "f1": 0.28307022318998365,
+            "predicted": 570,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.4559386973180077,
+            "recall": 0.1859375,
+            "f1": 0.2641509433962264,
+            "predicted": 522,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.6164874551971327,
+            "recall": 0.31822386679000925,
+            "f1": 0.4197681513117755,
+            "predicted": 1116,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.765748031496063,
+            "recall": 0.3307823129251701,
+            "f1": 0.46199524940617576,
+            "predicted": 1016,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.6727272727272727,
+            "recall": 0.3097674418604651,
+            "f1": 0.42420382165605097,
+            "predicted": 495,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5899581589958159,
+            "recall": 0.16967509025270758,
+            "f1": 0.2635514018691589,
+            "predicted": 239,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.5230769230769231,
+            "recall": 0.21085271317829457,
+            "f1": 0.3005524861878453,
+            "predicted": 260,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.48295454545454547,
+            "recall": 0.20214030915576695,
+            "f1": 0.28499580888516346,
+            "predicted": 352,
+            "support": 841
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.4459028382225241,
+        "per_class": {
+          "legit": {
+            "precision": 0.976046174321212,
+            "recall": 0.9970814210263873,
+            "f1": 0.9864516707122715,
+            "predicted": 501924,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.7207903780068728,
+            "recall": 0.2491832491832492,
+            "f1": 0.37033767380269256,
+            "predicted": 1164,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8212341197822142,
+            "recall": 0.34035351635953365,
+            "f1": 0.48125498537622974,
+            "predicted": 1102,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.734520780322307,
+            "recall": 0.39688359303391385,
+            "f1": 0.5153228205891104,
+            "predicted": 1179,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.5385996409335727,
+            "recall": 0.23677979479084452,
+            "f1": 0.32894736842105265,
+            "predicted": 557,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.5346715328467153,
+            "recall": 0.22890625,
+            "f1": 0.32056892778993434,
+            "predicted": 548,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.6356513222331048,
+            "recall": 0.3001850138760407,
+            "f1": 0.4077913917687716,
+            "predicted": 1021,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7535680304471931,
+            "recall": 0.336734693877551,
+            "f1": 0.46547164266823393,
+            "predicted": 1051,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.7161410018552876,
+            "recall": 0.3590697674418605,
+            "f1": 0.47831474597273854,
+            "predicted": 539,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5476190476190477,
+            "recall": 0.2490974729241877,
+            "f1": 0.3424317617866005,
+            "predicted": 378,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.5984848484848485,
+            "recall": 0.24496124031007752,
+            "f1": 0.34763476347634764,
+            "predicted": 264,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.6319702602230484,
+            "recall": 0.20214030915576695,
+            "f1": 0.3063063063063063,
+            "predicted": 269,
+            "support": 841
+          }
+        }
+      }
+    },
+    "paired_day_delta": {
+      "mean": 0.030790773689531335,
+      "interval_95": [
+        0.026008694031814383,
+        0.035314562347861345
+      ],
+      "positive_fraction": 1.0
+    },
+    "September_halves": [
+      {
+        "base": 0.40874645654284364,
+        "combined": 0.43876868816790404
+      },
+      {
+        "base": 0.41820547549433845,
+        "combined": 0.44993952820894645
+      }
+    ],
+    "changes": {
+      "corrected": 489,
+      "broken": 190
+    }
+  },
+  "initial_context_combination": {
+    "family": "context",
+    "thresholds": {
+      "legit": null,
+      "mule_account": null,
+      "velocity_bot": 0.0,
+      "layering_chain": 0.0,
+      "sim_swap": 0.02,
+      "account_takeover": 0.02,
+      "phishing_collect": 0.02,
+      "qr_swap": 0.05,
+      "refund_abuse": 0.0,
+      "fake_cashback": 0.0,
+      "loan_app_extortion": 0.0,
+      "merchant_collusion": 0.1
+    },
+    "August": {
+      "base": {
+        "macro_f1": 0.426289804161867,
+        "per_class": {
+          "legit": {
+            "precision": 0.975768198435837,
+            "recall": 0.9971271332218078,
+            "f1": 0.9863320479123848,
+            "predicted": 518616,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.676159479251424,
+            "recall": 0.2410092807424594,
+            "f1": 0.3553559974342527,
+            "predicted": 1229,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.819838056680162,
+            "recall": 0.3101071975497703,
+            "f1": 0.45,
+            "predicted": 988,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.6965572457966374,
+            "recall": 0.37646040675032455,
+            "f1": 0.4887640449438202,
+            "predicted": 1249,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5404040404040404,
+            "recall": 0.23043790380473797,
+            "f1": 0.32310015098137895,
+            "predicted": 594,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.4790528233151184,
+            "recall": 0.1972993248312078,
+            "f1": 0.27948990435706694,
+            "predicted": 549,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.6374650512581547,
+            "recall": 0.3034605146406389,
+            "f1": 0.41118124436429215,
+            "predicted": 1073,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7681564245810056,
+            "recall": 0.3314584170349538,
+            "f1": 0.46309289924221164,
+            "predicted": 1074,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.6685606060606061,
+            "recall": 0.3165919282511211,
+            "f1": 0.4297017650639075,
+            "predicted": 528,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.4305555555555556,
+            "recall": 0.19112207151664612,
+            "f1": 0.26473099914602904,
+            "predicted": 360,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5882352941176471,
+            "recall": 0.21212121212121213,
+            "f1": 0.311804008908686,
+            "predicted": 238,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.632768361581921,
+            "recall": 0.24374319912948858,
+            "f1": 0.3519245875883739,
+            "predicted": 354,
+            "support": 919
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.4418684738200338,
+        "per_class": {
+          "legit": {
+            "precision": 0.9759201143428086,
+            "recall": 0.9969458549340207,
+            "f1": 0.9863209441414185,
+            "predicted": 518441,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.7117750439367311,
+            "recall": 0.23491879350348027,
+            "f1": 0.3532490187527257,
+            "predicted": 1138,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8230535894843276,
+            "recall": 0.3116385911179173,
+            "f1": 0.4520966398222716,
+            "predicted": 989,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.6984962406015037,
+            "recall": 0.40199048031155343,
+            "f1": 0.5102993683054106,
+            "predicted": 1330,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5856643356643356,
+            "recall": 0.2404881550610194,
+            "f1": 0.34096692111959287,
+            "predicted": 572,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.5186440677966102,
+            "recall": 0.22955738934733683,
+            "f1": 0.31825273010920435,
+            "predicted": 590,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.6566440349175557,
+            "recall": 0.3003549245785271,
+            "f1": 0.4121765601217656,
+            "predicted": 1031,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7310996563573883,
+            "recall": 0.34190437926878264,
+            "f1": 0.4659184232137969,
+            "predicted": 1164,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.6842105263157895,
+            "recall": 0.34977578475336324,
+            "f1": 0.4629080118694362,
+            "predicted": 570,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.45169082125603865,
+            "recall": 0.23057953144266338,
+            "f1": 0.3053061224489796,
+            "predicted": 414,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5945945945945946,
+            "recall": 0.23333333333333334,
+            "f1": 0.33514689880304677,
+            "predicted": 259,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.6468926553672316,
+            "recall": 0.24918389553862894,
+            "f1": 0.35978004713275724,
+            "predicted": 354,
+            "support": 919
+          }
+        }
+      }
+    },
+    "September": {
+      "base": {
+        "macro_f1": 0.4208877185158127,
+        "per_class": {
+          "legit": {
+            "precision": 0.9757762107413905,
+            "recall": 0.997256454353954,
+            "f1": 0.9863994057289182,
+            "predicted": 502151,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.6609538002980626,
+            "recall": 0.26343926343926344,
+            "f1": 0.3767254194096411,
+            "predicted": 1342,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8373205741626795,
+            "recall": 0.3290710793531403,
+            "f1": 0.4724622030237581,
+            "predicted": 1045,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.754,
+            "recall": 0.34555453712190654,
+            "f1": 0.4739157762413576,
+            "predicted": 1000,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.47609942638623326,
+            "recall": 0.19652722967640096,
+            "f1": 0.2782122905027933,
+            "predicted": 523,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.4853195164075993,
+            "recall": 0.21953125,
+            "f1": 0.3023130715438408,
+            "predicted": 579,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.5922330097087378,
+            "recall": 0.2821461609620722,
+            "f1": 0.38220551378446116,
+            "predicted": 1030,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7661290322580645,
+            "recall": 0.3231292517006803,
+            "f1": 0.45454545454545453,
+            "predicted": 992,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.665314401622718,
+            "recall": 0.30511627906976746,
+            "f1": 0.41836734693877553,
+            "predicted": 493,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5219941348973607,
+            "recall": 0.21419975932611313,
+            "f1": 0.3037542662116041,
+            "predicted": 341,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.5166666666666667,
+            "recall": 0.19224806201550387,
+            "f1": 0.280225988700565,
+            "predicted": 240,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.6807692307692308,
+            "recall": 0.21046373365041618,
+            "f1": 0.3215258855585831,
+            "predicted": 260,
+            "support": 841
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.45008421178204644,
+        "per_class": {
+          "legit": {
+            "precision": 0.9760102318094525,
+            "recall": 0.9971241617226536,
+            "f1": 0.9864542297938486,
+            "predicted": 501964,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.725311203319502,
+            "recall": 0.2595782595782596,
+            "f1": 0.38232720909886264,
+            "predicted": 1205,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8359447004608295,
+            "recall": 0.34110567882662657,
+            "f1": 0.484508547008547,
+            "predicted": 1085,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.7517857142857143,
+            "recall": 0.38588450962419796,
+            "f1": 0.5099939430648092,
+            "predicted": 1120,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.5769980506822612,
+            "recall": 0.23362273086029992,
+            "f1": 0.3325842696629214,
+            "predicted": 513,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.5393835616438356,
+            "recall": 0.24609375,
+            "f1": 0.33798283261802575,
+            "predicted": 584,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.6343434343434343,
+            "recall": 0.2904717853839038,
+            "f1": 0.39847715736040606,
+            "predicted": 990,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7417218543046358,
+            "recall": 0.3333333333333333,
+            "f1": 0.459958932238193,
+            "predicted": 1057,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.697391304347826,
+            "recall": 0.3730232558139535,
+            "f1": 0.4860606060606061,
+            "predicted": 575,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5320197044334976,
+            "recall": 0.259927797833935,
+            "f1": 0.349232012934519,
+            "predicted": 406,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.6234817813765182,
+            "recall": 0.23875968992248062,
+            "f1": 0.3452914798206278,
+            "predicted": 247,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.716,
+            "recall": 0.21284185493460167,
+            "f1": 0.3281393217231897,
+            "predicted": 250,
+            "support": 841
+          }
+        }
+      }
+    },
+    "paired_day_delta": {
+      "mean": 0.029155536885381566,
+      "interval_95": [
+        0.02411631976319384,
+        0.034159441345517516
+      ],
+      "positive_fraction": 1.0
+    },
+    "September_halves": [
+      {
+        "base": 0.41397274619483776,
+        "combined": 0.44348570767211787
+      },
+      {
+        "base": 0.4245133716838078,
+        "combined": 0.4533874764470198
+      }
+    ],
+    "changes": {
+      "corrected": 476,
+      "broken": 168
+    }
+  },
+  "topology_and_bootstrap": {
+    "revealed_label_topology_diagnostic": [
+      {
+        "label": "mule_account",
+        "month": 8,
+        "seed": 137,
+        "revealed_true_seeds": 368,
+        "hidden_neighbours": 209,
+        "correct": 172,
+        "wrong": 37,
+        "precision": 0.8229665071770335,
+        "hidden_class_recall": 0.11147116007777058
+      },
+      {
+        "label": "mule_account",
+        "month": 8,
+        "seed": 281,
+        "revealed_true_seeds": 372,
+        "hidden_neighbours": 191,
+        "correct": 153,
+        "wrong": 38,
+        "precision": 0.8010471204188482,
+        "hidden_class_recall": 0.09941520467836257
+      },
+      {
+        "label": "mule_account",
+        "month": 8,
+        "seed": 419,
+        "revealed_true_seeds": 349,
+        "hidden_neighbours": 195,
+        "correct": 159,
+        "wrong": 36,
+        "precision": 0.8153846153846154,
+        "hidden_class_recall": 0.10179257362355953
+      },
+      {
+        "label": "mule_account",
+        "month": 9,
+        "seed": 137,
+        "revealed_true_seeds": 393,
+        "hidden_neighbours": 207,
+        "correct": 181,
+        "wrong": 26,
+        "precision": 0.8743961352657005,
+        "hidden_class_recall": 0.12262872628726287
+      },
+      {
+        "label": "mule_account",
+        "month": 9,
+        "seed": 281,
+        "revealed_true_seeds": 361,
+        "hidden_neighbours": 211,
+        "correct": 178,
+        "wrong": 33,
+        "precision": 0.8436018957345972,
+        "hidden_class_recall": 0.11803713527851459
+      },
+      {
+        "label": "mule_account",
+        "month": 9,
+        "seed": 419,
+        "revealed_true_seeds": 379,
+        "hidden_neighbours": 207,
+        "correct": 178,
+        "wrong": 29,
+        "precision": 0.8599033816425121,
+        "hidden_class_recall": 0.11946308724832215
+      },
+      {
+        "label": "velocity_bot",
+        "month": 8,
+        "seed": 137,
+        "revealed_true_seeds": 562,
+        "hidden_neighbours": 763,
+        "correct": 635,
+        "wrong": 128,
+        "precision": 0.8322411533420708,
+        "hidden_class_recall": 0.3097560975609756
+      },
+      {
+        "label": "velocity_bot",
+        "month": 8,
+        "seed": 281,
+        "revealed_true_seeds": 504,
+        "hidden_neighbours": 738,
+        "correct": 615,
+        "wrong": 123,
+        "precision": 0.8333333333333334,
+        "hidden_class_recall": 0.29174573055028463
+      },
+      {
+        "label": "velocity_bot",
+        "month": 8,
+        "seed": 419,
+        "revealed_true_seeds": 536,
+        "hidden_neighbours": 768,
+        "correct": 640,
+        "wrong": 128,
+        "precision": 0.8333333333333334,
+        "hidden_class_recall": 0.30828516377649323
+      },
+      {
+        "label": "velocity_bot",
+        "month": 9,
+        "seed": 137,
+        "revealed_true_seeds": 548,
+        "hidden_neighbours": 828,
+        "correct": 703,
+        "wrong": 125,
+        "precision": 0.8490338164251208,
+        "hidden_class_recall": 0.3330175272382757
+      },
+      {
+        "label": "velocity_bot",
+        "month": 9,
+        "seed": 281,
+        "revealed_true_seeds": 543,
+        "hidden_neighbours": 850,
+        "correct": 719,
+        "wrong": 131,
+        "precision": 0.8458823529411764,
+        "hidden_class_recall": 0.3397920604914934
+      },
+      {
+        "label": "velocity_bot",
+        "month": 9,
+        "seed": 419,
+        "revealed_true_seeds": 482,
+        "hidden_neighbours": 859,
+        "correct": 728,
+        "wrong": 131,
+        "precision": 0.8474970896391153,
+        "hidden_class_recall": 0.33440514469453375
+      }
+    ],
+    "paired_day_bootstrap": {
+      "interactions_minus_base": {
+        "mean": -0.027765962835672914,
+        "interval_95": [
+          -0.0345452767611232,
+          -0.02106644079529994
+        ],
+        "positive_fraction": 0.0
+      },
+      "history_interactions_minus_base": {
+        "mean": -0.08117501468593002,
+        "interval_95": [
+          -0.08959866454669943,
+          -0.0727953095787646
+        ],
+        "positive_fraction": 0.0
+      },
+      "history_interactions_minus_interactions": {
+        "mean": -0.0534090518502571,
+        "interval_95": [
+          -0.06039506749618941,
+          -0.0454530964391862
+        ],
+        "positive_fraction": 0.0
+      }
+    },
+    "september_halves": {
+      "base": [
+        0.40874645654284364,
+        0.41820547549433845
+      ],
+      "interactions": [
+        0.37722347878265494,
+        0.3933094451547836
+      ],
+      "history_interactions": [
+        0.33085870078670715,
+        0.3342748342903981
+      ]
+    }
+  },
+  "bounded_august": {
+    "protocol": {
+      "seed": 137,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "Supplied train transactions strictly before 2026-09-01; no later transaction context",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.3796743864830375,
+        "f1": {
+          "legit": 0.9844454322836242,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.31960461285008235,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4103612815269257,
+          "fake_cashback": 0.3118942731277533,
+          "loan_app_extortion": 0.3547257876312719,
+          "merchant_collusion": 0.291220556745182
+        },
+        "predicted": {
+          "legit": 518301,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 724,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 352,
+          "fake_cashback": 324,
+          "loan_app_extortion": 197,
+          "merchant_collusion": 482
+        }
+      }
+    },
+    "experiments": {
+      "8_base": {
+        "raw": {
+          "macro_f1": 0.4150254487873308,
+          "f1": {
+            "legit": 0.9863419802959887,
+            "mule_account": 0.3373966042664345,
+            "velocity_bot": 0.4348317783432287,
+            "layering_chain": 0.4757760371337395,
+            "sim_swap": 0.3125638406537283,
+            "account_takeover": 0.2718767198679141,
+            "phishing_collect": 0.3835103060587133,
+            "qr_swap": 0.45413105413105415,
+            "refund_abuse": 0.4573934837092732,
+            "fake_cashback": 0.2752457551385165,
+            "loan_app_extortion": 0.2641509433962264,
+            "merchant_collusion": 0.3270868824531516
+          },
+          "predicted": {
+            "legit": 519289,
+            "mule_account": 1146,
+            "velocity_bot": 925,
+            "layering_chain": 1136,
+            "sim_swap": 565,
+            "account_takeover": 484,
+            "phishing_collect": 948,
+            "qr_swap": 1021,
+            "refund_abuse": 481,
+            "fake_cashback": 308,
+            "loan_app_extortion": 294,
+            "merchant_collusion": 255
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.42107755634536764,
+          "f1": {
+            "legit": 0.9864455762262169,
+            "mule_account": 0.3558491370125719,
+            "velocity_bot": 0.4361283061339336,
+            "layering_chain": 0.4894346087949743,
+            "sim_swap": 0.3177004538577912,
+            "account_takeover": 0.2752594210813763,
+            "phishing_collect": 0.39706780696395844,
+            "qr_swap": 0.4659377628259041,
+            "refund_abuse": 0.4596426370918053,
+            "fake_cashback": 0.2685025817555938,
+            "loan_app_extortion": 0.26456071076011844,
+            "merchant_collusion": 0.3364016736401674
+          },
+          "predicted": {
+            "legit": 518800,
+            "mule_account": 1245,
+            "velocity_bot": 942,
+            "layering_chain": 1191,
+            "sim_swap": 590,
+            "account_takeover": 498,
+            "phishing_collect": 1020,
+            "qr_swap": 1078,
+            "refund_abuse": 508,
+            "fake_cashback": 351,
+            "loan_app_extortion": 353,
+            "merchant_collusion": 276
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4247249395416428,
+          "f1": {
+            "legit": 0.986482246866091,
+            "mule_account": 0.35620563562056357,
+            "velocity_bot": 0.4393258426966292,
+            "layering_chain": 0.5009752020061299,
+            "sim_swap": 0.3179746835443038,
+            "account_takeover": 0.2762008733624454,
+            "phishing_collect": 0.41248874211948366,
+            "qr_swap": 0.4700713893465129,
+            "refund_abuse": 0.4604938271604938,
+            "fake_cashback": 0.26666666666666666,
+            "loan_app_extortion": 0.2717149220489978,
+            "merchant_collusion": 0.3380992430613961
+          },
+          "predicted": {
+            "legit": 518847,
+            "mule_account": 1201,
+            "velocity_bot": 948,
+            "layering_chain": 1278,
+            "sim_swap": 582,
+            "account_takeover": 499,
+            "phishing_collect": 1077,
+            "qr_swap": 1153,
+            "refund_abuse": 505,
+            "fake_cashback": 254,
+            "loan_app_extortion": 238,
+            "merchant_collusion": 270
+          }
+        },
+        "shared_weights": [
+          1.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "joint_weights": [
+          1.0,
+          3.0,
+          3.0,
+          6.951319283893326,
+          2.89091169431116,
+          3.0,
+          2.89091169431116,
+          5.1886745726331025,
+          3.0,
+          1.2022711204863819,
+          0.5,
+          3.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1760,
+          "mule_account": 182,
+          "velocity_bot": 2,
+          "layering_chain": 444,
+          "sim_swap": 88,
+          "account_takeover": 60,
+          "phishing_collect": 238,
+          "qr_swap": 266,
+          "refund_abuse": 91,
+          "fake_cashback": 10,
+          "loan_app_extortion": 3,
+          "merchant_collusion": 22
+        }
+      }
+    }
+  },
+  "bounded_september": {
+    "protocol": {
+      "seed": 137,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "Supplied train transactions strictly before 2026-10-01; no later transaction context",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.38070993150572624,
+        "f1": {
+          "legit": 0.9844520591346224,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.3201581027667984,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4151967435549525,
+          "fake_cashback": 0.3148636763412489,
+          "loan_app_extortion": 0.35555555555555557,
+          "merchant_collusion": 0.29445234708392604
+        },
+        "predicted": {
+          "legit": 518288,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 725,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 359,
+          "fake_cashback": 326,
+          "loan_app_extortion": 195,
+          "merchant_collusion": 487
+        }
+      },
+      "9": {
+        "macro_f1": 0.3909842621374598,
+        "f1": {
+          "legit": 0.9844508449314185,
+          "mule_account": 0.3065184216263353,
+          "velocity_bot": 0.48388829215896884,
+          "layering_chain": 0.3343915343915344,
+          "sim_swap": 0.2659010600706714,
+          "account_takeover": 0.25758241758241757,
+          "phishing_collect": 0.300944669365722,
+          "qr_swap": 0.3218517497933315,
+          "refund_abuse": 0.4282772820864791,
+          "fake_cashback": 0.3302286198137172,
+          "loan_app_extortion": 0.36231884057971014,
+          "merchant_collusion": 0.31545741324921134
+        },
+        "predicted": {
+          "legit": 501645,
+          "mule_account": 1220,
+          "velocity_bot": 1065,
+          "layering_chain": 653,
+          "sim_swap": 997,
+          "account_takeover": 995,
+          "phishing_collect": 802,
+          "qr_swap": 1277,
+          "refund_abuse": 382,
+          "fake_cashback": 350,
+          "loan_app_extortion": 183,
+          "merchant_collusion": 427
+        }
+      }
+    },
+    "experiments": {
+      "9_base": {
+        "raw": {
+          "macro_f1": 0.41636648861737946,
+          "f1": {
+            "legit": 0.9864690974468457,
+            "mule_account": 0.34986945169712796,
+            "velocity_bot": 0.46610856062651906,
+            "layering_chain": 0.4626582278481013,
+            "sim_swap": 0.2777777777777778,
+            "account_takeover": 0.27149321266968324,
+            "phishing_collect": 0.38400528750826174,
+            "qr_swap": 0.45006165228113443,
+            "refund_abuse": 0.4268214055448098,
+            "fake_cashback": 0.3028720626631854,
+            "loan_app_extortion": 0.3045356371490281,
+            "merchant_collusion": 0.3137254901960784
+          },
+          "predicted": {
+            "legit": 502612,
+            "mule_account": 1229,
+            "velocity_bot": 1044,
+            "layering_chain": 978,
+            "sim_swap": 533,
+            "account_takeover": 488,
+            "phishing_collect": 864,
+            "qr_swap": 892,
+            "refund_abuse": 476,
+            "fake_cashback": 318,
+            "loan_app_extortion": 281,
+            "merchant_collusion": 281
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.421432465413118,
+          "f1": {
+            "legit": 0.9864927703106663,
+            "mule_account": 0.3594925822403784,
+            "velocity_bot": 0.4703982777179763,
+            "layering_chain": 0.47348721147847783,
+            "sim_swap": 0.28193832599118945,
+            "account_takeover": 0.2766313441160067,
+            "phishing_collect": 0.40281329923273657,
+            "qr_swap": 0.4541033434650456,
+            "refund_abuse": 0.4268675455116133,
+            "fake_cashback": 0.31072961373390556,
+            "loan_app_extortion": 0.2985386221294363,
+            "merchant_collusion": 0.31569664902998235
+          },
+          "predicted": {
+            "legit": 502207,
+            "mule_account": 1284,
+            "velocity_bot": 1057,
+            "layering_chain": 1024,
+            "sim_swap": 549,
+            "account_takeover": 513,
+            "phishing_collect": 966,
+            "qr_swap": 938,
+            "refund_abuse": 518,
+            "fake_cashback": 334,
+            "loan_app_extortion": 313,
+            "merchant_collusion": 293
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4234799538803282,
+          "f1": {
+            "legit": 0.9865030798341318,
+            "mule_account": 0.36180904522613067,
+            "velocity_bot": 0.4708097928436911,
+            "layering_chain": 0.4975903614457831,
+            "sim_swap": 0.2828729281767956,
+            "account_takeover": 0.2753623188405797,
+            "phishing_collect": 0.4148567831287378,
+            "qr_swap": 0.45623501199040767,
+            "refund_abuse": 0.42397476340694007,
+            "fake_cashback": 0.2962962962962963,
+            "loan_app_extortion": 0.30068337129840544,
+            "merchant_collusion": 0.3147656940760389
+          },
+          "predicted": {
+            "legit": 502225,
+            "mule_account": 1210,
+            "velocity_bot": 1058,
+            "layering_chain": 1138,
+            "sim_swap": 543,
+            "account_takeover": 514,
+            "phishing_collect": 1015,
+            "qr_swap": 984,
+            "refund_abuse": 510,
+            "fake_cashback": 276,
+            "loan_app_extortion": 233,
+            "merchant_collusion": 290
+          }
+        },
+        "shared_weights": [
+          1.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0,
+          3.0
+        ],
+        "joint_weights": [
+          1.0,
+          3.0,
+          3.0,
+          6.951319283893326,
+          2.89091169431116,
+          3.0,
+          2.89091169431116,
+          5.1886745726331025,
+          3.0,
+          1.2022711204863819,
+          0.5,
+          3.0
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1708,
+          "mule_account": 167,
+          "velocity_bot": 2,
+          "layering_chain": 395,
+          "sim_swap": 75,
+          "account_takeover": 65,
+          "phishing_collect": 245,
+          "qr_swap": 228,
+          "refund_abuse": 68,
+          "fake_cashback": 22,
+          "loan_app_extortion": 8,
+          "merchant_collusion": 10
+        }
+      }
+    }
+  },
+  "bounded_combination": {
+    "family": "base",
+    "thresholds": {
+      "legit": null,
+      "mule_account": 0.05,
+      "velocity_bot": 0.0,
+      "layering_chain": 0.0,
+      "sim_swap": 0.02,
+      "account_takeover": 0.02,
+      "phishing_collect": 0.02,
+      "qr_swap": 0.05,
+      "refund_abuse": 0.0,
+      "fake_cashback": 0.0,
+      "loan_app_extortion": 0.0,
+      "merchant_collusion": 0.1
+    },
+    "August": {
+      "base": {
+        "macro_f1": 0.4247249395416428,
+        "per_class": {
+          "legit": {
+            "precision": 0.9757018928508789,
+            "recall": 0.9975034827105833,
+            "f1": 0.986482246866091,
+            "predicted": 518847,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.6894254787676936,
+            "recall": 0.24013921113689096,
+            "f1": 0.35620563562056357,
+            "predicted": 1201,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8248945147679325,
+            "recall": 0.2993874425727412,
+            "f1": 0.4393258426966292,
+            "predicted": 948,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.7034428794992176,
+            "recall": 0.38900908697533537,
+            "f1": 0.5009752020061299,
+            "predicted": 1278,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5395189003436426,
+            "recall": 0.22541277817659727,
+            "f1": 0.3179746835443038,
+            "predicted": 582,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.5070140280561122,
+            "recall": 0.18979744936234058,
+            "f1": 0.2762008733624454,
+            "predicted": 499,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.637883008356546,
+            "recall": 0.30479148181011534,
+            "f1": 0.41248874211948366,
+            "predicted": 1077,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7424111014744146,
+            "recall": 0.34391321815990356,
+            "f1": 0.4700713893465129,
+            "predicted": 1153,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.7386138613861386,
+            "recall": 0.3345291479820628,
+            "f1": 0.4604938271604938,
+            "predicted": 505,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.5590551181102362,
+            "recall": 0.17509247842170161,
+            "f1": 0.26666666666666666,
+            "predicted": 254,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5126050420168067,
+            "recall": 0.18484848484848485,
+            "f1": 0.2717149220489978,
+            "predicted": 238,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.7444444444444445,
+            "recall": 0.21871599564744287,
+            "f1": 0.3380992430613961,
+            "predicted": 270,
+            "support": 919
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.44235966821917744,
+        "per_class": {
+          "legit": {
+            "precision": 0.9759095615555629,
+            "recall": 0.9972965890125653,
+            "f1": 0.986487171291135,
+            "predicted": 518629,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.6966199505358615,
+            "recall": 0.24506960556844548,
+            "f1": 0.3625831366659515,
+            "predicted": 1213,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8391752577319588,
+            "recall": 0.3116385911179173,
+            "f1": 0.45449469570072587,
+            "predicted": 970,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.7058823529411765,
+            "recall": 0.39463435742102987,
+            "f1": 0.5062447960033306,
+            "predicted": 1292,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5724258289703316,
+            "recall": 0.23546302943287867,
+            "f1": 0.3336724313326551,
+            "predicted": 573,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.5373406193078324,
+            "recall": 0.2213053263315829,
+            "f1": 0.3134962805526036,
+            "predicted": 549,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.6557539682539683,
+            "recall": 0.2932564330079858,
+            "f1": 0.4052728387492336,
+            "predicted": 1008,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.745777027027027,
+            "recall": 0.35476094817195664,
+            "f1": 0.4808058807514293,
+            "predicted": 1184,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.7461538461538462,
+            "recall": 0.34798206278026905,
+            "f1": 0.4746177370030581,
+            "predicted": 520,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.511049723756906,
+            "recall": 0.2281134401972873,
+            "f1": 0.3154305200341006,
+            "predicted": 362,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.5480427046263345,
+            "recall": 0.23333333333333334,
+            "f1": 0.3273113708820404,
+            "predicted": 281,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.7638376383763837,
+            "recall": 0.2252448313384113,
+            "f1": 0.34789915966386553,
+            "predicted": 271,
+            "support": 919
+          }
+        }
+      }
+    },
+    "September": {
+      "base": {
+        "macro_f1": 0.4234799538803282,
+        "per_class": {
+          "legit": {
+            "precision": 0.9758076559311065,
+            "recall": 0.9974355582240223,
+            "f1": 0.9865030798341318,
+            "predicted": 502225,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.684297520661157,
+            "recall": 0.24591624591624592,
+            "f1": 0.36180904522613067,
+            "predicted": 1210,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8270321361058601,
+            "recall": 0.3290710793531403,
+            "f1": 0.4708097928436911,
+            "predicted": 1058,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.7258347978910369,
+            "recall": 0.3785517873510541,
+            "f1": 0.4975903614457831,
+            "predicted": 1138,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.4714548802946593,
+            "recall": 0.20205209155485399,
+            "f1": 0.2828729281767956,
+            "predicted": 543,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.4805447470817121,
+            "recall": 0.19296875,
+            "f1": 0.2753623188405797,
+            "predicted": 514,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.6492610837438424,
+            "recall": 0.30481036077705825,
+            "f1": 0.4148567831287378,
+            "predicted": 1015,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7733739837398373,
+            "recall": 0.32355442176870747,
+            "f1": 0.45623501199040767,
+            "predicted": 984,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.6588235294117647,
+            "recall": 0.3125581395348837,
+            "f1": 0.42397476340694007,
+            "predicted": 510,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5942028985507246,
+            "recall": 0.197352587244284,
+            "f1": 0.2962962962962963,
+            "predicted": 276,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.5665236051502146,
+            "recall": 0.20465116279069767,
+            "f1": 0.30068337129840544,
+            "predicted": 233,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.6137931034482759,
+            "recall": 0.2116527942925089,
+            "f1": 0.3147656940760389,
+            "predicted": 290,
+            "support": 841
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.44895399360673743,
+        "per_class": {
+          "legit": {
+            "precision": 0.9759842723575131,
+            "recall": 0.9972605248964556,
+            "f1": 0.9865076944294284,
+            "predicted": 502046,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.7102177554438861,
+            "recall": 0.2518562518562519,
+            "f1": 0.37184827888620914,
+            "predicted": 1194,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8359592215013901,
+            "recall": 0.3392252726588943,
+            "f1": 0.4826110219368646,
+            "predicted": 1079,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.7398444252376837,
+            "recall": 0.3923006416131989,
+            "f1": 0.5127283617849656,
+            "predicted": 1157,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.5730337078651685,
+            "recall": 0.24151539068666142,
+            "f1": 0.339811215991116,
+            "predicted": 534,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.5529622980251346,
+            "recall": 0.240625,
+            "f1": 0.33532934131736525,
+            "predicted": 557,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.6684434968017058,
+            "recall": 0.290009250693802,
+            "f1": 0.4045161290322581,
+            "predicted": 938,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7509727626459144,
+            "recall": 0.3282312925170068,
+            "f1": 0.45680473372781066,
+            "predicted": 1028,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.6822262118491921,
+            "recall": 0.35348837209302325,
+            "f1": 0.46568627450980393,
+            "predicted": 557,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5440806045340051,
+            "recall": 0.259927797833935,
+            "f1": 0.3517915309446254,
+            "predicted": 397,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.6638655462184874,
+            "recall": 0.24496124031007752,
+            "f1": 0.3578708946772367,
+            "predicted": 238,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.6605166051660517,
+            "recall": 0.21284185493460167,
+            "f1": 0.32194244604316546,
+            "predicted": 271,
+            "support": 841
+          }
+        }
+      }
+    },
+    "paired_day_delta": {
+      "mean": 0.02543393636199135,
+      "interval_95": [
+        0.021060057643821246,
+        0.029992258109988325
+      ],
+      "positive_fraction": 1.0
+    },
+    "September_halves": [
+      {
+        "base": 0.4166578226308757,
+        "combined": 0.4437746006801094
+      },
+      {
+        "base": 0.42710309162085913,
+        "combined": 0.4512508910984536
+      }
+    ],
+    "changes": {
+      "corrected": 413,
+      "broken": 209
+    }
+  },
+  "seed281_august": {
+    "protocol": {
+      "seed": 281,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "Supplied train transactions strictly before 2026-09-01; no later transaction context",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.3796743864830375,
+        "f1": {
+          "legit": 0.9844454322836242,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.31960461285008235,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4103612815269257,
+          "fake_cashback": 0.3118942731277533,
+          "loan_app_extortion": 0.3547257876312719,
+          "merchant_collusion": 0.291220556745182
+        },
+        "predicted": {
+          "legit": 518301,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 724,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 352,
+          "fake_cashback": 324,
+          "loan_app_extortion": 197,
+          "merchant_collusion": 482
+        }
+      }
+    },
+    "experiments": {
+      "8_base": {
+        "raw": {
+          "macro_f1": 0.4156211056101959,
+          "f1": {
+            "legit": 0.986377603443826,
+            "mule_account": 0.35493562231759657,
+            "velocity_bot": 0.44506883956167465,
+            "layering_chain": 0.465467208357516,
+            "sim_swap": 0.3125,
+            "account_takeover": 0.2599672310212998,
+            "phishing_collect": 0.39276807980049877,
+            "qr_swap": 0.45506912442396313,
+            "refund_abuse": 0.4220532319391635,
+            "fake_cashback": 0.29764065335753176,
+            "loan_app_extortion": 0.2695187165775401,
+            "merchant_collusion": 0.32608695652173914
+          },
+          "predicted": {
+            "legit": 519258,
+            "mule_account": 1212,
+            "velocity_bot": 947,
+            "layering_chain": 1135,
+            "sim_swap": 559,
+            "account_takeover": 498,
+            "phishing_collect": 954,
+            "qr_swap": 983,
+            "refund_abuse": 463,
+            "fake_cashback": 291,
+            "loan_app_extortion": 275,
+            "merchant_collusion": 277
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.4228018815538919,
+          "f1": {
+            "legit": 0.9864014126782414,
+            "mule_account": 0.36697635135135137,
+            "velocity_bot": 0.44798657718120805,
+            "layering_chain": 0.4778761061946903,
+            "sim_swap": 0.3159493670886076,
+            "account_takeover": 0.26394849785407726,
+            "phishing_collect": 0.4061681699156241,
+            "qr_swap": 0.45736871823828346,
+            "refund_abuse": 0.44850700792199877,
+            "fake_cashback": 0.29848078641644327,
+            "loan_app_extortion": 0.2786885245901639,
+            "merchant_collusion": 0.32527105921601335
+          },
+          "predicted": {
+            "legit": 518629,
+            "mule_account": 1288,
+            "velocity_bot": 964,
+            "layering_chain": 1192,
+            "sim_swap": 582,
+            "account_takeover": 531,
+            "phishing_collect": 1183,
+            "qr_swap": 1053,
+            "refund_abuse": 526,
+            "fake_cashback": 308,
+            "loan_app_extortion": 316,
+            "merchant_collusion": 280
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4255722793379806,
+          "f1": {
+            "legit": 0.9863098086882273,
+            "mule_account": 0.363324764353042,
+            "velocity_bot": 0.4461839530332681,
+            "layering_chain": 0.4901141743247006,
+            "sim_swap": 0.3154158215010142,
+            "account_takeover": 0.2631578947368421,
+            "phishing_collect": 0.4114510244176256,
+            "qr_swap": 0.4609850581073603,
+            "refund_abuse": 0.4483811850946854,
+            "fake_cashback": 0.3053016453382084,
+            "loan_app_extortion": 0.28823529411764703,
+            "merchant_collusion": 0.3280067283431455
+          },
+          "predicted": {
+            "legit": 518410,
+            "mule_account": 1220,
+            "velocity_bot": 965,
+            "layering_chain": 1280,
+            "sim_swap": 579,
+            "account_takeover": 529,
+            "phishing_collect": 1309,
+            "qr_swap": 1125,
+            "refund_abuse": 522,
+            "fake_cashback": 283,
+            "loan_app_extortion": 360,
+            "merchant_collusion": 270
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          3.8729833462074175,
+          5.0,
+          9.312752054539772,
+          5.0,
+          5.0,
+          9.312752054539772,
+          9.312752054539772,
+          5.0,
+          3.8729833462074175,
+          9.312752054539772,
+          2.89091169431116
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1726,
+          "mule_account": 196,
+          "velocity_bot": 3,
+          "layering_chain": 435,
+          "sim_swap": 94,
+          "account_takeover": 58,
+          "phishing_collect": 260,
+          "qr_swap": 236,
+          "refund_abuse": 101,
+          "fake_cashback": 21,
+          "loan_app_extortion": 5,
+          "merchant_collusion": 20
+        }
+      }
+    }
+  },
+  "seed281_september": {
+    "protocol": {
+      "seed": 281,
+      "negative_sample_fraction": 0.2,
+      "negative_weight": 5,
+      "trees": 200,
+      "leaves": 31,
+      "learning_rate": 0.05,
+      "label_free_context": "Supplied train transactions strictly before 2026-10-01; no later transaction context",
+      "history": "strictly before min(target day - 7 days, fold training cutoff)",
+      "decision_tuning": "August only; frozen for September; full validation populations"
+    },
+    "rules": {
+      "8": {
+        "macro_f1": 0.38070993150572624,
+        "f1": {
+          "legit": 0.9844520591346224,
+          "mule_account": 0.29499151103565363,
+          "velocity_bot": 0.4538848518725545,
+          "layering_chain": 0.3201581027667984,
+          "sim_swap": 0.24522939504669103,
+          "account_takeover": 0.24260608658379768,
+          "phishing_collect": 0.31669865642994244,
+          "qr_swap": 0.33043019266297174,
+          "refund_abuse": 0.4151967435549525,
+          "fake_cashback": 0.3148636763412489,
+          "loan_app_extortion": 0.35555555555555557,
+          "merchant_collusion": 0.29445234708392604
+        },
+        "predicted": {
+          "legit": 518288,
+          "mule_account": 1264,
+          "velocity_bot": 966,
+          "layering_chain": 725,
+          "sim_swap": 1070,
+          "account_takeover": 1000,
+          "phishing_collect": 872,
+          "qr_swap": 1300,
+          "refund_abuse": 359,
+          "fake_cashback": 326,
+          "loan_app_extortion": 195,
+          "merchant_collusion": 487
+        }
+      },
+      "9": {
+        "macro_f1": 0.3909842621374598,
+        "f1": {
+          "legit": 0.9844508449314185,
+          "mule_account": 0.3065184216263353,
+          "velocity_bot": 0.48388829215896884,
+          "layering_chain": 0.3343915343915344,
+          "sim_swap": 0.2659010600706714,
+          "account_takeover": 0.25758241758241757,
+          "phishing_collect": 0.300944669365722,
+          "qr_swap": 0.3218517497933315,
+          "refund_abuse": 0.4282772820864791,
+          "fake_cashback": 0.3302286198137172,
+          "loan_app_extortion": 0.36231884057971014,
+          "merchant_collusion": 0.31545741324921134
+        },
+        "predicted": {
+          "legit": 501645,
+          "mule_account": 1220,
+          "velocity_bot": 1065,
+          "layering_chain": 653,
+          "sim_swap": 997,
+          "account_takeover": 995,
+          "phishing_collect": 802,
+          "qr_swap": 1277,
+          "refund_abuse": 382,
+          "fake_cashback": 350,
+          "loan_app_extortion": 183,
+          "merchant_collusion": 427
+        }
+      }
+    },
+    "experiments": {
+      "9_base": {
+        "raw": {
+          "macro_f1": 0.41630825491371254,
+          "f1": {
+            "legit": 0.9864189108968671,
+            "mule_account": 0.3574393707668779,
+            "velocity_bot": 0.4635654745899435,
+            "layering_chain": 0.46484131922837585,
+            "sim_swap": 0.2561117578579744,
+            "account_takeover": 0.2972536348949919,
+            "phishing_collect": 0.36007957559681697,
+            "qr_swap": 0.45914634146341465,
+            "refund_abuse": 0.4437460716530484,
+            "fake_cashback": 0.30127659574468085,
+            "loan_app_extortion": 0.30666666666666664,
+            "merchant_collusion": 0.2991533396048918
+          },
+          "predicted": {
+            "legit": 502547,
+            "mule_account": 1210,
+            "velocity_bot": 1060,
+            "layering_chain": 1032,
+            "sim_swap": 451,
+            "account_takeover": 577,
+            "phishing_collect": 854,
+            "qr_swap": 928,
+            "refund_abuse": 516,
+            "fake_cashback": 344,
+            "loan_app_extortion": 255,
+            "merchant_collusion": 222
+          }
+        },
+        "shared_august": {
+          "macro_f1": 0.4195038314627865,
+          "f1": {
+            "legit": 0.9863512393823677,
+            "mule_account": 0.3672852826931377,
+            "velocity_bot": 0.47396386822529224,
+            "layering_chain": 0.46558580605689814,
+            "sim_swap": 0.264756446991404,
+            "account_takeover": 0.2992545260915868,
+            "phishing_collect": 0.38397017707362535,
+            "qr_swap": 0.4637941352483543,
+            "refund_abuse": 0.4358502148557397,
+            "fake_cashback": 0.2915980230642504,
+            "loan_app_extortion": 0.3004201680672269,
+            "merchant_collusion": 0.30121608980355474
+          },
+          "predicted": {
+            "legit": 501942,
+            "mule_account": 1267,
+            "velocity_bot": 1105,
+            "layering_chain": 1087,
+            "sim_swap": 478,
+            "account_takeover": 598,
+            "phishing_collect": 1057,
+            "qr_swap": 990,
+            "refund_abuse": 554,
+            "fake_cashback": 383,
+            "loan_app_extortion": 307,
+            "merchant_collusion": 228
+          }
+        },
+        "joint_august": {
+          "macro_f1": 0.4182401873737234,
+          "f1": {
+            "legit": 0.9861047466636588,
+            "mule_account": 0.36773065150852646,
+            "velocity_bot": 0.4728723404255319,
+            "layering_chain": 0.4622399544029638,
+            "sim_swap": 0.26391279403327594,
+            "account_takeover": 0.2965333333333333,
+            "phishing_collect": 0.3890887290167866,
+            "qr_swap": 0.4614035087719298,
+            "refund_abuse": 0.4345679012345679,
+            "fake_cashback": 0.28815004262574595,
+            "loan_app_extortion": 0.2997002997002997,
+            "merchant_collusion": 0.2965779467680608
+          },
+          "predicted": {
+            "legit": 501594,
+            "mule_account": 1207,
+            "velocity_bot": 1101,
+            "layering_chain": 1327,
+            "sim_swap": 476,
+            "account_takeover": 595,
+            "phishing_collect": 1174,
+            "qr_swap": 1068,
+            "refund_abuse": 545,
+            "fake_cashback": 342,
+            "loan_app_extortion": 356,
+            "merchant_collusion": 211
+          }
+        },
+        "shared_weights": [
+          1.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0,
+          5.0
+        ],
+        "joint_weights": [
+          1.0,
+          3.8729833462074175,
+          5.0,
+          9.312752054539772,
+          5.0,
+          5.0,
+          9.312752054539772,
+          9.312752054539772,
+          5.0,
+          3.8729833462074175,
+          9.312752054539772,
+          2.89091169431116
+        ],
+        "new_correct_vs_rules": {
+          "legit": 1693,
+          "mule_account": 172,
+          "velocity_bot": 2,
+          "layering_chain": 376,
+          "sim_swap": 69,
+          "account_takeover": 74,
+          "phishing_collect": 240,
+          "qr_swap": 233,
+          "refund_abuse": 64,
+          "fake_cashback": 33,
+          "loan_app_extortion": 16,
+          "merchant_collusion": 1
+        }
+      }
+    }
+  },
+  "seed281_combination": {
+    "family": "base",
+    "thresholds": {
+      "legit": null,
+      "mule_account": 0.05,
+      "velocity_bot": 0.0,
+      "layering_chain": 0.0,
+      "sim_swap": 0.02,
+      "account_takeover": 0.02,
+      "phishing_collect": 0.02,
+      "qr_swap": 0.1,
+      "refund_abuse": 0.0,
+      "fake_cashback": 0.0,
+      "loan_app_extortion": 0.0,
+      "merchant_collusion": 0.1
+    },
+    "August": {
+      "base": {
+        "macro_f1": 0.4255722793379806,
+        "per_class": {
+          "legit": {
+            "precision": 0.975937964159642,
+            "recall": 0.996904476194417,
+            "f1": 0.9863098086882273,
+            "predicted": 518410,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.6950819672131148,
+            "recall": 0.2459396751740139,
+            "f1": 0.363324764353042,
+            "predicted": 1220,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8269430051813471,
+            "recall": 0.3055130168453293,
+            "f1": 0.4461839530332681,
+            "predicted": 965,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.6875,
+            "recall": 0.3807875378623972,
+            "f1": 0.4901141743247006,
+            "predicted": 1280,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5371329879101899,
+            "recall": 0.22325915290739412,
+            "f1": 0.3154158215010142,
+            "predicted": 579,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.46313799621928164,
+            "recall": 0.1837959489872468,
+            "f1": 0.2631578947368421,
+            "predicted": 529,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.5599694423223835,
+            "recall": 0.3251996450754215,
+            "f1": 0.4114510244176256,
+            "predicted": 1309,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7404444444444445,
+            "recall": 0.3346725592607473,
+            "f1": 0.4609850581073603,
+            "predicted": 1125,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.7030651340996169,
+            "recall": 0.3291479820627803,
+            "f1": 0.4483811850946854,
+            "predicted": 522,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.5901060070671378,
+            "recall": 0.2059186189889026,
+            "f1": 0.3053016453382084,
+            "predicted": 283,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.4083333333333333,
+            "recall": 0.22272727272727272,
+            "f1": 0.28823529411764703,
+            "predicted": 360,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.7222222222222222,
+            "recall": 0.21218715995647444,
+            "f1": 0.3280067283431455,
+            "predicted": 270,
+            "support": 919
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.4406649027487783,
+        "per_class": {
+          "legit": {
+            "precision": 0.976017903134013,
+            "recall": 0.9968611270386418,
+            "f1": 0.9863294120399434,
+            "predicted": 518345,
+            "support": 507507
+          },
+          "mule_account": {
+            "precision": 0.7129859387923904,
+            "recall": 0.25,
+            "f1": 0.3701954047670174,
+            "predicted": 1209,
+            "support": 3448
+          },
+          "velocity_bot": {
+            "precision": 0.8358974358974359,
+            "recall": 0.31202143950995403,
+            "f1": 0.4544187343183719,
+            "predicted": 975,
+            "support": 2612
+          },
+          "layering_chain": {
+            "precision": 0.7002305918524212,
+            "recall": 0.3942016443098226,
+            "f1": 0.5044296788482835,
+            "predicted": 1301,
+            "support": 2311
+          },
+          "sim_swap": {
+            "precision": 0.5806451612903226,
+            "recall": 0.2455132806891601,
+            "f1": 0.34510595358224017,
+            "predicted": 589,
+            "support": 1393
+          },
+          "account_takeover": {
+            "precision": 0.5202952029520295,
+            "recall": 0.2115528882220555,
+            "f1": 0.3008,
+            "predicted": 542,
+            "support": 1333
+          },
+          "phishing_collect": {
+            "precision": 0.5717761557177615,
+            "recall": 0.31277728482697426,
+            "f1": 0.4043590478921709,
+            "predicted": 1233,
+            "support": 2254
+          },
+          "qr_swap": {
+            "precision": 0.7435440783615316,
+            "recall": 0.33547609481719565,
+            "f1": 0.46234772978959027,
+            "predicted": 1123,
+            "support": 2489
+          },
+          "refund_abuse": {
+            "precision": 0.7282608695652174,
+            "recall": 0.36053811659192825,
+            "f1": 0.4823035392921416,
+            "predicted": 552,
+            "support": 1115
+          },
+          "fake_cashback": {
+            "precision": 0.5426997245179064,
+            "recall": 0.24290998766954378,
+            "f1": 0.33560477001703576,
+            "predicted": 363,
+            "support": 811
+          },
+          "loan_app_extortion": {
+            "precision": 0.43977591036414565,
+            "recall": 0.23787878787878788,
+            "f1": 0.3087512291052114,
+            "predicted": 357,
+            "support": 660
+          },
+          "merchant_collusion": {
+            "precision": 0.7490494296577946,
+            "recall": 0.21436343852013057,
+            "f1": 0.3333333333333333,
+            "predicted": 263,
+            "support": 919
+          }
+        }
+      }
+    },
+    "September": {
+      "base": {
+        "macro_f1": 0.4182401873737234,
+        "per_class": {
+          "legit": {
+            "precision": 0.976020446815552,
+            "recall": 0.9963996051573774,
+            "f1": 0.9861047466636588,
+            "predicted": 501594,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.6967688483844242,
+            "recall": 0.24977724977724977,
+            "f1": 0.36773065150852646,
+            "predicted": 1207,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8074477747502271,
+            "recall": 0.3343362166227905,
+            "f1": 0.4728723404255319,
+            "predicted": 1101,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.6111529766390355,
+            "recall": 0.37167736021998166,
+            "f1": 0.4622399544029638,
+            "predicted": 1327,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.4831932773109244,
+            "recall": 0.18153117600631413,
+            "f1": 0.26391279403327594,
+            "predicted": 476,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.4672268907563025,
+            "recall": 0.2171875,
+            "f1": 0.2965333333333333,
+            "predicted": 595,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.5528109028960818,
+            "recall": 0.3001850138760407,
+            "f1": 0.3890887290167866,
+            "predicted": 1174,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7387640449438202,
+            "recall": 0.3354591836734694,
+            "f1": 0.4614035087719298,
+            "predicted": 1068,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.6458715596330276,
+            "recall": 0.32744186046511625,
+            "f1": 0.4345679012345679,
+            "predicted": 545,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.49415204678362573,
+            "recall": 0.20336943441636582,
+            "f1": 0.28815004262574595,
+            "predicted": 342,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.42134831460674155,
+            "recall": 0.23255813953488372,
+            "f1": 0.2997002997002997,
+            "predicted": 356,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.7393364928909952,
+            "recall": 0.18549346016646848,
+            "f1": 0.2965779467680608,
+            "predicted": 211,
+            "support": 841
+          }
+        }
+      },
+      "combined": {
+        "macro_f1": 0.44243430378047627,
+        "per_class": {
+          "legit": {
+            "precision": 0.9761145163284269,
+            "recall": 0.9963446528336064,
+            "f1": 0.9861258413884029,
+            "predicted": 501518,
+            "support": 491335
+          },
+          "mule_account": {
+            "precision": 0.7058340180772391,
+            "recall": 0.2551232551232551,
+            "f1": 0.37478184991273994,
+            "predicted": 1217,
+            "support": 3367
+          },
+          "velocity_bot": {
+            "precision": 0.8246575342465754,
+            "recall": 0.3396013538924408,
+            "f1": 0.48108684070324986,
+            "predicted": 1095,
+            "support": 2659
+          },
+          "layering_chain": {
+            "precision": 0.6313813813813813,
+            "recall": 0.3854262144821265,
+            "f1": 0.4786568013659647,
+            "predicted": 1332,
+            "support": 2182
+          },
+          "sim_swap": {
+            "precision": 0.5719844357976653,
+            "recall": 0.23204419889502761,
+            "f1": 0.33015160022459294,
+            "predicted": 514,
+            "support": 1267
+          },
+          "account_takeover": {
+            "precision": 0.5384615384615384,
+            "recall": 0.240625,
+            "f1": 0.3326133909287257,
+            "predicted": 572,
+            "support": 1280
+          },
+          "phishing_collect": {
+            "precision": 0.5829514207149404,
+            "recall": 0.29417206290471787,
+            "f1": 0.3910236704580387,
+            "predicted": 1091,
+            "support": 2162
+          },
+          "qr_swap": {
+            "precision": 0.7429906542056075,
+            "recall": 0.3380102040816326,
+            "f1": 0.46464056107539453,
+            "predicted": 1070,
+            "support": 2352
+          },
+          "refund_abuse": {
+            "precision": 0.6527777777777778,
+            "recall": 0.3497674418604651,
+            "f1": 0.4554815263476681,
+            "predicted": 576,
+            "support": 1075
+          },
+          "fake_cashback": {
+            "precision": 0.5123595505617977,
+            "recall": 0.2743682310469314,
+            "f1": 0.3573667711598746,
+            "predicted": 445,
+            "support": 831
+          },
+          "loan_app_extortion": {
+            "precision": 0.4796511627906977,
+            "recall": 0.2558139534883721,
+            "f1": 0.33367037411526795,
+            "predicted": 344,
+            "support": 645
+          },
+          "merchant_collusion": {
+            "precision": 0.7747747747747747,
+            "recall": 0.20451843043995244,
+            "f1": 0.3236124176857949,
+            "predicted": 222,
+            "support": 841
+          }
+        }
+      }
+    },
+    "paired_day_delta": {
+      "mean": 0.024137042217072406,
+      "interval_95": [
+        0.018045141850612394,
+        0.029814448379224052
+      ],
+      "positive_fraction": 1.0
+    },
+    "September_halves": [
+      {
+        "base": 0.4151541448726878,
+        "combined": 0.43583893597729434
+      },
+      {
+        "base": 0.4188150433457411,
+        "combined": 0.44597474882146115
+      }
+    ],
+    "changes": {
+      "corrected": 383,
+      "broken": 147
+    }
+  },
+  "source_sha256": {
+    "scripts/eda/04_relational.py": "173bcc44f4505cfb3eba0d3891f9f0bb23feeda99fc0c74caa8ef67be49280e8",
+    "scripts/eda/07_baselines.py": "dbfdc0e59eeb99d22ba8792ccf2ce9cf9c8042fb854c382fc64ead54d3778e37",
+    "scripts/eda/common.py": "69d6367cd7b34e37fb27019a62070a94e631ce4fc494c5bf673c485df29fbe70",
+    "scripts/research/audit_evidence.py": "3b6f530485ba581bbd7c74e219d9536a7695c46e27922e0c7eefa44b56d7e5fb",
+    "scripts/research/identify_submission.py": "11f06f46ed611ae1f53cc6f5229c9e0f2375b506649f907864fe76844198a33e",
+    "scripts/research/prepare_bounded_context.py": "d76b29f99a72fe416064b7e65e399a8989a3bd957c3ab4a7a582f45c3bb99053",
+    "scripts/research/validate_candidates.py": "eb4ffa10e8601c9677f54710d4f5e6aa6acaf653ef7d40435b1fb06a137b4bc7",
+    "scripts/research/validate_rule_combination.py": "73475c4c5cb0be29137bef715b9421777c6cfbad3ab84e1eb2a1c69b4663d6da"
+  }
+}

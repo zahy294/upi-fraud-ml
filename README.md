@@ -2,6 +2,12 @@
 
 48-hour live round, 13 Nov 10:00 → 15 Nov 10:00 IST. Classify each October UPI transaction into 1 of 12 labels. Scored by macro-F1.
 
+## Experimental branch handoff
+
+Start with [the branch handoff](docs/BRANCH_HANDOFF.md) to review the new local pipeline, primary-source research, measured experiments and known bugs. The candidate improved September validation from **0.42348 to 0.44895**, but its reported public score was **0.4719**, below the team's **0.5034** submission. Treat this branch as experimental work to inspect and reuse selectively.
+
+The pipeline, tests and reproduction commands are documented in [RUN_LOCAL_PIPELINE.md](docs/RUN_LOCAL_PIPELINE.md). Aggregate results, configuration, hashes and the public-score outcome are captured in [RUN_SUMMARY.json](reports/implementation/RUN_SUMMARY.json). Raw data, models, credentials and prediction CSVs remain outside version control.
+
 ## Layout
 
 ```
