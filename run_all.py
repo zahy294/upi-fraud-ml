@@ -11,10 +11,11 @@ Steps (each is a script you can also run on its own):
   4. src/upi/features_v1.py, v2, v4        recipe, session and bait-timing features
   5. src/upi/run_oof.py  (tag s1)          first model without device bands; its test probabilities place the test bands
   6. src/upi/bands.py                      device-number bands -> features_v3
+     src/upi/features_v5.py                where forwarding chains come from (uses the bands)
   7. src/upi/run_oof.py  (tag oof_raw)     leave-one-month-out predictions on the raw labels
   8. src/upi/clean_labels.py               cleaned training labels
   9. src/upi/run_oof.py  (tag oof_clean)   final model on cleaned labels, with test predictions
- 10. src/upi/make_submission.py            class weights + band rule -> submission
+ 10. src/upi/make_submission.py            class weights + band rules -> submission
 """
 import argparse
 import subprocess
@@ -33,7 +34,7 @@ PY = [sys.executable, "-I"]
 P = ROOT / "data/processed"
 M = ROOT / "models"
 FEATS_NOBAND = "features_v1.parquet,features_v2.parquet,features_v4.parquet"
-FEATS = "features_v1.parquet,features_v2.parquet,features_v3.parquet,features_v4.parquet"
+FEATS = "features_v1.parquet,features_v2.parquet,features_v3.parquet,features_v4.parquet,features_v5.parquet"
 
 
 def step(name, outputs, cmd):
@@ -56,6 +57,7 @@ for v in ("v1", "v2", "v4"):
 step("stage1 (no bands)", [M / "s1/test_proba.npy"],
      PY + ["src/upi/run_oof.py", ".", "s1", "--features", FEATS_NOBAND, "--trees", str(a.trees), "--test"])
 step("bands", [P / "features_v3.parquet"], PY + ["src/upi/bands.py", ".", "s1"])
+step("features_v5", [P / "features_v5.parquet"], PY + ["src/upi/features_v5.py", "."])
 step("oof raw", [M / "oof_raw/oof.npy"], PY + ["src/upi/run_oof.py", ".", "oof_raw", "--features", FEATS, "--trees", str(a.trees)])
 step("clean labels", [M / "oof_raw/y_clean.npy"], PY + ["src/upi/clean_labels.py", ".", "oof_raw", "--tau-unrep", "0.85"])
 step("final model", [M / "oof_clean/test_proba.npy"],

@@ -21,6 +21,16 @@ Written 2026-11-13, 11:30 IST (round day 1, about 46 hours left). Builds on [the
 > - One entry point now exists: `python run_all.py` (raw CSVs to submission). `notebooks/colab_train.ipynb` runs it on Colab and adds an XGBoost GPU model for a blend.
 > - Checked and empty: shuffle seed, `txn_id` as a hash of a counter, shared-device ownership, account-history features. Rows dated after the month end are all fraud, but the model already predicts them.
 > - Honest ceiling: about 0.58 on cleaned training labels, less on October because bot, collusion and refund events are fewer there. 0.60 needs a way to see ordinary-looking fraud on home devices, and nothing found so far does that.
+>
+> **Update, 13 Nov, 21:30 IST. Corrections to the note above.**
+>
+> - Public score of `s3_clean_v4`: **0.5400** (leader 0.55). The team's share of uploads is 5–6 a day, so candidates are ranked locally and only a clear step up gets uploaded.
+> - **The first label cleaning was wrong about event types.** It moved a row to the type its shape suggests. But a generator sometimes emits a whole event in a sibling type's shape (bot in mule shape, takeover in SIM-swap shape, mule as a bare forwarding chain, cashback and phishing sharing bait-then-payback), and the raw labels are right about those: fraud-labelled rows on band devices carry the band's label 92–98% of the time. `clean_labels.py` now gives a row the majority raw label of its own event and changes only rows that disagree with their event. With that, the local score of the 0.5400 model is **0.557**, not 0.584; the gap to the leaderboard is about 0.017.
+> - **Local benchmark:** pooled leave-one-month-out macro-F1 against the cleaned labels, band rules applied (`make_submission.py` prints it). Two uploads calibrate it: local differences of 0.03 matched leaderboard differences of 0.037.
+> - Band edges in test are placed blind. The same procedure applied to the train block, where true edges are known, puts 72 of 3,231 rows (2.2%) in the wrong band. Two fixes mattered: mule-shaped rows also occur in the bot band at a tenth of the density, and the SIM-swap band is found by ×0.25-shaped bursts, not by model probabilities.
+> - **Event-level band rules** (`make_submission.py`): one band row in a drain burst, a fan-in, a fixed-amount merchant session or a forwarding chain gives the whole event that band's type. On the training rows the rule changes, the model was right 0–21% of the time and the rule 75–100%.
+> - `features_v5.py` follows forwarding chains back to their root. Current best locally: `s5_c3`, 0.5591.
+> - Ordinary-looking fraud is confirmed undetectable: band devices give clean ordinary-fraud rows and clean legit rows that both used a new device, and a model with every label-free feature separates them at AUC 0.485. Account, receiver and device history add nothing either (fraud share 2.3% in every history bucket). The realistic ceiling on the public board is therefore about 0.55–0.56.
 
 Expected gains in this file are my estimates from the EDA numbers and the research below. They are not measurements. The only measured scores so far are the EDA baselines (rules 0.392, LightGBM + relational features 0.391, both on September).
 

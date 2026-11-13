@@ -95,15 +95,59 @@ prior = np.array([r * width_te for r in rel[1:-1]])
 Pte = np.load(ROOT / "models" / TAG / "test_proba.npy").astype(float)   # rows of the test split, in base order
 assert len(Pte) == (~is_tr).sum()
 te_idx = np.where(~is_tr)[0]
+
+
+def band_scores(probs, kind, dnum, start, width, lam_mule, lam_sim):
+    """Per device number, the log-score of each band type given the stage-1 probabilities of the rows on it.
+
+    Two generators also emit events in a sibling's shape, so the pattern model's type is not the band type there:
+      - the bot band holds a few mule-shaped events (about a tenth as dense as in the mule band);
+      - the sim_swap band holds mostly takeover-shaped events, while SIM-shaped events are rare in the takeover band.
+    The mule band is dense in mule-shaped rows and the sim_swap band in SIM-shaped rows, so every device number
+    without one costs log(1 - density) there; that keeps either band from stretching across its sparse neighbour
+    to reach a stray look-alike event."""
+    Q = probs[:, 1:].copy()
+    mule = Q[:, 0].copy()
+    drain = Q[:, 3] + Q[:, 4]                      # the pattern model cannot tell the two drain generators apart
+    sim_shaped = kind == 1                         # balance shrinking by x0.25 per payment (x0.35 is the takeover shape)
+    Q[:, 1] = Q[:, 1] + 0.1 * mule
+    Q[:, 3] = drain
+    Q[:, 4] = np.where(sim_shaped, 0.1 * drain, drain)
+    sim = np.where(sim_shaped, drain, 0.0)
+    sc = np.zeros((width, K))
+    np.add.at(sc, dnum - start, np.log(np.maximum(Q, 0.05)))
+    for col, anchor, lam in ((0, mule, lam_mule), (3, sim, lam_sim)):
+        has = np.zeros(width, bool)
+        has[(dnum - start)[anchor >= 0.5]] = True
+        sc[~has, col] += np.log(1 - lam)
+    return sc
+
+
+kind_all = pd.read_parquet(P / "features_v1.parquet", columns=["snd_drain_kind"]).snd_drain_kind.values.astype(int)
+# density of mule-shaped rows inside the train mule band, measured with the stage-1 out-of-fold probabilities
+Ptr = np.load(ROOT / "models" / TAG / "oof.npy").astype(float)
+tr_idx = np.where(is_tr)[0]
+in_mule = (dn[tr_idx] >= edges_tr[0]) & (dn[tr_idx] < edges_tr[1])
+lam_mule = float((Ptr[in_mule, 1] >= 0.5).sum() / (edges_tr[1] - edges_tr[0]))
+in_sim = (dn[tr_idx] >= edges_tr[3]) & (dn[tr_idx] < edges_tr[4])
+lam_sim = float(((Ptr[in_sim, 4] + Ptr[in_sim, 5] >= 0.5) & (kind_all[tr_idx][in_sim] == 1)).sum() / (edges_tr[4] - edges_tr[3]))
+print("share of device numbers holding a look-alike anchor: mule band %.3f, sim_swap band %.3f" % (lam_mule, lam_sim))
 inblk = (dn[te_idx] >= start_te) & (dn[te_idx] <= end_te)
-Q = Pte[inblk][:, 1:].copy()
-drain = Q[:, 3] + Q[:, 4]                                               # sim_swap + account_takeover look alike to the model
-Q[:, 3] = drain
-Q[:, 4] = drain
-sc = np.zeros((width_te, K))
-np.add.at(sc, dn[te_idx][inblk] - start_te, np.log(np.maximum(Q, 0.05)))
+sc = band_scores(Pte[inblk], kind_all[te_idx][inblk], dn[te_idx][inblk], start_te, width_te, lam_mule, lam_sim)
 cuts_te = segment(sc, prior=prior, sd=0.02 * width_te)
 edges_te = [start_te] + [start_te + c for c in cuts_te] + [end_te + 1]
+
+# self-check: recover the train edges the same blind way, with the proportions taken from the test edges
+rel_te = [(e - start_te) / width_te for e in edges_te]
+in_tr_blk = (dn[tr_idx] >= start_tr) & (dn[tr_idx] <= end_tr)
+sc_tr = band_scores(Ptr[in_tr_blk], kind_all[tr_idx][in_tr_blk], dn[tr_idx][in_tr_blk], start_tr, width_tr, lam_mule, lam_sim)
+cuts_chk = segment(sc_tr, prior=np.array([r * width_tr for r in rel_te[1:-1]]), sd=0.02 * width_tr)
+edges_chk = np.array([start_tr] + [start_tr + c for c in cuts_chk] + [end_tr + 1])
+d_blk = dn[tr_idx][in_tr_blk]
+true_band = np.searchsorted(np.array(edges_tr), d_blk, "right")
+chk_band = np.searchsorted(edges_chk, d_blk, "right")
+print("blind recovery of the train edges: %d of %d rows land in the wrong band; edge errors (numbers): %s" % (
+    (true_band != chk_band).sum(), len(d_blk), (edges_chk - np.array(edges_tr))[1:-1].tolist()))
 print("test fraud block:", start_te, "-", end_te, "width", width_te, "(train/test width ratio %.2f)" % (width_tr / width_te))
 T = pd.DataFrame({"type": [LABELS[k] for k in ORDER], "train_start": edges_tr[:-1], "train_width": np.diff(edges_tr),
                   "test_start": edges_te[:-1], "test_width": np.diff(edges_te),

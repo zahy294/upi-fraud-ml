@@ -27,6 +27,8 @@ ap.add_argument("--lr", type=float, default=0.05)
 ap.add_argument("--model", default="lgb", choices=["lgb", "xgb"])
 ap.add_argument("--device", default="cpu", help="xgboost only: cpu or cuda")
 ap.add_argument("--jobs", type=int, default=12)
+ap.add_argument("--leaves", type=int, default=63)
+ap.add_argument("--min-child", type=int, default=20)
 a = ap.parse_args()
 sys.stdout.reconfigure(encoding="utf-8")
 ROOT = Path(a.root)
@@ -50,7 +52,7 @@ def fit_predict(fit_mask, pred_mask, seed):
                               subsample=0.8, colsample_bytree=0.5, reg_lambda=5.0, max_bin=256, tree_method="hist", device=a.device,
                               enable_categorical=True, n_jobs=a.jobs, random_state=seed)
     else:
-        m = lgb.LGBMClassifier(objective="multiclass", n_estimators=a.trees, learning_rate=a.lr, num_leaves=63, min_child_samples=20,
+        m = lgb.LGBMClassifier(objective="multiclass", n_estimators=a.trees, learning_rate=a.lr, num_leaves=a.leaves, min_child_samples=a.min_child,
                                subsample=0.8, subsample_freq=1, colsample_bytree=0.5, reg_lambda=5.0, verbose=-1, n_jobs=a.jobs, random_state=seed)
     m.fit(X[keep], y[keep])
     return m.predict_proba(X[pred_mask])
