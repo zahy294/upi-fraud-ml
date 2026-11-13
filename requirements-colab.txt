@@ -1,0 +1,8 @@
+# Python 3.11-3.13; external Colab installation only.
+numpy==2.2.6
+pandas==2.2.3
+scipy==1.15.3
+scikit-learn==1.6.1
+lightgbm==4.6.0
+pyarrow==20.0.0
+matplotlib==3.10.3

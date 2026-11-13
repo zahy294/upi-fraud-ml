@@ -40,6 +40,8 @@ __pycache__/
 build/
 dist/
 .venv/
+.colab-venv/
+colab-output/
 venv/
 .ipynb_checkpoints/
 .pytest_cache/
