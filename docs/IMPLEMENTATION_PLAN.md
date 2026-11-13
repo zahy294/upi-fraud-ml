@@ -32,6 +32,13 @@ Written 2026-11-13, 11:30 IST (round day 1, about 46 hours left). Builds on [the
 > - `features_v5.py` follows forwarding chains back to their root. Current best locally: `s5_c3`, 0.5591.
 > - Ordinary-looking fraud is confirmed undetectable: band devices give clean ordinary-fraud rows and clean legit rows that both used a new device, and a model with every label-free feature separates them at AUC 0.485. Account, receiver and device history add nothing either (fraud share 2.3% in every history bucket). The realistic ceiling on the public board is therefore about 0.55–0.56.
 
+> **State at 13 Nov, 22:00 IST.**
+>
+> - Best uploaded: `s3_clean_v4`, public **0.5400**. Git tag `s3_clean_v4` marks the code state that produced it (the steps were run by hand at that commit; `run_all.py` on the branch head produces the newer candidate, not a byte-identical copy).
+> - Best local candidate, not uploaded: `submissions/s5_c3.csv`, local 0.5591 against about 0.557 for the 0.5400 file. Three other model settings (more trees at a lower rate, smaller leaves, more legit rows) scored 0.5592–0.5596, so the defaults stay.
+> - Not done yet: a full `python run_all.py --force` run from the raw CSVs to confirm the pipeline reproduces end to end; the Colab run with five seeds and the XGBoost blend; the code link (due 15 Nov, 10:00 IST).
+> - Teammate branches `codex/target-070` and `siddharth/v2-stage2-ensemble` hold a general pipeline with learned neighbour propagation (their validation 0.4966 on raw labels; this branch scores 0.511 on the same kind of measure). They do not use device numbers or the exact recipes.
+
 Expected gains in this file are my estimates from the EDA numbers and the research below. They are not measurements. The only measured scores so far are the EDA baselines (rules 0.392, LightGBM + relational features 0.391, both on September).
 
 ---
