@@ -20,18 +20,20 @@ try:
                               build_label_free_v6, build_temporal_te)
     from .bands import build_bands
     from .clean_labels import clean_training_labels
+    from .challenge import stopping_metric, warmup_stopping, reliability_weights, build_peer_features
     from .make_submission import (prepare_rule_context, slice_rule_context, event_groups,
                                   fit_offsets, predict_labels, evaluate_predictions, write_submission,
-                                  select_recall_policy)
+                                  select_recall_policy, select_member_policy)
 except ImportError:
     from common import LABELS
     from features_v6 import (align_pack, validate_ids, assemble_features, apply_feature_schema,
                              build_label_free_v6, build_temporal_te)
     from bands import build_bands
     from clean_labels import clean_training_labels
+    from challenge import stopping_metric, warmup_stopping, reliability_weights, build_peer_features
     from make_submission import (prepare_rule_context, slice_rule_context, event_groups,
                                  fit_offsets, predict_labels, evaluate_predictions, write_submission,
-                                 select_recall_policy)
+                                 select_recall_policy, select_member_policy)
 
 PROFILES = {"control": ("v1", "v2", "v3", "v4", "v5"),
             "fusion": ("v1", "v2", "v3", "v4", "v5", "v6"),
@@ -143,6 +145,15 @@ def train_member(X_fit, y_fit, sample_weight, X_stop, y_stop, *,
                   deterministic=device == "cpu")
     if params["n_estimators"] < 1:
         raise ValueError("round count must be positive")
+    stop_metric = spec.get("stop_metric", "multi_logloss")
+    minimum = int(spec.get("minimum_rounds", 1))
+    if fixed_rounds is None and not 1 <= minimum <= params["n_estimators"]:
+        raise ValueError("minimum_rounds must be within the training round budget")
+    if stop_metric != "multi_logloss":
+        params["metric"] = "None"  # suppress default logloss stopping
+        metric = stopping_metric(stop_metric, classes)
+    else:
+        metric = "multi_logloss"
 
     def fit(backend):
         model = lgb.LGBMClassifier(**params, device_type=backend)
@@ -153,8 +164,12 @@ def train_member(X_fit, y_fit, sample_weight, X_stop, y_stop, *,
             if not np.isin(y_stop, classes).all():
                 raise ValueError("stop fold contains classes absent from training")
             kwargs.update(eval_set=[(X_stop, np.searchsorted(classes, y_stop))],
-                          eval_metric="multi_logloss",
-                          callbacks=[lgb.early_stopping(int(spec.get("early_stopping_rounds", 100)), verbose=False)])
+                          eval_metric=metric,
+                          callbacks=[warmup_stopping(lgb.early_stopping(
+                              int(spec.get("early_stopping_rounds", 100)), first_metric_only=True,
+                              verbose=False), minimum)])
+            if int(spec.get("log_period", 0)) > 0:
+                kwargs["callbacks"].append(lgb.log_evaluation(int(spec["log_period"])))
         categorical = spec.get("categorical_columns", [])
         if categorical:
             kwargs["categorical_feature"] = categorical
@@ -406,6 +421,8 @@ def _context_features(base, packs, masks, config, directory, bootstrap, name, si
     chain = rebuild_chain_features(base, packs["v1"], bands)
     cleaned = clean_training_labels(base, teacher, bands, packs["v2"], pd.Index(base.txn_id[fit]))
     context_packs = {**packs, "v3": bands, "v5": chain}
+    if config.get("peer_features", False):
+        context_packs["peer"] = build_peer_features(base, teacher)
     if any("v6" in PROFILES[p] for p in config["profiles"]):
         context_packs["v6"] = build_label_free_v6(base, packs)
     if any("te" in PROFILES[p] for p in config["profiles"]):
@@ -444,7 +461,8 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
     validation = name == "validation"
     fit = masks["fit"] if validation else masks["train"]
     schema = None if validation else json.loads((validation_folder / "schema.json").read_text(encoding="utf-8"))
-    X, schema, unknown = _frozen_features(base, {k: packs[k] for k in PROFILES[profile]}, schema)
+    feature_keys = list(PROFILES[profile]) + (["peer"] if config.get("peer_features", False) else [])
+    X, schema, unknown = _frozen_features(base, {k: packs[k] for k in feature_keys}, schema)
     _json(folder / "schema.json", schema)
     _json(folder / "unknown_categories.json", unknown)
     y_clean = cleaned.set_index("txn_id").loc[base.txn_id[fit], "y_clean"].to_numpy(dtype=int)
@@ -476,19 +494,25 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
         raise ValueError("ensemble weights must sum to a positive value")
     round_counts, backends = {}, {}
     recall_proba = None
+    member_probabilities = {}
     provenance = {"signature": signature, "profile": profile, "stage": name,
                   "fit_ids_hash": ids_hash(base.txn_id[fit]),
                   "sampled_fit_ids_hash": ids_hash(base.txn_id.iloc[fit_positions])}
     for member in members:
         spec = _spec(config, member, schema)
         member_weights = weights
-        if member["name"] == recall_name:
+        if member["name"] == recall_name or member.get("fraud_weighting", False):
             class_weights, counts = fraud_class_weights(
-                y_clean, power=recall_config.get("class_weight_power", .5),
-                cap=recall_config.get("class_weight_cap", 6.))
+                y_clean, power=member.get("class_weight_power", recall_config.get("class_weight_power", .5)),
+                cap=member.get("class_weight_cap", recall_config.get("class_weight_cap", 6.)))
             member_weights = weights * class_weights[fit_y]
             spec["fraud_class_weights"] = class_weights.tolist()
             spec["unsampled_fit_class_counts"] = counts.tolist()
+        if member.get("reliability_weighting", False):
+            fit_cleaned = cleaned.set_index("txn_id").loc[base.txn_id[fit]].reset_index()
+            trust = reliability_weights(fit_cleaned)[keep]
+            member_weights = member_weights * trust
+            spec["reliability_downweighted_rows"] = int((trust < 1).sum())
         fixed = None if validation else int(prior_manifest["round_counts"][member["name"]])
         print(f"{profile}/{name}: fitting {member['name']} on {len(fit_y)} rows", flush=True)
         model, rounds = train_member(
@@ -498,6 +522,8 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
             spec=spec, device=config["device"], fixed_rounds=fixed)
         print(f"{profile}/{name}: {member['name']} completed at {rounds} rounds", flush=True)
         p = model_proba(model, X.loc[query]) if query.any() else np.empty((0, 12))
+        if config.get("member_selection", False):
+            member_probabilities[member["name"]] = p
         weight = float(member["weight"]) / total_weight
         ensemble += weight * p
         if member["name"] == recall_name:
@@ -527,7 +553,15 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
         calibration = masks["calibration"][query]
         baseline_ensemble = ensemble.copy()
         selection = None
-        if recall_proba is not None:
+        if config.get("member_selection", False):
+            selection_config = {**recall_config, "baseline_calibration": config.get("calibration", {})}
+            offsets, selection = select_member_policy(
+                {k: p[calibration] for k, p in member_probabilities.items()},
+                {m["name"]: float(m["weight"]) / total_weight for m in members},
+                y[calibration], groups[calibration], slice_rule_context(context, calibration), config=selection_config)
+            _json(folder / "recall_selection.json", selection)
+            ensemble = sum(selection["member_weights"][k] * p for k, p in member_probabilities.items())
+        elif recall_proba is not None:
             offsets, selection = select_recall_policy(
                 ensemble[calibration], recall_proba[calibration], y[calibration], groups[calibration],
                 slice_rule_context(context, calibration),
@@ -579,7 +613,14 @@ def _profile_run(base, packs, cleaned, dates, masks, config, out, profile, name,
         print(profile, "raw assessment macro-F1:", metrics["partitions"]["assessment"]["macro_f1"], flush=True)
         return metrics
     offsets = json.loads((validation_folder / "offsets.json").read_text(encoding="utf-8"))
-    if recall_proba is not None:
+    if config.get("member_selection", False):
+        selection = json.loads((validation_folder / "recall_selection.json").read_text(encoding="utf-8"))
+        weights = selection["member_weights"]
+        if set(weights) != set(member_probabilities) or any(not np.isfinite(w) or w < 0 for w in weights.values()) or not np.isclose(sum(weights.values()), 1):
+            raise ValueError("invalid saved member selection weights")
+        ensemble = sum(weights[k] * p for k, p in member_probabilities.items())
+        _json(folder / "recall_selection.json", selection)
+    elif recall_proba is not None:
         selection = json.loads((validation_folder / "recall_selection.json").read_text(encoding="utf-8"))
         alpha = float(selection["recall_weight"])
         if not np.isfinite(alpha) or not 0 <= alpha <= 1:
@@ -612,7 +653,7 @@ def run_experiment(root: Path, config: dict, *, stage: str) -> dict:
     hashes = {name: file_hash(processed / name) for name in source_names}
     hashes["source"] = {name: file_hash(Path(__file__).parent / name) for name in
                         ("common.py", "features_v6.py", "clean_labels.py", "bands.py",
-                         "fit_submit.py", "make_submission.py", "features_v5.py")}
+                         "fit_submit.py", "make_submission.py", "features_v5.py", "challenge.py")}
     signature_config = {k: v for k, v in config.items() if k not in {"output_dir", "_root"}}
     signature = hashlib.sha256(json.dumps({"config": signature_config, "inputs": hashes},
                                          sort_keys=True).encode()).hexdigest()

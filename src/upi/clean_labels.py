@@ -41,7 +41,8 @@ def clean_training_labels(base: pd.DataFrame, teacher_proba: np.ndarray,
     if not len(b):
         return pd.DataFrame({"txn_id": b.txn_id, "y_raw": y, "y_clean": y.copy(),
                              "reason": pd.Series(dtype=object),
-                             "teacher_available": available})
+                             "teacher_available": available,
+                             "teacher_fraud_probability": np.empty(0), "direct_band": np.empty(0, dtype=int)})
     pf = np.where(available, 1 - p[:, 0], np.nan)
     top = np.where(available, np.nan_to_num(p[:, 1:], nan=-1).argmax(axis=1) + 1, 0)
     detected = (pf >= 0.5) | (band > 0)
@@ -82,7 +83,8 @@ def clean_training_labels(base: pd.DataFrame, teacher_proba: np.ndarray,
     clean[band > 0] = band[band > 0]
     reason[band_change] = "band"
     return pd.DataFrame({"txn_id": b.txn_id.to_numpy(), "y_raw": y, "y_clean": clean,
-                         "reason": reason, "teacher_available": available})
+                         "reason": reason, "teacher_available": available,
+                         "teacher_fraud_probability": pf, "direct_band": band})
 
 
 def main(argv=None):

@@ -320,6 +320,55 @@ def select_recall_policy(base_proba, recall_proba, y_raw, groups, rule_context, 
     return offsets, selection
 
 
+def select_member_policy(probabilities, baseline_weights, y_raw, groups, rule_context, *, config):
+    """Choose individual members or an equal blend using an inner time gate."""
+    context = _context(rule_context)
+    y, groups = _labels(y_raw, "y_raw"), np.asarray(groups).astype(str)
+    dates = pd.DatetimeIndex(pd.to_datetime(context["dates"], utc=True))
+    if (len(dates) != len(y) or groups.shape != y.shape or dates.isna().any()
+            or len(dates.year.unique()) != 1
+            or not ((dates.month == 9) & (dates.day >= 16) & (dates.day <= 23)).all()):
+        raise ValueError("member selection requires September16-23 rows")
+    probabilities = {k: _proba(p) for k, p in probabilities.items()}
+    if any(len(p) != len(y) for p in probabilities.values()):
+        raise ValueError("member probabilities are not aligned")
+    keys = list(probabilities)
+    if set(baseline_weights) != set(keys) or any(v < 0 for v in baseline_weights.values()) or not np.isclose(sum(baseline_weights.values()), 1):
+        raise ValueError("invalid baseline member weights")
+    early, late = dates.day <= 19, dates.day >= 20
+    if not early.any() or not late.any():
+        raise ValueError("both inner calibration periods are required")
+    legacy = config.get("baseline_calibration", {})
+    broad = {**legacy, **config.get("calibration", {})}
+    specs = [("legacy", baseline_weights, legacy), ("baseline_broad", baseline_weights, broad)]
+    specs += [(key, {k: float(k == key) for k in keys}, broad) for key in keys]
+    specs += [("equal_members", {k: 1 / len(keys) for k in keys}, broad)]
+    def blend(weights):
+        return sum(weights[k] * probabilities[k] for k in keys)
+    chosen = specs[0]
+    trials, best, baseline_score = [], -1., None
+    margin = float(config.get("min_gain", .001))
+    if not np.isfinite(margin) or margin < 0:
+        raise ValueError("invalid selection margin")
+    for name, weights, settings in specs:
+        p = blend(weights)
+        offsets = fit_offsets(p[early], y[early], groups[early], slice_rule_context(context, early), config=settings)
+        metric = evaluate_predictions(y[late], predict_labels(
+            p[late], groups[late], offsets, slice_rule_context(context, late)))
+        score = metric["macro_f1"]
+        trials.append({"name": name, "weights": weights, "metrics": metric})
+        print(f"Member selection {name}: Sep20-23 macro-F1 {score:.6f}", flush=True)
+        if baseline_score is None:
+            best = baseline_score = score
+        elif score > baseline_score + margin and score > best + 1e-12:
+            chosen, best = (name, weights, settings), score
+    name, weights, settings = chosen
+    offsets = fit_offsets(blend(weights), y, groups, context, config=settings)
+    return offsets, {"selected": name, "member_weights": weights,
+                     "recall_weight": weights.get("R", 0.), "trials": trials,
+                     "min_gain": margin, "fit_days": "Sep16-19", "gate_days": "Sep20-23"}
+
+
 def write_submission(test_ids: np.ndarray, pred: np.ndarray,
                      sample: pd.DataFrame, path: Path) -> dict:
     ids = pd.Index(np.asarray(test_ids))

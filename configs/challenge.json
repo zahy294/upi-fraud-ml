@@ -1,0 +1,121 @@
+{
+  "tag": "challenge_v8",
+  "device": "cpu",
+  "allow_cpu_fallback": false,
+  "calendar_timezone": "Asia/Kolkata",
+  "profiles": [
+    "ensemble"
+  ],
+  "legit_fraction": 0.25,
+  "splits": {
+    "fit": [
+      "07-01",
+      "09-01"
+    ],
+    "early_stop": [
+      "09-01",
+      "09-16"
+    ],
+    "calibration": [
+      "09-16",
+      "09-24"
+    ],
+    "assessment": [
+      "09-24",
+      "10-01"
+    ]
+  },
+  "model_defaults": {
+    "log_period": 100,
+    "learning_rate": 0.05,
+    "max_rounds": 1500,
+    "early_stopping_rounds": 150,
+    "n_jobs": 8
+  },
+  "members": [
+    {
+      "name": "A",
+      "seed": 17,
+      "num_leaves": 63,
+      "min_child_samples": 20,
+      "colsample_bytree": 0.5,
+      "weight": 1.0,
+      "stop_metric": "multi_logloss",
+      "minimum_rounds": 1
+    },
+    {
+      "name": "B",
+      "seed": 43,
+      "num_leaves": 31,
+      "min_child_samples": 60,
+      "colsample_bytree": 0.75,
+      "weight": 0.0,
+      "stop_metric": "balanced_logloss",
+      "minimum_rounds": 100,
+      "learning_rate": 0.035
+    },
+    {
+      "name": "C",
+      "seed": 101,
+      "num_leaves": 95,
+      "min_child_samples": 40,
+      "colsample_bytree": 0.65,
+      "weight": 0.0,
+      "stop_metric": "macro_f1",
+      "minimum_rounds": 150,
+      "learning_rate": 0.035,
+      "fraud_weighting": true,
+      "class_weight_power": 0.35,
+      "class_weight_cap": 4.0
+    }
+  ],
+  "recall": {
+    "enabled": true,
+    "class_weight_power": 0.5,
+    "class_weight_cap": 6.0,
+    "member": {
+      "name": "R",
+      "seed": 211,
+      "num_leaves": 47,
+      "min_child_samples": 30,
+      "colsample_bytree": 0.8,
+      "stop_metric": "macro_f1",
+      "minimum_rounds": 150,
+      "learning_rate": 0.035,
+      "reliability_weighting": true
+    },
+    "blend_weights": [
+      0.0,
+      0.25,
+      0.5,
+      1.0
+    ],
+    "min_gain": 0.001,
+    "calibration": {
+      "coarse_grid": [
+        -1.0,
+        0.0,
+        0.5,
+        1.0,
+        1.5,
+        2.0,
+        2.5,
+        3.0
+      ],
+      "offset_bound": 3.0,
+      "conditional": false
+    }
+  },
+  "calibration": {
+    "steps": [
+      0.4,
+      0.2,
+      0.1,
+      0.05
+    ],
+    "max_passes": 3,
+    "conditional": true
+  },
+  "peer_features": true,
+  "member_selection": true
+}

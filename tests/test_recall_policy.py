@@ -131,6 +131,7 @@ class RecallTests(unittest.TestCase):
         config = {"splits": {"fit": ["07-01", "09-01"], "early_stop": ["09-01", "09-16"],
                              "calibration": ["09-16", "09-24"], "assessment": ["09-24", "10-01"]},
                   "device": "cpu", "profiles": ["ensemble"], "legit_fraction": 1.,
+                  "member_selection": getattr(self, "member_selection", False),
                   "members": [{"name": name, "seed": seed, "num_leaves": 31,
                                "min_child_samples": 20, "colsample_bytree": .8, "weight": weight}
                               for name, seed, weight in [("A", 17, .5), ("B", 43, .3), ("C", 101, .2)]],

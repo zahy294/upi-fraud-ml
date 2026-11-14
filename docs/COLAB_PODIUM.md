@@ -1,5 +1,8 @@
 # Colab handoff: codex/target-070
 
+Latest stronger training experiment: [CHALLENGE_V8.md](CHALLENGE_V8.md).
+Use `--config configs/challenge.json --tag challenge_v8` for that experiment.
+
 All code is on [codex/target-070](https://github.com/zahy294/upi-fraud-ml/tree/codex/target-070).
 The modelling branch is unchanged. The Python runner is the entry point;
 the older notebook and run_all.py use the previous training interface.

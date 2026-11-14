@@ -26,7 +26,7 @@ SOURCE_FILES = (
     "src/upi/fit_submit.py", "src/upi/make_submission.py", "src/upi/build_base.py",
     "src/upi/features_v1.py", "src/upi/features_v2.py", "src/upi/features_v4.py",
     "src/upi/features_v5.py", "src/upi/features_v6.py", "src/upi/bands.py",
-    "src/upi/clean_labels.py", "src/upi/common.py", "run_all.py",
+    "src/upi/clean_labels.py", "src/upi/challenge.py", "src/upi/common.py", "run_all.py",
     "scripts/eda/common.py", "scripts/eda/00_load_and_overview.py",
     "scripts/eda/04_relational.py",
 )
@@ -396,6 +396,8 @@ def validate_artifacts(root: Path, run_dir: Path) -> dict:
         if selection:
             lines += ["", f"Selected policy: {selection['selected']}; fraud-weighted member share: {selection['recall_weight']:.2f}.",
                       "Selection uses Sep20-23, after threshold fitting on Sep16-19."]
+            if "member_weights" in selection:
+                lines += [f"Selected member weights: {selection['member_weights']}"]
         if legacy:
             score = values["original_label_macro_f1"]["assessment"]
             lines += [f"Legacy ensemble assessment: {legacy['macro_f1']:.6f}; change: {score - legacy['macro_f1']:+.6f}.",
