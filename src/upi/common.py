@@ -23,8 +23,11 @@ def load_xy(root: Path, feature_files=("features_v1.parquet",), with_traps=False
     X = df[num].astype("float32")
     for f in feature_files:
         F = pd.read_parquet(P / f)
-        assert (F.txn_id.values == df.txn_id.values).all()
-        X = pd.concat([X, F.drop(columns=["txn_id"])], axis=1)
+        assert (F.txn_id.values == df.txn_id.values).all(), f"{f}: rows are not in base order"
+        F = F.drop(columns=["txn_id"])
+        bad = [c for c in F.columns if c in DROP or c in TRAPS or c in X.columns]
+        assert not bad, f"{f}: columns that are forbidden as model inputs or already present: {bad}"
+        X = pd.concat([X, F], axis=1)
     for c in CATS:
         X[c] = df[c].astype("object").fillna("NA").astype("category")
     if with_traps:

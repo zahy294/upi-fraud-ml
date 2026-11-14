@@ -1,0 +1,51 @@
+import sys, pandas as pd, numpy as np
+pd.set_option('display.width', 250); pd.set_option('display.max_columns', 40); pd.set_option('display.max_rows', 400)
+d = pd.read_parquet('work.parquet')
+root = sys.argv[1]
+acc = pd.read_csv(root + '/data/raw/accounts.csv'); acc['num']=acc.account_id.str[2:].astype(int); acc=acc.set_index('num')
+mer = pd.read_csv(root + '/data/raw/merchants.csv'); mer['num']=mer.merchant_id.str[2:].astype(int); mer=mer.set_index('num')
+t = d[(d.split=='train')&(d.pred==0)].copy()
+t['stealth'] = (t.y_raw>0).astype(int)
+base = t.stealth.mean()
+def flat(name, v, minn=1500):
+    g = t.groupby(v).stealth.agg(['mean','size']); g = g[g['size']>=minn]
+    if len(g) < 2: print(name, 'single bucket'); return
+    chi = (((g['mean']-base)**2*g['size']/(base*(1-base))).sum())/(len(g)-1)
+    print(f'{name:<34} buckets {len(g):>4}  share min {g["mean"].min():.4f} max {g["mean"].max():.4f}  chi2/df {chi:.2f}')
+p2p = t.receiver_type=='P2P'
+ts = pd.to_datetime(t.timestamp)
+scity = t.snum.map(acc.home_city); sbank = t.snum.map(acc.bank_code)
+rcity = np.where(p2p, t.rnum.map(acc.home_city), t.rnum.map(mer.city)); rbank = t.rnum.map(acc.bank_code).where(p2p)
+flat('device_city == sender home', (t.device_city==scity).astype(int))
+flat('receiver city == sender home', (rcity==scity.values).astype(int))
+flat('receiver city == device city', (rcity==t.device_city.values).astype(int))
+flat('p2p: same bank', (rbank==sbank).astype(int).where(p2p).fillna(-1))
+flat('p2p: receiver kyc', t.rnum.map(acc.kyc_level).where(p2p).fillna('m'))
+flat('p2p: receiver os', t.rnum.map(acc.os).where(p2p).fillna('m'))
+flat('p2p: receiver opened year', t.rnum.map(acc.opened_on).str[:4].where(p2p).fillna('m'))
+flat('merchant: table category == row', np.where(p2p, 'p2p', (t.rnum.map(mer.category).values==t.merchant_category.values).astype(str)))
+flat('merchant: onboard year', t.rnum.map(mer.onboarded_on).str[:4].where(~p2p).fillna('p'))
+mage = (ts - pd.to_datetime(t.rnum.map(mer.onboarded_on).where(~p2p))).dt.days
+flat('merchant age ventile', pd.qcut(mage, 20, duplicates='drop').astype(str))
+flat('merchant category (table)', t.rnum.map(mer.category).where(~p2p).fillna('p'))
+aage = (ts.dt.normalize() - pd.to_datetime(t.snum.map(acc.opened_on))).dt.days
+flat('acct age col - table (days)', (t.sender_account_age_days - aage).clip(-3,3))
+flat('sender == receiver', (p2p & (t.snum==t.rnum)).astype(int), 1)
+flat('qr_vpa_mismatch', t.qr_vpa_mismatch.fillna(-1))
+flat('txn_type x receiver_type', t.txn_type + '_' + t.receiver_type)
+flat('app x os', t.app + '_' + t.snum.map(acc.os))
+flat('sender kyc x txn_type', t.snum.map(acc.kyc_level) + '_' + t.txn_type)
+flat('amount whole rupee', (t.amount%1==0).astype(int))
+flat('amount > balance', (t.amount>t.balance_before).astype(int), 50)
+flat('login_to_txn_sec < 5', (t.login_to_txn_sec<5).astype(int), 50)
+flat('pin_retries', t.pin_retries, 200)
+flat('sim_age < 24h', (t.sim_age_hours<24).astype(int), 200)
+flat('device_age < 1d', (t.device_age_days<1).astype(int), 200)
+# receiver popularity
+rc = d.groupby('receiver_id').size(); t['rc'] = t.receiver_id.map(rc)
+flat('receiver total rows ventile', pd.qcut(t.rc, 20, duplicates='drop').astype(str))
+sc = d.groupby('sender_id').size(); t['sc'] = t.sender_id.map(sc)
+flat('sender total rows ventile', pd.qcut(t.sc, 20, duplicates='drop').astype(str))
+pc = d.groupby(['sender_id','receiver_id']).size().rename('pc'); t = t.join(pc, on=['sender_id','receiver_id'])
+flat('pair rows', t.pc.clip(upper=6))
+print('base', base)

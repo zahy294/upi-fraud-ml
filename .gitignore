@@ -57,3 +57,6 @@ desktop.ini
 # Claude Code local-only files (settings.json is shared)
 .claude/settings.local.json
 .claude/scratch/
+
+# 65 MB dump from a review agent
+docs/codex_episodes.md

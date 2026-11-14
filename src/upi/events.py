@@ -29,6 +29,8 @@ class Events:
 
     def prev_dt(self, qg, qt, within):
         """Seconds since the last event of group qg strictly before qt (nan if none within `within`)."""
+        if self.n == 0:
+            return np.full(len(qg), np.nan)
         b = qg.astype(np.int64) * SCALE + qt + OFF
         i = np.searchsorted(self.K, b, "left") - 1
         ic = np.maximum(i, 0)
@@ -37,6 +39,8 @@ class Events:
 
     def next_dt(self, qg, qt, within):
         """Seconds until the first event of group qg strictly after qt (nan if none within `within`)."""
+        if self.n == 0:
+            return np.full(len(qg), np.nan)
         b = qg.astype(np.int64) * SCALE + qt + OFF
         i = np.searchsorted(self.K, b, "right")
         ic = np.minimum(i, self.n - 1)

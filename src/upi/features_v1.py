@@ -15,7 +15,9 @@ ROOT = Path(sys.argv[1])
 P = ROOT / "data/processed"
 df = pd.read_parquet(P / "base_v0.parquet")
 R = pd.read_parquet(P / "ratios_v0.parquet")
-assert len(R) == len(df)
+assert "txn_id" in R.columns and len(R) == len(df) and (R.txn_id.values == df.txn_id.values).all(), \
+    "ratios_v0.parquet does not match base_v0.parquet row for row: rebuild both with src/upi/build_base.py"
+R = R.drop(columns=["txn_id"])
 t = df.t.values.astype(np.int64)
 amt = df.amount.values
 bal = df.balance_before.values

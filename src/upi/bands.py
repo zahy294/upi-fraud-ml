@@ -5,7 +5,7 @@ type, in label order; ordinary new devices follow in a fully occupied block. Tra
 separate runs, so each split has its own block. Bot bursts use a shared pool of device numbers (420001-423000).
 
 This script finds the band edges (train: from labels; test: from the train proportions, refined with stage-1
-probabilities) and writes data/processed/features_v3.parquet:
+probabilities and with how densely each band's device numbers are used) and writes data/processed/features_v3.parquet:
   band            0 = none, else the label index of the band the device number falls in
   dev_ext_legit   1 if the device is an ordinary new device (not a fraud band, not any account's home device)
   snd_band_<k>_3h / rcv_band_<k>_24h   rows of the same sender / receiver nearby that sit on band-k devices
@@ -97,8 +97,13 @@ assert len(Pte) == (~is_tr).sum()
 te_idx = np.where(~is_tr)[0]
 
 
-def band_scores(probs, kind, dnum, start, width, lam_mule, lam_sim):
+def band_scores(probs, kind, dnum, start, width, lam_mule, lam_sim, occ):
     """Per device number, the log-score of each band type given the stage-1 probabilities of the rows on it.
+
+    Every device number also carries occupancy evidence: the generators leave very different shares of their
+    numbers in use (sim_swap about 0.71, account_takeover about 0.26), so a number that appears in the data adds
+    log(occ) to each band and an unused one adds log(1 - occ). `occ` is measured on the train bands.
+
 
     Two generators also emit events in a sibling's shape, so the pattern model's type is not the band type there:
       - the bot band holds a few mule-shaped events (about a tenth as dense as in the mule band);
@@ -120,6 +125,9 @@ def band_scores(probs, kind, dnum, start, width, lam_mule, lam_sim):
         has = np.zeros(width, bool)
         has[(dnum - start)[anchor >= 0.5]] = True
         sc[~has, col] += np.log(1 - lam)
+    present = np.zeros(width, bool)
+    present[dnum - start] = True
+    sc += np.where(present[:, None], np.log(occ)[None, :], np.log(1 - occ)[None, :])
     return sc
 
 
@@ -132,15 +140,20 @@ lam_mule = float((Ptr[in_mule, 1] >= 0.5).sum() / (edges_tr[1] - edges_tr[0]))
 in_sim = (dn[tr_idx] >= edges_tr[3]) & (dn[tr_idx] < edges_tr[4])
 lam_sim = float(((Ptr[in_sim, 4] + Ptr[in_sim, 5] >= 0.5) & (kind_all[tr_idx][in_sim] == 1)).sum() / (edges_tr[4] - edges_tr[3]))
 print("share of device numbers holding a look-alike anchor: mule band %.3f, sim_swap band %.3f" % (lam_mule, lam_sim))
+# share of each train band's device numbers that appear in the data
+d_tr = dn[tr_idx]
+occ = np.array([len(np.unique(d_tr[(d_tr >= edges_tr[k]) & (d_tr < edges_tr[k + 1])])) / (edges_tr[k + 1] - edges_tr[k]) for k in range(K)])
+occ = np.clip(occ, 0.02, 0.98)
+print("share of device numbers in use per train band:", occ.round(3).tolist())
 inblk = (dn[te_idx] >= start_te) & (dn[te_idx] <= end_te)
-sc = band_scores(Pte[inblk], kind_all[te_idx][inblk], dn[te_idx][inblk], start_te, width_te, lam_mule, lam_sim)
+sc = band_scores(Pte[inblk], kind_all[te_idx][inblk], dn[te_idx][inblk], start_te, width_te, lam_mule, lam_sim, occ)
 cuts_te = segment(sc, prior=prior, sd=0.02 * width_te)
 edges_te = [start_te] + [start_te + c for c in cuts_te] + [end_te + 1]
 
 # self-check: recover the train edges the same blind way, with the proportions taken from the test edges
 rel_te = [(e - start_te) / width_te for e in edges_te]
 in_tr_blk = (dn[tr_idx] >= start_tr) & (dn[tr_idx] <= end_tr)
-sc_tr = band_scores(Ptr[in_tr_blk], kind_all[tr_idx][in_tr_blk], dn[tr_idx][in_tr_blk], start_tr, width_tr, lam_mule, lam_sim)
+sc_tr = band_scores(Ptr[in_tr_blk], kind_all[tr_idx][in_tr_blk], dn[tr_idx][in_tr_blk], start_tr, width_tr, lam_mule, lam_sim, occ)
 cuts_chk = segment(sc_tr, prior=np.array([r * width_tr for r in rel_te[1:-1]]), sd=0.02 * width_tr)
 edges_chk = np.array([start_tr] + [start_tr + c for c in cuts_chk] + [end_tr + 1])
 d_blk = dn[tr_idx][in_tr_blk]

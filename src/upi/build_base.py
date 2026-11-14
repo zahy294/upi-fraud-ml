@@ -65,5 +65,7 @@ q2["row"] = q2.index
 m2 = pd.merge_asof(q2, inn, left_on="t", right_on="i_t", by="k", direction="backward", allow_exact_matches=False, tolerance=7200).set_index("row")
 R["back:amt/i_amt"] = (m2.amount / m2.i_amt).reindex(df.index)
 R["back:bal/i_amt"] = (m2.balance_before / m2.i_amt).reindex(df.index)
-R.astype("float32").to_parquet(P / "ratios_v0.parquet")
+R = R.astype("float32")
+R.insert(0, "txn_id", df.txn_id.values)                  # features_v1 checks this against the base table before using the ratios
+R.to_parquet(P / "ratios_v0.parquet")
 print("ratios_v0:", R.shape)

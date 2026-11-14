@@ -1,0 +1,349 @@
+﻿
+### runtime
+{'python': '3.11.0 (main, Oct 24 2022, 18:26:48) [MSC v.1933 64 bit (AMD64)]', 'packages': {'numpy': '2.4.6', 'pandas': '2.3.3', 'pyarrow': '21.0.0', 'scipy': '1.16.3', 'scikit-learn': '1.7.2', 'lightgbm': '4.7.0'}}
+
+### scores
+{'weighted_before': 0.5575617076295928, 'own_band': 0.5577879750222889, 'all_rules': 0.5591364110754334, 'raw_all_rules': 0.5108442117665147, 'argmax_all_rules': 0.557434791606686}
+
+### per_class
+                    precision    recall        f1  support  predicted    weight  test_predicted
+legit                0.976938  0.999816  0.988245  1503408    1538615  1.000000          256619
+mule_account         0.921523  0.331779  0.487899    10724       3861  0.666176             801
+velocity_bot         1.000000  0.413277  0.584849     8752       3617  0.196950             299
+layering_chain       0.864416  0.451000  0.592742     7153       3732  0.903436             562
+sim_swap             0.794260  0.420131  0.549565     4282       2265  1.661551             336
+account_takeover     0.997116  0.324115  0.489211     4267       1387  0.666176             265
+phishing_collect     0.825688  0.371055  0.512016     7034       3161  0.775788             514
+qr_swap              0.923030  0.396366  0.554583     7594       3261  0.775788             516
+refund_abuse         0.957116  0.434660  0.597826     3543       1609  0.775788             282
+fake_cashback        0.716325  0.307427  0.430217     2612       1121  1.934941             202
+loan_app_extortion   0.990769  0.314453  0.477391     2048        650  0.666176             103
+merchant_collusion   0.975672  0.288309  0.445093     2643        781  2.253314              83
+
+### rule own
+{'train_changed': 12, 'test_changed': 2, 'clean_right': 12, 'raw_right': 8, 'score': 0.5577879750222889}
+
+### rule drain
+{'train_changed': 2, 'test_changed': 0, 'clean_right': 2, 'raw_right': 2, 'score': 0.5578465112637451}
+
+### rule fanin
+{'train_changed': 77, 'test_changed': 8, 'clean_right': 77, 'raw_right': 67, 'score': 0.5587982971994411}
+
+### rule shop
+{'train_changed': 5, 'test_changed': 7, 'clean_right': 5, 'raw_right': 3, 'score': 0.5589527468031622}
+
+### rule chain
+{'train_changed': 28, 'test_changed': 12, 'clean_right': 21, 'raw_right': 23, 'score': 0.5591364110754334}
+
+### wrong examples chain
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id    amount  balance_before txn_type         label  split app_major  ip_risk_score  band           clean          before         after
+40790   TX8abd6dba   223002  2026-07 2026-07-03 13:56:42  AC274440    AC258674           P2P  DV0274440  101114.0       102802.40      PAY         legit  train         4          0.569     0  layering_chain  layering_chain  mule_account
+336859  TX6d1364a9  1713757  2026-07 2026-07-20 20:02:37  AC391354    AC302117           P2P  DV0391354   43569.0        48546.71      PAY         legit  train         3          0.698     0  layering_chain  layering_chain  mule_account
+695429  TX50a807d8  3532613  2026-08 2026-08-10 21:16:53  AC166908    AC293833           P2P  DV0166908   36438.0        37867.11      PAY  mule_account  train         3          0.124     0        sim_swap  layering_chain  mule_account
+993067  TX78350e0a  5062002  2026-08 2026-08-28 14:06:42  AC082064    AC301737           P2P  DV0082064   34153.0        36342.79      PAY         legit  train         4          0.483     0  layering_chain  layering_chain  mule_account
+
+### monthly
+     month     score       raw
+0  2026-07  0.555728  0.509354
+1  2026-08  0.553379  0.506909
+2  2026-09  0.564891  0.513297
+
+### density row/device issue
+{'mule_rows': 115, 'mule_unique_devices': 115, 'lambda_mule': np.float64(0.17557251908396945), 'sim_rows': 42, 'sim_unique_devices': 42, 'lambda_sim': np.float64(0.10294117647058823)}
+
+### blind train bands
+{'edges': [423001, 423679, 424151, 424630, 425001, 426773, 427170, 427853, 428071, 428200, 428301, 428455], 'edge_errors': [0, 23, -2, 5, -32, 10, 7, 9, 6, 0, -1, 0], 'row_changes': 72}
+
+### blind train frozen model
+{'macro': 0.5571331917935556, 'delta': -0.002003219281877855, 'changed_predictions': 94, 'right_to_wrong': 94, 'wrong_to_right': 0}
+
+### blind wrong class changes
+blind_pred          account_takeover  layering_chain  merchant_collusion  mule_account  phishing_collect  qr_swap  refund_abuse
+oracle_pred                                                                                                                    
+fake_cashback                      0               0                   0             0                 0        0             2
+loan_app_extortion                 0               0                   1             0                 0        0             0
+phishing_collect                   3               0                   0             0                 0        0             0
+qr_swap                            0               0                   0             0                 4        0             0
+refund_abuse                       0               0                   0             0                 0        4             0
+sim_swap                          46               2                   0             0                 0        0             0
+velocity_bot                       0               2                   0            30                 0        0             0
+
+### leave month out label edges 2026-07
+{'edges': [423001, 423655, 424153, 424625, 425033, 426763, 427163, 427844, 428065, 428200, 428302, 428455], 'held_rows_changed': 1}
+
+### leave month out label edges 2026-08
+{'edges': [423001, 423656, 424152, 424625, 425033, 426759, 427159, 427843, 428061, 428200, 428302, 428455], 'held_rows_changed': 6}
+
+### leave month out label edges 2026-09
+{'edges': [423001, 423656, 424153, 424620, 425031, 426763, 427163, 427844, 428059, 428198, 428300, 428455], 'held_rows_changed': 8}
+
+### test edges reproduced
+[473632, 473750, 473826, 473920, 473969, 474280, 474360, 474459, 474496, 474509, 474526, 474552]
+
+### chain integrity
+{'parent_links': 2076, 'child_links': 2067, 'parent_not_reciprocal': 13, 'child_not_reciprocal': 4, 'over8parent': 0, 'over8child': 0, 'linked_non_PAY_rows': 40}
+
+### cross split chain links
+{'parent': 0, 'child': 0}
+
+### October train tails
+label
+account_takeover       1
+fake_cashback          2
+layering_chain         4
+legit                 18
+loan_app_extortion     8
+merchant_collusion    11
+mule_account          24
+phishing_collect       1
+qr_swap                2
+refund_abuse          74
+sim_swap               1
+velocity_bot           1
+dtype: int64
+
+### test rows touching tails
+{'sender3h': 0, 'sender7d': 38, 'receiver24h': 9, 'device10min': 0}
+
+### remove tail band sources
+{'tail_band_rows': 2, 'test_S_changed': 0, 'test_R_changed': 0, 'test_chain_band_changed': 0, 'test_predictions_changed': 0}
+
+### fresh run comparison
+{'label_differences': 69, 'oof_changed_rows': 1564060, 'test_changed_rows': 260582, 'test_final_pred_differences': 16, 'fresh_score_own_labels': 0.5597066621132784, 'fresh_score_original_labels': 0.5596857471705651, 'old_score_fresh_labels': 0.5592310972689883, 'old_score_old_labels': 0.5591364110754334}
+
+### label differences
+fresh               fake_cashback  layering_chain  legit  loan_app_extortion  merchant_collusion  mule_account  phishing_collect  qr_swap  refund_abuse  sim_swap
+old                                                                                                                                                              
+account_takeover                0               0      0                   0                   0             0                 0        0             0         1
+fake_cashback                   0               0      0                   0                   0             0                 3        0             0         0
+layering_chain                  0               0      1                   0                   0             1                 1        0             0         0
+legit                           0               5      0                   1                   5             0                10        1             2         0
+loan_app_extortion              0               0      2                   0                   0             1                 1        0             0         0
+merchant_collusion              0               0      1                   0                   0             0                 0        0             0         0
+mule_account                    0               2      3                   1                   0             0                 0        0             0         0
+phishing_collect                0               1     17                   0                   1             0                 0        0             1         0
+qr_swap                         1               0      0                   0                   0             0                 0        0             0         0
+sim_swap                        0               0      2                   0                   0             0                 0        0             0         0
+velocity_bot                    0               0      3                   0                   0             0                 1        0             0         0
+
+### changed label details
+             txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id     amount  balance_before txn_type               label  split app_major  ip_risk_score           old_clean         fresh_clean    raw_pf
+43025    TX07307288   231768  2026-07 2026-07-03 16:22:48  AC158700    AC312590           P2P  DV0117500   36690.00        40003.75      PAY               legit  train         3          0.172      layering_chain               legit  0.901437
+93099    TX74311297   486759  2026-07 2026-07-06 15:12:39  AC189107    AC333034           P2P  DV0189107    2704.00         4689.55  COLLECT               legit  train         4          0.712               legit    phishing_collect  0.817031
+140074   TX4bf143d7   731300  2026-07 2026-07-09 11:08:20  AC027600    AC065168           P2P  DV0027600   95211.00       105845.34      PAY               legit  train         4          0.512        mule_account      layering_chain  0.860688
+141762   TXaba48365   737096  2026-07 2026-07-09 12:44:56  AC349591    MR003881      MERCHANT  DV0349591     404.65         4378.26       QR             qr_swap  train         3          0.160             qr_swap       fake_cashback  0.475501
+159141   TX3fed0efb   824881  2026-07 2026-07-10 13:08:01  AC199031    AC361453           P2P  DV0199031    1999.00        82655.51  COLLECT               legit  train         4          0.670    phishing_collect               legit  0.934778
+201236   TX7d5d8329  1023357  2026-07 2026-07-12 20:15:57  AC004272    AC111854           P2P  DV0004272    2000.00         4511.36      PAY               legit  train         3          0.752        mule_account               legit  0.923864
+208605   TXc26df0ae  1078285  2026-07 2026-07-13 11:31:25  AC030334    AC111854           P2P  DV0030334    2380.00         2309.61      PAY               legit  train         4          0.271        mule_account               legit  0.897489
+210578   TXa338854a  1084733  2026-07 2026-07-13 13:18:53  AC130335    AC026492           P2P  DV0130335    7593.00         8352.30  COLLECT    phishing_collect  train         3          0.215  loan_app_extortion    phishing_collect  0.907347
+213139   TXe2854f01  1094642  2026-07 2026-07-13 16:04:02  AC191132    AC247209           P2P  DV0191132    1960.00        15693.26  COLLECT               legit  train         3          0.330    phishing_collect               legit  0.859074
+221081   TX7ea43943  1122046  2026-07 2026-07-13 23:40:46  AC215342    AC388807           P2P  DV0215342    7355.00        37002.43      PAY               legit  train         4          0.222  loan_app_extortion               legit  0.882861
+245316   TXa4011078  1259926  2026-07 2026-07-15 13:58:46  AC120525    AC195307           P2P  DV0120525      10.00         8521.17      PAY               legit  train         3          0.219    phishing_collect               legit  0.861512
+272262   TXcf7726a5  1380081  2026-07 2026-07-16 23:21:21  AC366656    MR023454      MERCHANT  DV0366656    2198.00         3070.88      PAY               legit  train         4          0.568               legit  loan_app_extortion  0.811554
+285201   TX48c732e6  1452151  2026-07 2026-07-17 19:22:31  AC283469    AC022242           P2P  DV0283469    2020.00         9535.73      PAY               legit  train         4          0.029               legit      layering_chain  0.565586
+288168   TXa2f5915b  1461093  2026-07 2026-07-17 21:51:33  AC041839    AC281728           P2P  DV0041839      10.00         9578.13      PAY               legit  train         3          0.377               legit    phishing_collect  0.826089
+292777   TX03c360c6  1506676  2026-07 2026-07-18 10:31:16  AC088242    AC242221           P2P  DV0088242    1990.00        28074.13  COLLECT               legit  train         4          0.076    phishing_collect               legit  0.857091
+293409   TX44020f09  1508795  2026-07 2026-07-18 11:06:35  AC319283    AC022242           P2P  DV0319283     230.00         6316.37      PAY               legit  train         3          0.217               legit      layering_chain  0.486755
+302934   TX19f3ab8a  1540775  2026-07 2026-07-18 19:59:35  AC211512    AC022242           P2P  DV0211512     620.00         6143.65      PAY               legit  train         4          0.112               legit      layering_chain  0.550183
+332953   TXb13a5fc2  1702280  2026-07 2026-07-20 16:51:20  AC019788    AC419294           P2P  DV0019788    1112.00        26904.18  COLLECT    phishing_collect  train         4          0.355    phishing_collect        refund_abuse  0.438963
+357562   TX47404036  1824848  2026-07 2026-07-22 02:54:08  AC360099    AC194252           P2P  DV0360099   12915.00        20909.91      PAY               legit  train         4          0.675    account_takeover            sim_swap  0.981484
+380077   TXcfb5c255  1947669  2026-07 2026-07-23 13:01:09  AC097033    AC183457           P2P  DV0097033    1970.00        15496.34  COLLECT               legit  train         4          0.078    phishing_collect               legit  0.856204
+384486   TX0dfe86ff  1963522  2026-07 2026-07-23 17:25:22  AC303327    AC237693           P2P  DV0303327    1950.00        28875.59  COLLECT               legit  train         4          0.217    phishing_collect               legit  0.875813
+390259   TX8c20e02f  1980484  2026-07 2026-07-23 22:08:04  AC409433    AC039568           P2P  DV0409433    1990.00        17703.11  COLLECT               legit  train         4          0.151    phishing_collect               legit  0.886112
+424118   TXc35b51fa  2153026  2026-07 2026-07-25 22:03:46  AC204877    MR009497      MERCHANT  DV0204877   14144.00        15558.40      PAY               legit  train         3          0.070  loan_app_extortion               legit  0.916291
+465601   TX12ff0a0e  2380697  2026-07 2026-07-28 13:18:17  AC123041    AC218822           P2P  DV0123041    1200.00         5109.10      PAY               legit  train         4          0.072               legit      layering_chain  0.844875
+527356   TXe444d9df  2684707  2026-08 2026-08-01 01:45:07  AC340403    AC091135           P2P  DV0340403   10373.00        11410.30      PAY               legit  train         4          0.646       fake_cashback    phishing_collect  0.962946
+543730   TX994d1a1a  2761680  2026-08 2026-08-01 23:08:00  AC176784    AC337305           P2P  DV0176784      10.00         2292.08      PAY               legit  train         4          0.049               legit    phishing_collect  0.848806
+562914   TX42a497a8  2882489  2026-08 2026-08-03 08:41:29  AC136362    AC317668           P2P  DV0121222   24801.00        27638.74      PAY               legit  train         3          0.745               legit      layering_chain  0.847147
+642027   TX6b66821d  3266403  2026-08 2026-08-07 19:20:03  AC223247    AC290281           P2P  DV0223247    1720.00         7065.94      PAY               legit  train         4          0.701        mule_account               legit  0.866054
+671900   TX7c4abc9e  3425587  2026-08 2026-08-09 15:33:07  AC093759    AC239200           P2P  DV0093759      10.00        29173.75      PAY               legit  train         4          0.117    phishing_collect               legit  0.861111
+696324   TX2bc52ff7  3535956  2026-08 2026-08-10 22:12:36  AC251913    AC160181           P2P  DV0251913  108889.00       113332.38      PAY      layering_chain  train         4          0.615    phishing_collect      layering_chain  0.965545
+730288   TXcc64b28e  3710329  2026-08 2026-08-12 22:38:49  AC149520    AC196536           P2P  DV0149520    3970.00         5607.71  COLLECT               legit  train         4          0.219    phishing_collect               legit  0.858063
+751030   TXf7d4dc3b  3838294  2026-08 2026-08-14 10:11:34  AC166626    AC254990           P2P  DV0166626    1990.00        21095.08  COLLECT               legit  train         4          0.269    phishing_collect               legit  0.852567
+781926   TX47dae5cb  3982534  2026-08 2026-08-16 02:15:34  AC394981    MR006129      MERCHANT  DV0394981    1000.00        15336.66      PAY               legit  train         3          0.093               legit  merchant_collusion  0.803718
+784862   TX61e3641f  4012083  2026-08 2026-08-16 10:28:03  AC251913    AC391060           P2P  DV0251913       2.00          313.95      PAY    phishing_collect  train         4          0.067      layering_chain    phishing_collect  0.626722
+797694   TXa4a38985  4054453  2026-08 2026-08-16 22:14:13  AC394981    MR006129      MERCHANT  DV0394981    1000.00        19245.09       QR               legit  train         4          0.443               legit  merchant_collusion  0.810306
+801443   TXac93037f  4096611  2026-08 2026-08-17 09:56:51  AC394981    MR006129      MERCHANT  DV0394981    2000.00         6215.90       QR               legit  train         3          0.295               legit  merchant_collusion  0.778473
+812612   TXa6cd6f56  4133584  2026-08 2026-08-17 20:13:04  AC125064    MR002182      MERCHANT  DV0125064    1442.45         6282.13   REFUND               legit  train         4          0.663               legit        refund_abuse  0.714992
+820311   TX0bae7bd7  4189955  2026-08 2026-08-18 11:52:35  AC084229    MR021160      MERCHANT  DV0084229    1334.93         3021.54   REFUND               legit  train         3          0.249               legit        refund_abuse  0.746194
+828226   TX31f04586  4216442  2026-08 2026-08-18 19:14:02  AC295230    AC311099           P2P  DV0295230    1980.00         5626.46  COLLECT               legit  train         4          0.053               legit    phishing_collect  0.838471
+843713   TXaa6f1c12  4298197  2026-08 2026-08-19 17:56:37  AC392701    AC142179           P2P  DV0392701   22018.00        25473.52  COLLECT               legit  train         3          0.160               legit    phishing_collect  0.821183
+860152   TXd285f56a  4382314  2026-08 2026-08-20 17:18:34  AC068444    AC087362           P2P  DV0068444     610.00         6222.61      PAY  loan_app_extortion  train         3          0.719  loan_app_extortion        mule_account  0.445106
+877451   TX07dc4ebd  4469830  2026-08 2026-08-21 17:37:10  AC191605    AC119084           P2P  DV0191605    1960.00        31346.94  COLLECT               legit  train         4          0.087    phishing_collect               legit  0.863538
+902895   TXa567a95d  4612174  2026-08 2026-08-23 09:09:34  AC116603    MR005718      MERCHANT  DV0116603    7834.00         8617.40       QR               legit  train         3          0.537               legit  merchant_collusion  0.801032
+907131   TX93e3e98e  4626864  2026-08 2026-08-23 13:14:24  AC341027    MR005718      MERCHANT  DV0341027    1276.00        56495.28       QR    phishing_collect  train         4          0.465    phishing_collect  merchant_collusion  0.439413
+935095   TX2e32614d  4752901  2026-08 2026-08-25 00:15:01  AC356242    AC272335           P2P  DV0356242      10.00         4626.28      PAY    phishing_collect  train         3          0.046        velocity_bot    phishing_collect  0.501196
+947163   TX8544e48a  4820300  2026-08 2026-08-25 18:58:20  AC054990    MR022790      MERCHANT  DV0054990    2500.00        11507.50      PAY               legit  train         4          0.356  merchant_collusion               legit  0.883607
+982694   TXe11b4edb  4997449  2026-08 2026-08-27 20:10:49  AC027853    AC196008           P2P  DV0027853  156266.00       156416.65      PAY               legit  train         3          0.703        mule_account      layering_chain  0.882877
+982982   TXcebc8c8f  4998351  2026-08 2026-08-27 20:25:51  AC347010    MR005866      MERCHANT  DV0347010    2044.14        32408.68  AUTOPAY        mule_account  train         4          0.340        mule_account  loan_app_extortion  0.489132
+1033947  TX5ae927bd  5256903  2026-08 2026-08-30 20:15:03  AC168605    AC269958           P2P  DV0168605    1980.00        16873.87  COLLECT               legit  train         4          0.084    phishing_collect               legit  0.874596
+1069599  TX677969a4  5436419  2026-09 2026-09-01 22:06:59  AC281246    AC348775           P2P  DV0281246    1999.00        21147.30  COLLECT               legit  train         4          0.500    phishing_collect               legit  0.944966
+1084085  TX9449b86a  5514356  2026-09 2026-09-02 19:45:56  AC121246    AC082555           P2P  DV0121246       5.00        25248.06      PAY               legit  train         3          0.427       fake_cashback    phishing_collect  0.945917
+1148939  TXd7605ccb  5851011  2026-09 2026-09-06 17:16:51  AC319707    AC271126           P2P  DV0319707    1990.00         2432.13  COLLECT               legit  train         4          0.618    phishing_collect               legit  0.867237
+1174826  TXc9140114  5994202  2026-09 2026-09-08 09:03:22  AC156398    MR026125      MERCHANT  DV0156398     310.00         3170.26       QR               legit  train         4          0.661               legit             qr_swap  0.804190
+1193678  TXc665b7ea  6087750  2026-09 2026-09-09 11:02:30  AC070416    AC031726           P2P  DV0208803    1950.00         5490.37  COLLECT               legit  train         4          0.240    phishing_collect               legit  0.867384
+1204283  TX991cf4b4  6122550  2026-09 2026-09-09 20:42:30  AC334513    AC135182           P2P  DV0334513       2.00        20269.30      PAY               legit  train         4          0.044       fake_cashback    phishing_collect  0.938675
+1245442  TXc2bfea2d  6349446  2026-09 2026-09-12 11:44:06  AC311835    AC318417           P2P  DV0311835    1990.00        30398.95  COLLECT               legit  train         3          0.183    phishing_collect               legit  0.870511
+1247298  TXb216597b  6355391  2026-09 2026-09-12 13:23:11  AC199602    AC334345           P2P  DV0199602    1949.00         7615.94  COLLECT               legit  train         4          0.663               legit    phishing_collect  0.725816
+1292414  TX79120251  6576272  2026-09 2026-09-15 02:44:32  AC370657    AC035718           P2P  DV0370657     820.00         3112.30      PAY               legit  train         3          0.099        velocity_bot               legit  0.875945
+1292473  TXb3bff8b6  6580888  2026-09 2026-09-15 04:01:28  AC252370    AC035718           P2P  DV0252370     690.00        18583.58      PAY               legit  train         4          0.183        velocity_bot               legit  0.870312
+1292560  TXf041a12d  6585658  2026-09 2026-09-15 05:20:58  AC389592    AC035718           P2P  DV0389592    4730.00          889.76      PAY               legit  train         3          0.421        velocity_bot               legit  0.867230
+1309365  TX5530d13a  6671065  2026-09 2026-09-16 05:04:25  AC028929    AC075529           P2P  DV0028929     697.00          906.15      PAY               legit  train         3          0.246            sim_swap               legit  0.908682
+1338507  TXbebdf8e5  6808991  2026-09 2026-09-17 19:23:11  AC274624    AC196914           P2P  DV0274624     960.00         5437.57      PAY               legit  train         4          0.300            sim_swap               legit  0.858035
+1372235  TX26e10e34  6981008  2026-09 2026-09-19 19:10:08  AC024007    AC247697           P2P  DV0024007       5.00         4111.56      PAY               legit  train         3          0.585               legit    phishing_collect  0.840508
+1388803  TX8c23c0e8  7067316  2026-09 2026-09-20 19:08:36  AC410285    AC205452           P2P  DV0410285    1325.00         2190.88  COLLECT               legit  train         3          0.760               legit    phishing_collect  0.673630
+1391945  TX45b56783  7076529  2026-09 2026-09-20 21:42:09  AC055022    AC087438           P2P  DV0103165    5970.00        33161.03  COLLECT               legit  train         4          0.230    phishing_collect               legit  0.865070
+1476426  TX12a1d638  7505106  2026-09 2026-09-25 20:45:06  AC023989    AC382424           P2P  DV0023989    1999.00         2198.90  COLLECT               legit  train         3          0.640               legit    phishing_collect  0.837344
+1478972  TXc337e5ff  7517499  2026-09 2026-09-26 00:11:39  AC060518    MR007988      MERCHANT  DV0060518    3613.00         3974.30      PAY               legit  train         4          0.196               legit  merchant_collusion  0.844875
+1481268  TXa13cc91c  7550997  2026-09 2026-09-26 09:29:57  AC135205    AC211152           P2P  DV0135205    9999.00        11963.83      PAY               legit  train         4          0.080               legit    phishing_collect  0.849734
+1497538  TX25249423  7635476  2026-09 2026-09-27 08:57:56  AC087581    AC162447           P2P  DV0087581   20638.00        22560.28      PAY               legit  train         3          0.469      layering_chain        mule_account  0.850417
+
+### October detection-rate mixture scenario
+{'score': 0.5393359744095666, 'delta': -0.01980043666586684, 'ratios': {'legit': np.float64(1.0011), 'mule_account': np.float64(1.2452), 'velocity_bot': np.float64(0.4962), 'layering_chain': np.float64(0.9039), 'sim_swap': np.float64(0.8904), 'account_takeover': np.float64(1.1468), 'phishing_collect': np.float64(0.976), 'qr_swap': np.float64(0.9497), 'refund_abuse': np.float64(1.052), 'fake_cashback': np.float64(1.0816), 'loan_app_extortion': np.float64(0.9511), 'merchant_collusion': np.float64(0.6379)}}
+
+### mixture only mule_account
+0.00406324668342628
+
+### mixture only velocity_bot
+-0.014451735135737387
+
+### mixture only layering_chain
+-0.0016360612148299536
+
+### mixture only sim_swap
+-0.0016980174776946022
+
+### mixture only account_takeover
+0.0028424517435430285
+
+### mixture only phishing_collect
+-0.0003626142762729323
+
+### mixture only qr_swap
+-0.0009229209943611982
+
+### mixture only refund_abuse
+0.0009680675080205869
+
+### mixture only fake_cashback
+0.0012449466206468918
+
+### mixture only loan_app_extortion
+-0.00103617241676901
+
+### mixture only merchant_collusion
+-0.008806627795285626
+
+### public 30 percent sampling scenario
+{'rows': 78175, 'mean': 0.55855303773067, 'sd': 0.009815081773692006, 'p025': 0.5398867954156044, 'p975': 0.5779802837226787}
+
+### DONE
+No fits; no data/model/submission writes.
+
+### cleaning branches
+{'unreported': 2202, 'unreported_model_fallback': 873, 'type': 737, 'band': 991, 'changed_total': 3930}
+
+### undo clean branch unreported
+{'macro': 0.5270750446574063, 'delta': 0.03206136641802715, 'current_pred_agrees_clean': 2017, 'current_pred_agrees_raw': 0, 'app3_share': 0.5958219800181653}
+
+### undo clean branch fallback subset
+{'macro': 0.5488485329685792, 'delta': 0.010287878106854276, 'current_pred_agrees_clean': 858, 'current_pred_agrees_raw': 0, 'app3_share': 0.570446735395189}
+
+### undo clean branch event type
+{'macro': 0.5585012611268758, 'delta': 0.0006351499485576229, 'current_pred_agrees_clean': 306, 'current_pred_agrees_raw': 358, 'app3_share': 0.6160108548168249}
+
+### undo clean branch band
+{'macro': 0.5438180886212798, 'delta': 0.015318322454153654, 'current_pred_agrees_clean': 991, 'current_pred_agrees_raw': 0, 'app3_share': 0.5418768920282543}
+
+### cross-month raw-label vote exposure
+{'rows': 2162, 'relabelled': 93, 'changed_type': 32, 'unreported': 50}
+
+### cleaner checked on known band rows
+{'n': 6573, 'raw_wrong': 991, 'vote_cleaner_wrong': 125, 'raw_right_to_wrong': 58, 'wrong_to_right': 924}
+
+### chain benchmark disagreement root 40650
+           txn_id       t    month           timestamp sender_id receiver_id receiver_type  device_id    amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band           clean
+40650  TX58850cec  222594  2026-07 2026-07-03 13:49:54  AC097896    AC274440           P2P  DV0423422  101862.0       103821.12      PAY  mule_account  train         3          0.643     1           1    mule_account
+40790  TX8abd6dba  223002  2026-07 2026-07-03 13:56:42  AC274440    AC258674           P2P  DV0274440  101114.0       102802.40      PAY         legit  train         4          0.569     0           1  layering_chain
+41048  TX907b6dc4  224083  2026-07 2026-07-03 14:14:43  AC258674    AC402003           P2P  DV0258674   98210.0       101707.26      PAY  mule_account  train         3          0.660     0           1    mule_account
+
+### chain benchmark disagreement root 336367
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band           clean
+336367  TX53954d21  1712439  2026-07 2026-07-20 19:40:39  AC054438    AC030545           P2P  DV0054438  46434.0        51087.45      PAY  mule_account  train         4          0.217     0           1    mule_account
+336695  TX7d2aaf0b  1713319  2026-07 2026-07-20 19:55:19  AC030545    AC391354           P2P  DV0423371  44953.0        50186.88      PAY  mule_account  train         3          0.192     1           1    mule_account
+336859  TX6d1364a9  1713757  2026-07 2026-07-20 20:02:37  AC391354    AC302117           P2P  DV0391354  43569.0        48546.71      PAY         legit  train         3          0.698     0           1  layering_chain
+
+### chain benchmark disagreement root 694901
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band         clean
+694901  TX73a2abce  3530975  2026-08 2026-08-10 20:49:35  AC387175    AC228409           P2P  DV0387175  39211.0        42760.78      PAY  mule_account  train         3          0.249     0           1  mule_account
+695083  TX1496e1b7  3531497  2026-08 2026-08-10 20:58:17  AC228409    AC091069           P2P  DV0228409  38267.0        39322.61      PAY  mule_account  train         3          0.623     0           1  mule_account
+695311  TXb92e85d0  3532210  2026-08 2026-08-10 21:10:10  AC091069    AC166908           P2P  DV0091069  37363.0        41896.77      PAY  mule_account  train         3          0.430     0           1  mule_account
+695429  TX50a807d8  3532613  2026-08 2026-08-10 21:16:53  AC166908    AC293833           P2P  DV0166908  36438.0        37867.11      PAY  mule_account  train         3          0.124     0           1      sim_swap
+695652  TX3791fee9  3533371  2026-08 2026-08-10 21:29:31  AC293833    AC231921           P2P  DV0423213  35859.0        40487.99      PAY  mule_account  train         4          0.699     1           1  mule_account
+695820  TX866d9bd3  3533942  2026-08 2026-08-10 21:39:02  AC231921    AC276537           P2P  DV0231921  34841.0        34957.55      PAY  mule_account  train         3          0.508     0           1  mule_account
+
+### chain benchmark disagreement root 993067
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band           clean
+993067  TX78350e0a  5062002  2026-08 2026-08-28 14:06:42  AC082064    AC301737           P2P  DV0082064  34153.0        36342.79      PAY         legit  train         4          0.483     0           1  layering_chain
+993390  TX83a3217c  5063298  2026-08 2026-08-28 14:28:18  AC301737    AC166717           P2P  DV0301737  33678.0        34047.22      PAY  mule_account  train         3          0.276     0           1    mule_account
+993656  TX4ff2b61a  5064280  2026-08 2026-08-28 14:44:40  AC166717    AC323500           P2P  DV0423437  32678.0        34572.82      PAY  mule_account  train         4          0.859     1           1    mule_account
+993792  TXf89dc495  5064805  2026-08 2026-08-28 14:53:25  AC323500    AC159110           P2P  DV0323500  32171.0        35753.38      PAY  mule_account  train         3          0.531     0           1    mule_account
+993838  TXf7a971c4  5064994  2026-08 2026-08-28 14:56:34  AC159110    AC375721           P2P  DV0159110  31903.0        34327.12      PAY  mule_account  train         3          0.205     0           1    mule_account
+994071  TX1dc9f2e7  5065909  2026-08 2026-08-28 15:11:49  AC375721    AC243745           P2P  DV0375721  31125.0        31737.04      PAY         legit  train         3          0.493     0           1  layering_chain
+
+### chain benchmark disagreement root 993067
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band           clean
+993067  TX78350e0a  5062002  2026-08 2026-08-28 14:06:42  AC082064    AC301737           P2P  DV0082064  34153.0        36342.79      PAY         legit  train         4          0.483     0           1  layering_chain
+993390  TX83a3217c  5063298  2026-08 2026-08-28 14:28:18  AC301737    AC166717           P2P  DV0301737  33678.0        34047.22      PAY  mule_account  train         3          0.276     0           1    mule_account
+993656  TX4ff2b61a  5064280  2026-08 2026-08-28 14:44:40  AC166717    AC323500           P2P  DV0423437  32678.0        34572.82      PAY  mule_account  train         4          0.859     1           1    mule_account
+993792  TXf89dc495  5064805  2026-08 2026-08-28 14:53:25  AC323500    AC159110           P2P  DV0323500  32171.0        35753.38      PAY  mule_account  train         3          0.531     0           1    mule_account
+993838  TXf7a971c4  5064994  2026-08 2026-08-28 14:56:34  AC159110    AC375721           P2P  DV0159110  31903.0        34327.12      PAY  mule_account  train         3          0.205     0           1    mule_account
+994071  TX1dc9f2e7  5065909  2026-08 2026-08-28 15:11:49  AC375721    AC243745           P2P  DV0375721  31125.0        31737.04      PAY         legit  train         3          0.493     0           1  layering_chain
+
+### chain benchmark disagreement root 1185326
+             txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id    amount  balance_before txn_type           label  split app_major  ip_risk_score  band  chain_band           clean
+1185326  TX6d84b0af  6030695  2026-09 2026-09-08 19:11:35  AC098657    AC211238           P2P  DV0098657  152658.0       153877.78      PAY  layering_chain  train         3          0.190     0           3  layering_chain
+1185634  TXaeeb8f5d  6031491  2026-09 2026-09-08 19:24:51  AC211238    AC169524           P2P  DV0424293  151083.0       171051.78      PAY  layering_chain  train         4          0.249     3           3  layering_chain
+1185723  TX3852608c  6031724  2026-09 2026-09-08 19:28:44  AC169524    AC290040           P2P  DV0169524  149943.0       163851.37      PAY  layering_chain  train         4          0.469     0           3  layering_chain
+1185796  TX8fa67c8c  6031929  2026-09 2026-09-08 19:32:09  AC290040    AC270808           P2P  DV0290040  148993.0       159275.00      PAY  layering_chain  train         4          0.177     0           3    refund_abuse
+
+### chain benchmark disagreement root 1222840
+             txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id    amount  balance_before txn_type         label  split app_major  ip_risk_score  band  chain_band           clean
+1222840  TX8e4c2cdf  6214467  2026-09 2026-09-10 22:14:27  AC123503    AC265485           P2P  DV0123503  104112.0       112429.54      PAY         legit  train         4          0.466     0           1  layering_chain
+1222961  TX3a06af39  6215072  2026-09 2026-09-10 22:24:32  AC265485    AC294828           P2P  DV0265485  102190.0       106305.41      PAY  mule_account  train         3          0.103     0           1    mule_account
+1223188  TX37a5b590  6216209  2026-09 2026-09-10 22:43:29  AC294828    AC415637           P2P  DV0294828  101090.0       105504.96      PAY  mule_account  train         3          0.693     0           1    mule_account
+1223259  TXa3715209  6216600  2026-09 2026-09-10 22:50:00  AC415637    AC379174           P2P  DV0423435   98630.0        99769.30      PAY  mule_account  train         3          0.522     1           1    mule_account
+
+### non reciprocal parent example
+            txn_id       t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type           label  split app_major  ip_risk_score
+102397  TX2bc6561e  529505  2026-07 2026-07-07 03:05:05  AC348909    AC355256           P2P  DV0348909  65985.0        66984.83      PAY  layering_chain  train         4          0.826
+102466  TX26449413  534639  2026-07 2026-07-07 04:30:39  AC355256    AC289081           P2P  DV0355256  65145.0        72547.65      PAY  layering_chain  train         4          0.478
+
+### non reciprocal parent example
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type           label  split app_major  ip_risk_score
+241597  TXa1b9d797  1247228  2026-07 2026-07-15 10:27:08  AC296445    AC067758           P2P  DV0296445  29266.0        32635.70      PAY  layering_chain  train         4          0.554
+242039  TXcc59a4ee  1248849  2026-07 2026-07-15 10:54:09  AC067758    AC064438           P2P  DV0424604  28849.0        30181.93      PAY  layering_chain  train         4          0.181
+
+### non reciprocal parent example
+            txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id  amount  balance_before txn_type         label  split app_major  ip_risk_score
+561696  TXcfb0a966  2872795  2026-08 2026-08-03 05:59:55  AC121728    AC065394           P2P  DV0423004  4170.0         8362.57      PAY         legit  train         4          0.252
+562244  TX194176fc  2879008  2026-08 2026-08-03 07:43:28  AC065394    AC370028           P2P  DV0423005  4163.0        11524.60      PAY  mule_account  train         3          0.124
+
+### train changed shop session membership
+{'changed': 5, 'S_flag_false': 0}
+
+### train shop band context
+            txn_id       t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type         label  split app_major  ip_risk_score  band  S_flag
+129340  TXa9c563f2  667648  2026-07 2026-07-08 17:27:28  AC034932    MR022540      MERCHANT  DV0034932   2000.0        15617.27      PAY  refund_abuse  train         3          0.121     0    True
+136482  TXdead8ed7  704250  2026-07 2026-07-09 03:37:30  AC419538    MR022540      MERCHANT  DV0427963  10000.0        21343.08       QR         legit  train         3          0.121     8    True
+
+### test changed shop session membership
+{'changed': 7, 'S_flag_false': 0}
+
+### test shop band context
+             txn_id        t    month           timestamp sender_id receiver_id receiver_type  device_id   amount  balance_before txn_type label split app_major  ip_risk_score  band  S_flag
+1586322  TXfee0b1a5  8187390  2026-10 2026-10-03 18:16:30  AC323661    MR014017      MERCHANT  DV0323661  10000.0        11000.00      PAY  None  test         5          0.141     0    True
+1590074  TX62df1b07  8241502  2026-10 2026-10-04 09:18:22  AC303388    MR014017      MERCHANT  DV0474488   2500.0        17586.37      PAY  None  test         5          0.232     8    True
+
+### F1 selected columns
+['is_1p1', 'is_1p02']
