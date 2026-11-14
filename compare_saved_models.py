@@ -74,7 +74,7 @@ def mix(probabilities, weights):
     return sum(float(w) * probabilities[k] for k, w in zip("ABC", weights))
 
 
-def select_policy(probabilities, y, groups, context, config, min_gain=.001):
+def select_policy(probabilities, y, groups, context, config, min_gain=.001, fraud_gate_search=False):
     """Only calibration rows are accepted; assessment labels cannot enter."""
     dates = pd.DatetimeIndex(pd.to_datetime(context["dates"], utc=True))
     if (not len(y) or len(dates) != len(y) or dates.isna().any()
@@ -89,6 +89,11 @@ def select_policy(probabilities, y, groups, context, config, min_gain=.001):
     early_ctx, late_ctx = slice_rule_context(context, early), slice_rule_context(context, late)
     specs = [("legacy", WEIGHTS["original"], config)] + [
         (name + "_broad", w, {**config, **BROAD}) for name, w in WEIGHTS.items()]
+    if fraud_gate_search:
+        for name in ("original", "equal"):
+            for threshold in (-.5, 0., .5, 1.):
+                specs.append((f"{name}_fraud_gate_{threshold:g}", WEIGHTS[name],
+                              {**config, **BROAD, "fraud_gate_log_odds": threshold}))
     trials = []
     selected, best, baseline = None, -1., None
     for number, (name, weights, settings) in enumerate(specs, 1):
@@ -116,6 +121,8 @@ def main(argv=None):
     ap.add_argument("--labels-csv", type=Path, default=Path("../upi-fraud-rings/train.csv"))
     ap.add_argument("--output-dir", type=Path, default=Path("runs/saved_model_comparison"))
     ap.add_argument("--min-gain", type=float, default=.001)
+    ap.add_argument("--fraud-gate-search", action="store_true",
+                    help="also test total-fraud-mass gates on original and equal blends")
     a = ap.parse_args(argv)
     if a.output_dir.exists():
         raise FileExistsError("output folder already exists; choose a new --output-dir")
@@ -145,7 +152,7 @@ def main(argv=None):
     y = read_labels(a.labels_csv, meta.txn_id)
     config = manifest["config"].get("calibration", {})
     selected, trials = select_policy({k: p[cal] for k, p in probabilities.items()}, y[cal], groups[cal],
-                                    slice_rule_context(context, cal), config, a.min_gain)
+                                    slice_rule_context(context, cal), config, a.min_gain, a.fraud_gate_search)
     # Freeze the decision before examining any assessment metrics.
     print(f"Selected {selected['name']}; recalibrating on Sep16-23...", flush=True)
     selected_p = probabilities["original"] if selected["name"] == "legacy" else mix(probabilities, selected["weights"])

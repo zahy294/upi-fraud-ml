@@ -70,6 +70,7 @@
     }
   ],
   "recall": {
+    "fraud_gate_thresholds": [-0.5, 0.0, 0.5, 1.0],
     "enabled": true,
     "class_weight_power": 0.5,
     "class_weight_cap": 6.0,

@@ -68,4 +68,11 @@ Implementation verification uses only small synthetic probability artifacts:
 rtk proxy .\.colab-venv\Scripts\python.exe tests/test_saved_comparison.py
 ```
 
-The actual competition comparison must be launched by the user or teammate.
+The command can be run by the user or teammate against the saved run.
+
+Optional `--fraud-gate-search` adds eight policies testing total adjusted
+fraud mass versus legit, on original/equal blends with log-odds thresholds
+-0.5,0,0.5,1. Fraud type is chosen only after the fraud gate. Use a new output
+directory. The agent has now run this comparison at the user's request:
+`runs/fraud_gate_comparison/COMPARISON.txt` reports assessment0.520807 with
+the selected equal-weight,-0.5-gate policy. No models were trained.

@@ -143,7 +143,19 @@ def _decision_scores(logp, groups, offsets):
 
 
 def _decision(logp, groups, offsets, context):
-    return _apply_rules(_decision_scores(logp, groups, offsets).argmax(axis=1), context)
+    scores = _decision_scores(logp, groups, offsets)
+    pred = scores.argmax(axis=1)
+    if "fraud_gate_log_odds" in offsets:
+        threshold = float(offsets["fraud_gate_log_odds"])
+        if not np.isfinite(threshold):
+            raise ValueError("fraud gate threshold must be finite")
+        # Detect fraud from total adjusted fraud mass, then choose its type.
+        # Stable log-sum-exp avoids numerical overflow for extreme offsets.
+        top = scores[:, 1:].max(axis=1)
+        fraud_logmass = top + np.log(np.exp(scores[:, 1:] - top[:, None]).sum(axis=1))
+        pred = np.where(fraud_logmass - scores[:, 0] >= threshold,
+                        scores[:, 1:].argmax(axis=1) + 1, 0)
+    return _apply_rules(pred, context)
 
 
 def predict_labels(proba: np.ndarray, groups: np.ndarray,
@@ -156,6 +168,8 @@ def predict_labels(proba: np.ndarray, groups: np.ndarray,
 
 def _optimize(logp, y, groups, context, config, conditional):
     result = {"global": [0.] * 12, "conditional": {}, "class_order": list(LABELS)}
+    if "fraud_gate_log_odds" in config:
+        result["fraud_gate_log_odds"] = float(config["fraud_gate_log_odds"])
     trace = []
 
     def objective(offsets):
@@ -343,6 +357,13 @@ def select_member_policy(probabilities, baseline_weights, y_raw, groups, rule_co
     specs = [("legacy", baseline_weights, legacy), ("baseline_broad", baseline_weights, broad)]
     specs += [(key, {k: float(k == key) for k in keys}, broad) for key in keys]
     specs += [("equal_members", {k: 1 / len(keys) for k in keys}, broad)]
+    gates = [float(v) for v in config.get("fraud_gate_thresholds", [])]
+    if any(not np.isfinite(v) for v in gates):
+        raise ValueError("fraud gate thresholds must be finite")
+    for label, weights in (("baseline", baseline_weights), ("equal", {k: 1 / len(keys) for k in keys})):
+        for threshold in gates:
+            specs.append((f"{label}_fraud_gate_{threshold:g}", weights,
+                          {**broad, "fraud_gate_log_odds": threshold}))
     def blend(weights):
         return sum(weights[k] * probabilities[k] for k in keys)
     chosen = specs[0]

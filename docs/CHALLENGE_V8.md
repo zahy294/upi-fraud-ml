@@ -52,6 +52,12 @@ does not establish their correctness from the public leaderboard.
 The new run's reference ensemble is A alone. Candidates are the reference
 with broader offsets, each of A/B/C/R individually, and an equal four-way
 blend. Their thresholds are fitted on Sep16-19 and evaluated on Sep20-23.
+The reference and equal blend also test a separate fraud-detection decision:
+sum the11 adjusted fraud probabilities, compare that mass against legit,
+and then select the strongest fraud class. Candidate log-odds thresholds are
+-0.5,0,0.5,1. They pass through the same temporal selection and saved-offset
+checks. The original max-class decision remains a candidate. Direct-band
+rules still apply after either decision method.
 A candidate must beat the reference by more than0.001 macro-F1. Only the
 chosen policy is recalibrated on all Sep16-23; the selected member weights
 are reused for the final refit. Sep24-30 is reported afterward, with original
@@ -100,6 +106,13 @@ from0.515393 to0.519201 (+0.003808). The new candidate is at
 `runs/challenge_saved_comparison/submission.csv`, with full diagnostics and
 provenance beside it. This is a local gain; its public score is unknown.
 It does not include any newly trained challenge model.
+
+A subsequent17-policy saved comparison tested the separate fraud gate.
+Equal weights with a-0.5 gate won the inner comparison (0.506567) and raised
+later assessment to0.520807 (+0.005415 versus the original0.515393).
+That candidate and all12-class reports are at `runs/fraud_gate_comparison`.
+Its public score is unmeasured. Repeated use of the same September assessment
+reduces its independence; these small gains do not establish top-three odds.
 
 ## Verification
 
