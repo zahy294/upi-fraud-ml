@@ -4,6 +4,13 @@ This is an experimental diversity candidate, not a replacement for the team's
 0.5411 public baseline and not evidence for a promised0.642 score. Training is
 run by the user. The existing dependencies suffice; no GPU is required.
 
+**Measured update, 14 November:** the user's completed forest scored
+**0.501632** on Sep24-30, below the saved 0.520807 reference. Neither the
+bounded forest/hierarchy blends nor the alternative threshold search cleared
+the selection margin. Do not refit this forest for a new submission based on
+these results. The next isolated feature experiment is documented in
+[EVENT_BOOST_V11.md](EVENT_BOOST_V11.md).
+
 Extra Trees randomizes split thresholds across an ensemble of trees, providing
 a different model family from the LightGBM/XGBoost/CatBoost boosting models.
 That difference is a reason to test it, not proof of a blending gain.
@@ -59,7 +66,7 @@ rtk proxy .\.colab-venv\Scripts\python.exe forest_experiment.py --stage validate
 `prepare` computes features only. `validate` fits **one** forest and saves
 `runs/forest_v10/RUN_REPORT.md`, the model/imputer, probabilities, offsets and
 checksums. It creates no competition submission. Keep the terminal open; the
-forest prints progress. Real training runtime and score have not been measured.
+forest prints progress. Its measured score is recorded at the top of this document.
 
 Review that report before running:
 
