@@ -81,3 +81,30 @@ v5 builder expecting the v4 submission.
    Retain the verified v4 file as the public baseline.
 
 All implementation commits and pushes stay on `codex/target-070`.
+
+## Commands
+
+With the existing local Python environment, inventory the artifact bundle:
+
+```powershell
+rtk proxy .\.colab-venv\Scripts\python.exe v4_master.py --artifact-root "C:\path\to\friends\upi-fraud-ml" --stage check
+```
+
+Once all files are present, reproduce the submitted labels without training:
+
+```powershell
+rtk proxy .\.colab-venv\Scripts\python.exe v4_master.py --artifact-root "C:\path\to\friends\upi-fraud-ml" --stage reproduce --output-dir runs/v4_reproduction
+```
+
+The small predeclared tuning comparison performs reproduction again and refuses
+to tune if **any** submitted label differs. Use a fresh output directory:
+
+```powershell
+rtk proxy .\.colab-venv\Scripts\python.exe v4_master.py --artifact-root "C:\path\to\friends\upi-fraud-ml" --stage tune --output-dir runs/v4_tuning
+```
+
+Output includes input/code hashes, baseline CSV checksum, per-class metrics,
+eight candidate policies and `RUN_REPORT.md`. CSV byte differences caused solely
+by formatting are reported separately from ID-aligned prediction differences.
+No changes are made to the original artifacts. Existing output directories are
+not overwritten. No additional dependencies are required for these diagnostics.
