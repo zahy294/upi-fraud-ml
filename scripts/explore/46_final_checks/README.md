@@ -1,6 +1,6 @@
 # Final checks, 14 Nov night
 
-One-off scripts behind the "Update, 14 Nov, midnight" box in `docs/IMPLEMENTATION_PLAN.md`. They are exploratory and unpolished.
+One-off scripts behind the findings in the top-level README ("What limits the score", edge probes, the QR-field rule). They are exploratory and unpolished.
 
 Run from an empty working folder, as `python -I <script> <project_root> [...]`:
 

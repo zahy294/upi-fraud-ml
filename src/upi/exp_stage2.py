@@ -1,8 +1,8 @@
 """Strict nested month cross-fitting for a probability-neighbour second stage.
 
 Run: python -I src/upi/exp_stage2.py ROOT --out NEW_DIRECTORY
-No existing input/output file is overwritten. See docs/codex_review.md for the
-three-month uniform-prior fallback and the distinction from ordinary OOF stacking.
+No existing input/output file is overwritten. Months without out-of-fold predictions fall back to a uniform prior,
+which is what distinguishes this from ordinary OOF stacking.
 """
 import argparse
 import gc

@@ -1,4 +1,4 @@
-"""Feature pack v2: event sessions for the recipes documented in docs/codex_recipes.md and docs/codex_bot_drift.md.
+"""Feature pack v2: event sessions for the fraud recipes (fixed-ratio drains, paybacks, forwards) and the bot bursts.
 
 Label-free, train+test together. Usage: python -I src/upi/features_v2.py <project_root>
 """
