@@ -60,3 +60,13 @@ desktop.ini
 
 # 65 MB dump from a review agent
 docs/codex_episodes.md
+
+# working notes and review-agent reports (kept locally only)
+.claude/
+docs/*
+!docs/PROBLEM_STATEMENT.md
+scripts/explore/*codex*
+scripts/explore/*antigravity*
+scripts/explore/50_redteam_stealth.py
+scripts/explore/42_october_drift.py
+*.pdf
