@@ -53,7 +53,8 @@ Written 2026-11-13, 11:30 IST (round day 1, about 46 hours left). Builds on [the
 
 > **Update, 14 Nov, midnight. Final state of the round.**
 >
-> - **Best public: 0.5472** (`final_s2_typ_all.csv`, uploaded 14 Nov 23:36): the second stage decides fraud or legit and a specialist model types the detected rows (`exp_typing.py`, mode `all`). `run_all.py` builds it as its last step. It is 0.0001 above the second-stage file, which is noise.
+> - **Best public: 0.5475** (`edge3_bot_right.csv`, 15 Nov 05:23): the 0.5472 file with the October bot|layering band edge moved four device numbers to the right. Eight edge probes were uploaded (table in the README, "Edge probes"); four confirmed the placed edge, three touched no public row, one raised the score. `run_all.py` applies the kept move as its last step (`EDGE_MOVES`).
+> - **0.5472** (`final_s2_typ_all.csv`, uploaded 14 Nov 23:36): the second stage decides fraud or legit and a specialist model types the detected rows (`exp_typing.py`, mode `all`). `run_all.py` builds it as its last step. It is 0.0001 above the second-stage file, which is noise.
 > - **Probe, 14 Nov 23:35:** `probe_simband_shape.csv` scored 0.5325. It retyped 73 rows on multi-row devices in the SIM-swap band as takeover, following the shape of their events. The 0.015 drop confirms that test labels follow the device band, as in training.
 > - **Second-stage file: 0.5471** (`final_s2_v7edges.csv`): the second-stage model (`features_v6.py`, account episodes) on top of the one-stage model, with test band edges that also use how densely each band is occupied. The one-stage file scored 0.5468. `run_all.py` now runs the second stage too and rebuilds both files.
 > - **Model variants are flat.** XGBoost, CatBoost, a neural network, a detect-then-type specialist and their blends all land within 0.002 of the second stage on the local benchmark (Colab and laptop runs).

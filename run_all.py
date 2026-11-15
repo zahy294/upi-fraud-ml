@@ -1,4 +1,5 @@
-"""One entry point: raw CSVs -> features -> models -> submissions/<name>_typ_all.csv, <name>.csv and <name>_base.csv
+"""One entry point: raw CSVs -> features -> models -> submissions/<name>_edges_quirk.csv, plus
+<name>_edges.csv, <name>_typ_all.csv, <name>.csv and <name>_base.csv from the earlier steps
 
     python run_all.py                      # full run, skipping steps whose outputs already exist
     python run_all.py --force              # rebuild everything
@@ -21,7 +22,14 @@ Steps (each is a script you can also run on its own):
  13. src/upi/make_submission.py            class weights + band rules -> submissions/<name>.csv
  14. src/upi/exp_typing.py (tag s2_typ_all) detect-then-type: the second stage decides fraud or legit, a specialist model
                                            trained only on detected fraud rows decides the type
- 15. src/upi/make_submission.py            class weights + band rules -> submissions/<name>_typ_all.csv   (the final file)
+ 15. src/upi/make_submission.py            class weights + band rules -> submissions/<name>_typ_all.csv
+ 16. src/upi/relabel_band_rows.py          EDGE_MOVES below -> submissions/<name>_edges.csv
+ 17. src/upi/quirk_rules.py                rows the legit generator cannot produce -> submissions/<name>_edges_quirk.csv
+
+--mlp adds a neural network to the second stage (needs PyTorch; fitted on --device, default cuda):
+ 18. src/upi/exp_mlp.py (tag mlp)          small neural network on the same feature tables, with test predictions
+ 19. src/upi/make_submission.py --blend    average of second stage and network -> submissions/<name>_blend.csv
+ 20. relabel_band_rows.py, quirk_rules.py  -> submissions/<name>_blend_edges.csv, <name>_blend_edges_quirk.csv
 
 --no-stage2 stops after step 10. The second stage adds about 80 minutes on a 16 GB laptop, steps 14 and 15 about 25 more.
 Step 14 always uses its own defaults (300 trees, 3 seeds); --trees and --seeds apply to the 12-class models.
@@ -41,12 +49,18 @@ ap.add_argument("--trees", type=int, default=150)
 ap.add_argument("--name", default="final")
 ap.add_argument("--no-stage2", action="store_true")
 ap.add_argument("--jobs", type=int, default=os.cpu_count() or 4, help="threads for the second-stage and specialist fits")
+ap.add_argument("--mlp", action="store_true", help="also build the neural-network blend (needs PyTorch)")
+ap.add_argument("--device", default="cuda", help="device for the neural network: cuda or cpu")
 a = ap.parse_args()
 PY = [sys.executable, "-I"]
 P = ROOT / "data/processed"
 M = ROOT / "models"
 FEATS_NOBAND = "features_v1.parquet,features_v2.parquet,features_v4.parquet"
 FEATS = "features_v1.parquet,features_v2.parquet,features_v3.parquet,features_v4.parquet,features_v5.parquet"
+# October band-edge corrections, each confirmed by one public-leaderboard upload on 15 Nov (see README, "Edge probes").
+# bands.py places the October edges without labels; where no clearly typed row sits near an edge, the rows next to it
+# can belong to either band. "<first device number>-<last device number>:<label>".
+EDGE_MOVES = ["473818-473821:velocity_bot"]
 
 
 def step(name, outputs, cmd):
@@ -91,4 +105,19 @@ step("type specialist", [M / "s2_typ_all/test_proba.npy"],
            "--labels", "models/oof_raw/y_clean.npy", "--mode", "all", "--jobs", str(a.jobs), "--test"])
 step("submission (type specialist)", [ROOT / "submissions" / f"{a.name}_typ_all.csv"],
      PY + ["src/upi/make_submission.py", ".", "s2_typ_all", "--labels", "models/oof_raw/y_clean.npy", "--name", f"{a.name}_typ_all"])
-print("finished:", ROOT / "submissions" / f"{a.name}_typ_all.csv")
+step("edge corrections", [ROOT / "submissions" / f"{a.name}_edges.csv"],
+     PY + ["src/upi/relabel_band_rows.py", ".", f"submissions/{a.name}_typ_all.csv", f"submissions/{a.name}_edges.csv"] + EDGE_MOVES)
+step("quirk rules", [ROOT / "submissions" / f"{a.name}_edges_quirk.csv"],
+     PY + ["src/upi/quirk_rules.py", ".", f"submissions/{a.name}_edges.csv", f"submissions/{a.name}_edges_quirk.csv"])
+print("finished:", ROOT / "submissions" / f"{a.name}_edges_quirk.csv")
+if a.mlp:
+    step("neural network", [M / "mlp/test_proba.npy"],
+         PY + ["src/upi/exp_mlp.py", ".", "mlp", "--features", FEATS + ",features_v6.parquet", "--labels", "models/oof_raw/y_clean.npy",
+               "--device", a.device, "--test"])
+    step("submission (blend)", [ROOT / "submissions" / f"{a.name}_blend.csv"],
+         PY + ["src/upi/make_submission.py", ".", "s2", "--blend", "s2,mlp", "--labels", "models/oof_raw/y_clean.npy", "--name", f"{a.name}_blend"])
+    step("edge corrections (blend)", [ROOT / "submissions" / f"{a.name}_blend_edges.csv"],
+         PY + ["src/upi/relabel_band_rows.py", ".", f"submissions/{a.name}_blend.csv", f"submissions/{a.name}_blend_edges.csv"] + EDGE_MOVES)
+    step("quirk rules (blend)", [ROOT / "submissions" / f"{a.name}_blend_edges_quirk.csv"],
+         PY + ["src/upi/quirk_rules.py", ".", f"submissions/{a.name}_blend_edges.csv", f"submissions/{a.name}_blend_edges_quirk.csv"])
+    print("finished:", ROOT / "submissions" / f"{a.name}_blend_edges_quirk.csv")

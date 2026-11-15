@@ -8,3 +8,5 @@ lightgbm==4.7.0
 xgboost==3.2.0
 # only the EDA scripts under scripts/eda need this
 matplotlib==3.10.7
+# only for run_all.py --mlp (the final entry); built with the CUDA 12.8 wheel
+torch==2.11.0
