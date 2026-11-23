@@ -1,0 +1,7 @@
+{
+  "passed": true,
+  "files_verified": 1137,
+  "chunks": 126,
+  "archive_bytes": 5929634052,
+  "method": "Stream-decompress complete tar; compare every archived file SHA-256 and symlink target against live originals."
+}
