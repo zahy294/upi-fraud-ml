@@ -1,0 +1,7 @@
+[
+  "upi-fraud-ml/data/processed/research_sep_seed281/data",
+  "upi-fraud-ml/data/processed/research_aug_seed281/data",
+  "upi-fraud-ml/data/processed/research_probe/data/raw",
+  "upi-fraud-s54/data/processed/forward_2026-09/scripts",
+  "upi-fraud-s54/data/processed/forward_2026-08/scripts"
+]

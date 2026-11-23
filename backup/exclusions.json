@@ -1,0 +1,17 @@
+[
+  "upi-fraud-s5411-audit/tests/__pycache__",
+  "upi-fraud-s5411-audit/src/upi/__pycache__",
+  "upi-fraud-ml/.git",
+  "upi-fraud-ml/.venv",
+  "upi-fraud-ml/tests/__pycache__",
+  "upi-fraud-ml/src/upi_fraud/__pycache__",
+  "upi-fraud-ml/scripts/eda/__pycache__",
+  "upi-fraud-ml/scripts/research/__pycache__",
+  "upi-fraud-modelling/src/upi/__pycache__",
+  "upi-fraud-s54/experiments/__pycache__",
+  "upi-fraud-s54/experiments/phase1/__pycache__",
+  "upi-fraud-s54/experiments/phase2_forward_stack_v1/__pycache__",
+  "upi-fraud-s54/src/upi/__pycache__",
+  "upi-fraud-s54/scripts/eda/__pycache__",
+  "upi-fraud-s54/reports/missed_fraud_august_v1/__pycache__"
+]

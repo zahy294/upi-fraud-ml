@@ -1,0 +1,32 @@
+[
+  {
+    "folder": "upi-fraud-ml",
+    "head": "5269d019dc111aa5722100f102c672211591304f",
+    "status": "",
+    "branch": "thanmay/score-improvement"
+  },
+  {
+    "folder": "upi-fraud-modelling",
+    "head": "d4ecf6caef06c08fc43b965f14fbabb998a3a34a",
+    "status": "",
+    "branch": "modelling"
+  },
+  {
+    "folder": "upi-fraud-s54",
+    "head": "645494f3dee17478000d40acb4b2ed5e59ab5aae",
+    "status": "?? experiments/\n?? logs/\n?? reports/binary_risk_v1/\n?? reports/class_specialist_v1/\n?? reports/cleaning_ablation_v1/\n?? reports/cleaning_ablation_v1_review/\n?? reports/continuation_20261115/\n?? reports/deadline_anchor_v1/\n?? reports/deadline_candidate_v1/\n?? reports/deadline_event_v1/\n?? reports/event_pooling_v1/\n?? reports/far_episode_stack_v1/\n?? reports/final_submission_20261115/\n?? reports/missed_fraud_august_v1/\n?? reports/noise_weight_coverage_v1/\n?? reports/offband_specialist_v1/\n?? reports/phase1/\n?? reports/phase2_forward_stack_v1/\n?? reports/s54/\n?? reports/xgb_forward_blend_v1/\n?? src/upi/blend_evaluate.py\n?? src/upi/features_v5.py\n?? src/upi/run_oof_catboost.py\n?? src/upi/weight_search_v2.py\n",
+    "branch": "thanmay/s54-experiments"
+  },
+  {
+    "folder": "upi-fraud-s5411-audit",
+    "head": "774f8285f94f5cd8dc58c3907a8866311fdc3bff",
+    "status": " M src/upi/pipeline.py\n?? reports/s5411_audit/\n?? scripts/audit_s5411_artifacts.py\n?? tests/test_propagation_selection.py\n",
+    "branch": "thanmay/s5411-audit"
+  },
+  {
+    "folder": "upi-fraud-final-audit",
+    "head": "629027cf463cf8391a06d95021145f6f345ba128",
+    "status": "",
+    "branch": ""
+  }
+]
