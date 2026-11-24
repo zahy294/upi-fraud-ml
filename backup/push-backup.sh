@@ -2,6 +2,11 @@
 set -euo pipefail
 cd "/home/thanmay/ML-challenge-backup-20261124"
 branch="refs/heads/thanmay/full-backup-2026-11-24"
+# Cache credentials in memory for eight hours; apply only to this script.
+# Clear inherited helpers so a plaintext store is never used by these commands.
+git() {
+  command git -c credential.helper= -c 'credential.helper=cache --timeout=28800' "$@"
+}
 remote_head=$(git ls-remote origin "$branch" | cut -f1)
 if [ -n "$remote_head" ] && git merge-base --is-ancestor f3a4a347b0e870e35b259af0fbf49ed69f05fbd5 "$remote_head"; then echo "Already backed up f3a4a347b0e870e35b259af0fbf49ed69f05fbd5"; else git push origin f3a4a347b0e870e35b259af0fbf49ed69f05fbd5:"$branch"; remote_head=f3a4a347b0e870e35b259af0fbf49ed69f05fbd5; fi
 if [ -n "$remote_head" ] && git merge-base --is-ancestor 1dafdf3941317e7e187e0d398b583ea1a20c1827 "$remote_head"; then echo "Already backed up 1dafdf3941317e7e187e0d398b583ea1a20c1827"; else git push origin 1dafdf3941317e7e187e0d398b583ea1a20c1827:"$branch"; remote_head=1dafdf3941317e7e187e0d398b583ea1a20c1827; fi
